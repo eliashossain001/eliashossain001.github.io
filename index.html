@@ -29,74 +29,142 @@
           </script>
           <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-        <style>
-            .section-title {
-              background-color: #760000;
-              color: white;
-              display: inline-block;
-              padding: 5px 15px;
-              font-weight: bold;
-              font-size: 18px;
-              margin-bottom: 20px;
-            }
-          
-            .publication {
-              margin-bottom: 35px;
-            }
-          
-            .authors a {
-              text-decoration: underline;
-              color: #000;
-            }
-          
-            .title {
-              font-weight: bold;
-              font-size: 1.05em;
-              margin-top: 5px;
-              margin-bottom: 5px;
-            }
-          
-            .journal {
-              font-style: italic;
-            }
-          
-            .doi-box {
-              display: inline-block;
-              background-color: #ffd700;
-              color: #000;
-              padding: 3px 8px;
-              font-weight: bold;
-              border-radius: 3px;
-              margin-top: 5px;
-            }
-          
-            .doi-link {
-              color: #000;
-              text-decoration: underline;
-              margin-left: 5px;
-            }
+                  <style>
+                      .section-title {
+                        background-color: #760000;
+                        color: white;
+                        display: inline-block;
+                        padding: 5px 15px;
+                        font-weight: bold;
+                        font-size: 18px;
+                        margin-bottom: 20px;
+                      }
+                    
+                      .publication {
+                        margin-bottom: 35px;
+                      }
+                    
+                      .authors a {
+                        text-decoration: underline;
+                        color: #000;
+                      }
+                    
+                      .title {
+                        font-weight: bold;
+                        font-size: 1.05em;
+                        margin-top: 5px;
+                        margin-bottom: 5px;
+                      }
+                    
+                      .journal {
+                        font-style: italic;
+                      }
+                    
+                      .doi-box {
+                        display: inline-block;
+                        background-color: #ffd700;
+                        color: #000;
+                        padding: 3px 8px;
+                        font-weight: bold;
+                        border-radius: 3px;
+                        margin-top: 5px;
+                      }
+                    
+                      .doi-link {
+                        color: #000;
+                        text-decoration: underline;
+                        margin-left: 5px;
+                      }
 
 
-            .card-title {
-                font-weight: 700;
-                color: #3d3d3d;
-                }
+                      .card-title {
+                          font-weight: 700;
+                          color: #3d3d3d;
+                          }
 
-                .card-text a {
-                text-decoration: underline;
-                color: #760000;
-                font-weight: 500;
-                }
+                          .card-text a {
+                          text-decoration: underline;
+                          color: #760000;
+                          font-weight: 500;
+                          }
+
+                      :root {
+            --accent: #6C63FF;
+            --accent-dark: #5147D8;
+            --bg-soft: #FAFAFF;
+            --text-main: #333333;
+          }
+
+          /* General text & link colors */
+          body { color: var(--text-main); background-color: #FFFFFF; }
+          a { color: var(--accent-dark); text-decoration: none; }
+          a:hover { color: var(--accent); }
+
+          /* Sidebar */
+          #sideNav { background-color: #F5F5FB !important; }
+
+          /* Section headings */
+          .section-title, .news-title { border-left: 4px solid var(--accent); padding-left: 10px; }
+
+          /* Highlight text */
+          .text-primary { color: var(--accent) !important; }
+
+          /* Social icon hover */
+          .social-icons a:hover { background-color: var(--accent); color: #fff; }
+
+          /* News box background */
+          #news { background-color: var(--bg-soft); padding: 15px 20px; border-radius: 6px; }
 
 
+          /* Sidebar background */
+          #sideNav {
+            background-color: #EDE9F8 !important; /* soft neutral lavender */
+            color: #3C3C3C;
+            border-right: 1px solid #DDD;
+          }
 
+          /* Navigation links */
+          .navbar-nav .nav-link {
+            color: #3C3C3C !important;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            padding: 8px 12px;
+            transition: all 0.3s ease-in-out;
+          }
 
+          .navbar-nav .nav-link:hover,
+          .navbar-nav .nav-link.active {
+            color: #6C63FF !important;
+            background-color: #F6F4FF;
+            border-radius: 6px;
+          }
+
+          /* Profile image */
+          .img-profile {
+            border: 3px solid #fff;
+            box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+          }
+
+          /* Social icons */
+          .social-icons a {
+            color: #5C5C5C;
+            transition: all 0.3s ease;
+          }
+
+          .social-icons a:hover {
+            color: #6C63FF;
+          }
+
+          /* Keep titles clean and readable */
+          .text-primary {
+            color: #6C63FF !important;
+          }
 
           </style>
           
-
- 
-
         
     </head>
 
@@ -106,17 +174,20 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav" style="background-color: rgb(165, 161, 228) !important;">
             <a class="navbar-brand js-scroll-trigger" href="#page-top">
                 <span class="d-block d-lg-none">Elias Hossain</span>
-                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="dist/assets/img/elias.jpg" alt="..." /></span>
+                <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="dist/assets/img/elias3.jpeg" alt="..." /></span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav">
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#education">Education</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#myresearch">Research</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#research-blog">Research</a></li>
+                  
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#publication">Publication</a></li>
                     <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#research">Conference</a></li>
-                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#awards">Awards</a></li>
+                    <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+
+                    
                     
                 </ul>
             </div>
@@ -135,54 +206,42 @@
                     <!-- Street  -  District  -  Country 
                     -  Number -->
                 </div>
-                <p class="lead mb-5" style="text-align: justify; font-size: 1.0em;">
-                    Hello! I’m Elias, a graduate student at <strong>Mississippi State University</strong>, USA, specializing in <strong>large language models (LLMs)</strong> with a focus on <strong>healthcare applications</strong>. My research centers on <strong>LLM reasoning</strong> and <strong>clinical uncertainty measurement</strong>, aiming to make AI-driven medical systems more interpretable, reliable, and safe. I’m particularly interested in how LLMs respond to ambiguous clinical scenarios, with the goal of enhancing trust and usability in real-world healthcare environments.
-                
-                    In addition to uncertainty modeling, I’ve worked on <strong>conversational AI</strong>, including the development of <strong>BarkPlug</strong>, an LLM-based chatbot designed to help students easily access engineering department resources. I also contributed to an <strong>NIH-funded project</strong> in collaboration with the Psychology Department, where I applied <strong>machine learning</strong> to investigate age-related memory patterns.
-                
-                    Earlier in my career, I gained nearly three years of experience in the <strong>software industry</strong>, where I focused on AI solutions in healthcare and built custom desktop, web, and Linux-based applications. I also developed <strong>speech-to-text (STT)</strong> and <strong>text-to-speech (TTS)</strong> systems for <strong>low-resource languages</strong>, contributing to accessibility-focused innovations.
-                
-                    My journey began in <strong>Bangladesh</strong>, where I earned my bachelor's degree and started building mobile applications before modern AI tools were widely accessible. In 2017, I was honored to win the divisional championship in the <strong>NASA Space Apps Challenge</strong> for best use of NASA data—an early milestone that fueled my passion for research.
-                
-                    For me, research is not just about publishing papers; it’s about solving meaningful problems that can make a real-world impact. I’m excited about what lies ahead and remain committed to advancing AI in healthcare and beyond.
-                </p>
-                
-                
-             
-                <!-- Recent News Subsection -->
-                <!-- <div id="news">
-                    <h2 class="news-title">Recent News</h2>
-                    <div class="news-item">
-                      
-                        <h6>Invited Speaker, Millsaps College in Jackson, United States</h6>
-                      
-                    </div>
-                    <div class="news-item">
-                  
-                        <h6>Abstract Accepted, Frontiers in Education 2024 - Washington D.C., USA</h6>
-                       
-                    </div>
-                </div> -->
+            <p class="lead mb-5" style="text-align: justify; font-size: 1.0em;">
+                I am a Ph.D. student at the <strong>University of Central Florida (UCF)</strong>, advised by
+                <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>. 
+                My research focuses on advancing <strong>Large Language Models (LLMs)</strong> and <strong>Machine Learning</strong> for <strong>biomedical discovery</strong> and <strong>antimicrobial resistance (AMR)</strong> prediction. 
 
+                I am currently developing an <strong>AI-driven framework</strong> that integrates <strong>LLM-based reasoning</strong> with <strong>computational biology</strong> to predict resistance mechanisms and design <strong>digital twin systems</strong> capable of simulating host–pathogen interactions for <strong>drug discovery</strong> in bacterial pathogens. 
+                My work aims to enable <strong>trustworthy, interpretable, and data-efficient biomedical AI</strong> capable of bridging computational intelligence with clinical translation.
+
+                With a professional background as a <strong>Software Engineer</strong> and <strong>Machine Learning Researcher</strong>, I bring expertise in <strong>backend system design</strong>, <strong>algorithm optimization</strong>, and <strong>scalable AI model deployment</strong>. 
+                This combination of computational and biomedical insight drives my goal of creating robust, explainable, and high-impact <strong>AI systems for healthcare and life sciences</strong>.
+            </p>
+
+
+
+                                
                 <!-- Recent News Subsection -->
                 <div id="news">
                     <h2 class="news-title">Recent News</h2>
-                    <ol class="news-list">
-                        <li>Distinguished Speaker, 2nd Global Congress on Advanced Satellite Communications (Adv. Satellite 2024) event, London, United Kingdom</li>
-                        <li>Invited Speaker, Mississippi Health Innovation Conference 2024, Millsaps College in Jackson, United States</li>
-                        <li>Abstract Accepted, Frontiers in Education 2024 - Washington D.C., USA</li>
-                    </ol>
+                    <ul class="news-list">
+                        <li>
+                            <strong>Paper Accepted</strong> — <em>7th Molecular Machine Learning (MoML) Conference</em>, 
+                            Massachusetts Institute of Technology (MIT), Cambridge, USA (2025)
+                        </li>
+                    </ul>
                 </div>
 
 
-                <div class="social-icons">
-                    <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-b70678160/"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="social-icon" href="https://github.com/eliashossain001"><i class="fab fa-github"></i></a>
-                    <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en"><i class="fab fa-researchgate"></i></a>
-                    <a class="social-icon" href="https://eliashossain9111.medium.com/"><i class="fab fa-medium-m"></i></a>
-                    <a class="social-icon" href="mailto:elias.hossain191@gmail.com"><i class="fa fa-envelope"></i></a>
-                    <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en"><i class="fas fa-graduation-cap"></i></a>
-                </div>
+              <div class="social-icons">
+                <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-7448a736a/"><i class="fab fa-linkedin-in"></i></a>
+                <a class="social-icon" href="https://github.com/eliashossain001"><i class="fab fa-github"></i></a>
+                <a class="social-icon" href="https://www.youtube.com/@eliashossain6662"><i class="fab fa-youtube"></i></a>
+                <a class="social-icon" href="https://eliashossain9111.medium.com/"><i class="fab fa-medium-m"></i></a>
+                <a class="social-icon" href="mailto:elias.hossain191@gmail.com"><i class="fa fa-envelope"></i></a>
+                <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en"><i class="fas fa-graduation-cap"></i></a>
+              </div>
+
 
         </section>
 
@@ -192,130 +251,113 @@
           
             <!-- Education-->
             <section class="resume-section" id="education">
-                <div class="resume-section-content">
-                    <h2 class="mb-5">Education</h2>
-                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-0">Mississippi State University, United States</h3>
-                            <div class="subheading mb-3">Master of Science (MS) in Computer Science</div>
-                            <div>Research Focus: Natural Language Processing and Machine Learning</div>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary" style="color: black!important;">Jan 2024 - Present</span></div>
-                    </div>
-                    <!-- <div class="d-flex flex-column flex-md-row justify-content-between">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-0">North South University, Dhaka, Bangladesh</h3>
-                            <div class="subheading mb-3">Master of Science in Computer Science & Engineering</div>
-                            <div class="subheading mb-3">Accomplishments: Received 4IR skills award and authored two journal articles</div>
-                        </div>
-                        <div class="flex-shrink-0"><span class="text-primary" style="color: black !important;">Jan 2023 - Dec 2023</span></div>
-                    </div> -->
-                </div>
-            </section>
-
-
-            <hr class="m-0" />
-            <!-- Research Section-->
-               
-            <section class="resume-section" id="myresearch">
               <div class="resume-section-content">
-                <h2 class="mb-5">Research</h2>
-            
-                <div class="project-entry mb-5">
-                  <h5>R-GAT: Residual Graph Attention Network for Biomedical Document Classification</h5>
-                  <p style="text-align: justify;">
-                    This completed project proposes <strong>R-GAT</strong>, a Residual Graph Attention Network for classifying medical documents from the PubMed database. It encodes textual units as graph nodes and semantic relations as edges, effectively handling long-form biomedical texts across thyroid, colon, lung, and generic categories.
-                  </p>
-            
-                  <p style="text-align: justify;">
-                    The model computes node representations using multi-head graph attention:
-                  </p>
-            
-                  <p class="text-center">
-                    \[
-                    h_i' = \sigma\left(\sum_{j \in \mathcal{N}(i)} \alpha_{ij} W h_j\right)
-                    \]
-                  </p>
-            
-                  <p class="text-center">
-                    \[
-                    \alpha_{ij} = \frac{\exp\left(\text{LeakyReLU}(a^T [Wh_i \, || \, Wh_j])\right)}{\sum_{k \in \mathcal{N}(i)} \exp\left(\text{LeakyReLU}(a^T [Wh_i \, || \, Wh_k])\right)}
-                    \]
-                  </p>
-            
-                  <p style="text-align: justify;">
-                    Residual connections and global pooling improve training stability and classification performance. A version has been <strong>submitted as a preprint to arXiv</strong>.
-                  </p>
-            
-                  <p>
-                    <a href="https://arxiv.org/abs/2410.15198" target="_blank">[Read the preprint on arXiv]</a>
-                  </p>
-                </div>
-            
-                <div class="project-entry mb-5">
-                  <h5>LLM Reasoning: Enhancing Multi-Step Reasoning in Large Language Models</h5>
-            
-                  <p style="text-align: justify;">
-                    This ongoing project investigates the reasoning capabilities of Large Language Models (LLMs) in multi-hop and chain-of-thought tasks. We explore methods to inject structured reasoning using step supervision and logical consistency constraints.
-                  </p>
-            
-                  <p style="text-align: justify;">
-                    We define a hybrid loss combining language modeling with reasoning consistency:
-                  </p>
-            
-                  <p class="text-center">
-                    \[
-                    \mathcal{L}_{\text{total}} = \lambda_1 \cdot \mathcal{L}_{\text{LM}} + \lambda_2 \cdot \mathcal{L}_{\text{reason}}
-                    \]
-                  </p>
-            
-                  <p style="text-align: justify;">
-                    Here, \( \mathcal{L}_{\text{LM}} \) is the standard token prediction loss, and \( \mathcal{L}_{\text{reason}} \) ensures intermediate steps follow logical structure. We evaluate on datasets like GSM8K, MEDQA, and StrategyQA.
-                  </p>
-            
-                  <p>
-                    <a href="#" class="btn btn-outline-secondary mt-2 disabled">📄 Preprint coming soon</a>
-                  </p>
+                <h2 class="mb-5">Education</h2>
+
+                <!-- Ph.D. Entry -->
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                  <div class="flex-grow-1">
+                    <h3 class="mb-0">University of Central Florida (UCF), United States</h3>
+                    <div class="subheading mb-3">Doctor of Philosophy (Ph.D.) in Industrial Engineering and Management Systems</div>
+                    <div>Advisor: 
+                      <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>
+                    </div>
+                    <div>My research focuses on advancing Large Language Models (LLMs) for biomedical discovery, with applications in antimicrobial resistance (AMR) prediction, digital twin systems, and data-driven drug discovery for bacterial pathogens. I aim to develop interpretable and trustworthy AI frameworks that bridge computational modeling with biological understanding, contributing to the next generation of intelligent healthcare systems.</div>
+                    
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-primary" style="color: black!important;">Aug 2025 – Dec 2028 (Expected)</span>
+                  </div>
                 </div>
 
-
-                <div class="project-entry mb-5">
-                  <h5>Contrastive Learning in Positive-Unlabeled Data with LLMs</h5>
-                
-                  <p style="text-align: justify;">
-                    This project explores the integration of contrastive learning with Large Language Models (LLMs) to enhance classification in Positive-Unlabeled (PU) settings, where only partial labels are available. The method learns discriminative representations by contrasting positive examples against ambiguous unlabeled data in embedding space.
-                  </p>
-                
-                  <p style="text-align: justify;">
-                    We fine-tune a pretrained LLM using a contrastive loss that separates positive pairs from uncertain examples while preserving semantic alignment:
-                  </p>
-                
-                  <p class="text-center">
-                    \[
-                    \mathcal{L}_{\text{total}} = \lambda_1 \cdot \mathcal{L}_{\text{LM}} + \lambda_2 \cdot \mathcal{L}_{\text{cont}}
-                    \]
-                  </p>
-                
-                  <p class="text-center">
-                    \[
-                    \mathcal{L}_{\text{cont}} = -\log \frac{\exp(\text{sim}(z_i, z_j)/\tau)}{\sum_{k=1}^{K} \exp(\text{sim}(z_i, z_k)/\tau)}
-                    \]
-                  </p>
-                
-                  <p style="text-align: justify;">
-                    Here, \( \text{sim}(z_i, z_j) \) denotes cosine similarity between representations, and \( \tau \) is a temperature parameter. This framework helps the LLM distinguish informative unlabeled instances without requiring full supervision.
-                  </p>
-                
-                  <p>
-                    <a href="#" class="btn btn-outline-secondary mt-2 disabled">📄 Manuscript in progress</a>
-                  </p>
+                <!-- Master's Entry -->
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                  <div class="flex-grow-1">
+                    <h3 class="mb-0">Mississippi State University, United States</h3>
+                    <div class="subheading mb-3">Master of Science (M.S.) in Computer Science</div>
+                    <div>Thesis: <em>“TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts”</em> (July 2025) — 
+                      <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">Download</a>
+                    </div>
+                    <div>Major Professor: 
+                      <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank">Dr. Andy Perkins</a>
+                    </div>
+                    <div>My research centered on Natural Language Processing (NLP), Machine Learning, and scientific topic modeling. In particular, my work focused on developing advanced AI-driven frameworks for uncovering latent structures and thematic patterns in large-scale scientific corpora, contributing to more interpretable and efficient methods for knowledge discovery in research literature.</div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <span class="text-primary" style="color: black!important;">Jan 2024 – July 2025</span>
+                  </div>
                 </div>
-                
-            
+
               </div>
             </section>
+
+
+
+                <!-- Future or present Ph.D. entry could go here -->
+
+              </div>
+            </section>
+
+
             
-            
+
+<hr class="m-0" />
+
+<!-- Research Blog Section -->
+<section class="resume-section" id="research-blog">
+  <div class="resume-section-content">
+    <h2 class="mb-5">Research & Insights</h2>
+
+    <p style="text-align: justify;">
+      I occasionally write about my ongoing research, methodologies, and experiments at the intersection of 
+      <strong>Large Language Models (LLMs)</strong>, <strong>Computational Biology</strong>, and 
+      <strong>Biomedical AI</strong>. This section highlights key ideas and progress from my recent work.
+    </p>
+
+    <div class="row">
+      <!-- Blog Card 1 -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Building an Interpretable LLM Framework for AMR Prediction</h5>
+            <p class="card-text" style="text-align: justify;">
+              Exploring how specialized biomedical embeddings and fine-tuned reasoning layers can 
+              help predict antimicrobial resistance patterns with greater interpretability and confidence.
+            </p>
+            <a href="blog/amr-framework.html" class="btn btn-outline-primary btn-sm">Read More</a>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Card 2 -->
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Digital Twin Systems for Host–Pathogen Simulation</h5>
+            <p class="card-text" style="text-align: justify;">
+              Introducing AI-driven digital twin architectures designed to simulate biological interactions 
+              and accelerate antibiotic discovery through predictive modeling and multi-agent reasoning.
+            </p>
+            <a href="blog/digital-twin.html" class="btn btn-outline-primary btn-sm">Read More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-3">
+      More articles and technical discussions are available on my 
+      <a href="https://eliashossain9111.medium.com/" target="_blank"><strong>Medium</strong></a> 
+      and <a href="https://www.youtube.com/@eliashossain6662" target="_blank"><strong>YouTube</strong></a> channels.
+    </p>
+  </div>
+</section>
+
+
+
+
+
+
 
 
 
@@ -326,413 +368,195 @@
             <!--Publication section-->
 
                     
-                     <section class="resume-section" id="publication">
-                      <div class="resume-section-content">
-                      <h2 class="mb-5">Publications</h2>
-                      <div class="accordion" id="publicationAccordion">
-                      <!-- Journal Articles -->
-                      <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingJournal">
-                      <button aria-controls="collapseJournal" aria-expanded="true" class="accordion-button" data-bs-target="#collapseJournal" data-bs-toggle="collapse" type="button">
-                                      Journal Articles (10)
-                                    </button>
-                      </h2>
-                      <div aria-labelledby="headingJournal" class="accordion-collapse collapse show" data-bs-parent="#publicationAccordion" id="collapseJournal">
-                      <div class="accordion-body">
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Alshahrani, A., and Rahman, W.</div>
-                      <div class="title">News Modeling and Retrieving Information: Data-Driven Approach.</div>
-                      <div class="journal"><em>Intelligent Automation &amp; Soft Computing</em>, vol. 38, no. 2, pp. 109–123, 2024.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.32604/iasc.2022.029511" target="_blank">10.32604/iasc.2022.029511</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(`@article{hossain2023news,
-                        title={News Modeling and Retrieving Information: Data-Driven Approach.}`)" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.32604/iasc.2022.029511" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Rana, R., et al.</div>
-                      <div class="title">Natural Language Processing in Electronic Health Records in relation to healthcare decision-making: A systematic review.</div>
-                      <div class="journal"><em>Computers in Biology and Medicine</em>, vol. 155, 2023. [Q1, IF: 7.7]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1016/j.compbiomed.2023.106649">10.1016/j.compbiomed.2023.106649</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1016/j.compbiomed.2023.106649" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Alshehri, M., Almakdi, S., Halawani, H., Rahman, M. M., Rahman, W., et al.</div>
-                      <div class="title">Dm-Health App: Diabetes Diagnosis Using Machine Learning with Smartphone.</div>
-                      <div class="journal"><em>CMC-Computers Materials &amp; Continua</em>, vol. 72, no. 1, pp. 1713–1746, 2022. [Q1, IF: 3.1]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.32604/cmc.2022.024822">10.32604/cmc.2022.024822</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.32604/cmc.2022.024822" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Hossain, M. S., Al Jannat, S., Huda, M., Alsharif, S., et al.</div>
-                      <div class="title">Brain Tumor Auto-Segmentation on Multimodal Imaging Modalities Using Deep Neural Network.</div>
-                      <div class="journal"><em>CMC-Computers Materials &amp; Continua</em>, vol. 72, no. 3, pp. 4509–4523, 2022. [Q1, IF: 3.1]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.32604/cmc.2022.025977">10.32604/cmc.2022.025977</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.32604/cmc.2022.025977" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Alazeb, A., Almudawi, N., Almakdi, S., Alshehri, M., Faruque, M. G. G., and Rahman, W.</div>
-                      <div class="title">Forecasting Mental Stress Using Machine Learning Algorithms.</div>
-                      <div class="journal"><em>CMC-Computers Materials &amp; Continua</em>, vol. 72, no. 3, pp. 4945–4966, 2022. [Q1, IF: 3.1]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.32604/cmc.2022.027058">10.32604/cmc.2022.027058</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.32604/cmc.2022.027058" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Siddiqui, S., Arifeen, M., Hopgood, A., Good, A., Gegov, A., <u>Hossain, E.</u>, et al.</div>
-                      <div class="title">Deep Learning Models for the Diagnosis and Screening of COVID-19: A Systematic Review.</div>
-                      <div class="journal"><em>SN Computer Science</em>, vol. 3, no. 5, pp. 1–22, 2022. [Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/s42979-022-01326-3">10.1007/s42979-022-01326-3</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/s42979-022-01326-3" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Hossain, M. M., Swarna, R. A., Mostafiz, R., Shaha, P., Pinky, L. Y., Rahman, M. M., et al., <u>Hossain, E.</u></div>
-                      <div class="title">Analysis of the performance of feature optimization techniques for the diagnosis of machine learning-based chronic kidney disease.</div>
-                      <div class="journal"><em>Machine Learning with Applications</em>, 100330, 2022.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1016/j.mlwa.2022.100330">10.1016/j.mlwa.2022.100330</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1016/j.mlwa.2022.100330" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Imran, A. Z. M., Hakim, M. L., Ahmed, M. R., Islam, M. T., and <u>Hossain, E.</u></div>
-                      <div class="title">Design of microstrip patch antenna to deploy unmanned aerial vehicle as UE in 5G wireless network.</div>
-                      <div class="journal"><em>International Journal of Electrical and Computer Engineering (IJECE)</em>, vol. 11, no. 5, pp. 4202–4213, 2021.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="http://doi.org/10.11591/ijece.v11i5.pp4202-4213">10.11591/ijece.v11i5.pp4202-4213</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="http://doi.org/10.11591/ijece.v11i5.pp4202-4213" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Rahman, M. W., Islam, M. T., and Hossain, M. S.</div>
-                      <div class="title">Manifesting a mobile application on safety which ascertains women salus in Bangladesh.</div>
-                      <div class="journal"><em>International Journal of Electrical and Computer Engineering</em>, vol. 9, no. 5, pp. 4355–4363, 2019. [Q3, Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="http://doi.org/10.11591/ijece.v9i5.pp4355-4363">10.11591/ijece.v9i5.pp4355-4363</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="http://doi.org/10.11591/ijece.v9i5.pp4355-4363" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Rahman, W., <u>Hossain, E.</u>, Islam, R., Harun-Ar-Rashid, N.-A.-A., and Hasan, M.</div>
-                      <div class="title">Real-time and low-cost IoT based farming using raspberry Pi.</div>
-                      <div class="journal"><em>Indonesian Journal of Electrical Engineering and Computer Science</em>, vol. 17, no. 1, pp. 197–204, 2020.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="http://doi.org/10.11591/ijeecs.v17.i1.pp197-204">10.11591/ijeecs.v17.i1.pp197-204</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="http://doi.org/10.11591/ijeecs.v17.i1.pp197-204" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      </div>
-                      </div>
-                      </div>
-                      <!-- Book Chapters -->
-                      <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingBooks">
-                      <button aria-controls="collapseBooks" aria-expanded="false" class="accordion-button collapsed" data-bs-target="#collapseBooks" data-bs-toggle="collapse" type="button">
-                                        Book Chapters (6)
-                                    </button>
-                      </h2>
-                      <div aria-labelledby="headingBooks" class="accordion-collapse collapse" data-bs-parent="#publicationAccordion" id="collapseBooks">
-                      <div class="accordion-body">
-                      <div class="publication">
-                      <div class="authors">Siddiqui, S., <u>Hossain, E.</u>, Asaduzzaman, S. M., Al Jannat, S., Niloy, T. S., Rahman, W., et al.</div>
-                      <div class="title">Analysing and Identifying COVID-19 Risk Factors Using Machine Learning Algorithm with Smartphone Application.</div>
-                      <div class="journal">in <em>Inventive Systems and Control</em>, Springer, Singapore, pp. 775–788, 2022.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-981-19-1012-8_55">10.1007/978-981-19-1012-8_55</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-981-19-1012-8_55" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Siddiqui, S., <u>Hossain, E.</u>, Ferdous, R., Arifeen, M., Rahman, W., Masum, S., et al.</div>
-                      <div class="title">A Comparative Study of Deep Learning Models for COVID-19 Diagnosis Based on X-Ray Images.</div>
-                      <div class="journal">in <em>Smart and Sustainable Technology for Resilient Cities and Communities</em>, Springer, Singapore, pp. 163–174, 2022.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-981-16-9101-0_12">10.1007/978-981-16-9101-0_12</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-981-16-9101-0_12" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Kaysar, N., Joy, J. U., Md, A. Z., Rahman, M., and Rahman, W.</div>
-                      <div class="title">A Study Towards Bangla Fake News Detection Using Machine Learning and Deep Learning.</div>
-                      <div class="journal">in <em>Sentimental Analysis and Deep Learning</em>, Springer, Singapore, pp. 79–95, 2021.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-981-16-5157-1_7">10.1007/978-981-16-5157-1_7</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-981-16-5157-1_7" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Siddiqui, S., Hopgood, A., Good, A., Gegov, A., <u>Hossain, E.</u>, Rahman, W., et al.</div>
-                      <div class="title">A Next-Generation Telemedicine and Health Advice System.</div>
-                      <div class="journal">in <em>Proc. 6th Int. Congr. on Information and Communication Technology</em>, Springer, Singapore, pp. 981–989, 2021. [Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-981-16-2380-6_87">10.1007/978-981-16-2380-6_87</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-981-16-2380-6_87" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Hossain, M., Qaiduzzaman, K. M., and <u>Hossain, E.</u></div>
-                      <div class="title">Sightless Helper: An Interactive Mobile Application for Blind Assistance and Safe Navigation.</div>
-                      <div class="journal">in <em>Int. Conf. on Cyber Security and Computer Science</em>, Springer, Cham, pp. 581–592, 2020. [Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-3-030-52856-0_46">10.1007/978-3-030-52856-0_46</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-3-030-52856-0_46" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Qaiduzzaman, K. M., Khatun, S., Afsa, M., Sobhan, S., <u>Hossain, E.</u>, Shaharum, S. M., and Rahman, M.</div>
-                      <div class="title">A Mutation Triggering Method for Genetic Algorithm to Solve Traveling Salesman Problem.</div>
-                      <div class="journal">in <em>Embracing Industry 4.0</em>, Springer, Singapore, pp. 159–170, 2020.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1007/978-981-15-6025-5_15">10.1007/978-981-15-6025-5_15</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1007/978-981-15-6025-5_15" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      </div>
-                      </div>
-                      </div>
-                      <!-- Conference Articles -->
-                      <div class="accordion-item">
-                      <h2 class="accordion-header" id="headingConferences">
-                      <button aria-controls="collapseConferences" aria-expanded="false" class="accordion-button collapsed" data-bs-target="#collapseConferences" data-bs-toggle="collapse" type="button">
-                                        Conference Articles (6)
-                                    </button>
-                      </h2>
-                      
-                      <div aria-labelledby="headingConferences" class="accordion-collapse collapse" data-bs-parent="#publicationAccordion" id="collapseConferences">
-                        <div class="accordion-body">
-                    
-                          <!-- NEW: FIE 2024 paper -->
-                          <div class="publication">
-                            <div class="authors">Neupane, S., <u>Hossain, E.</u>, Keith, J., Tripathi, H., Ghiasi, F., Golilarz, N. A., Amirlatifi, A., Mittal, S., and Rahimi, S.</div>
-                            <div class="title">From Questions to Insightful Answers: Building an Informed Chatbot for University Resources.</div>
-                            <div class="journal"><em>Proc. 2024 IEEE Frontiers in Education Conference (FIE)</em>, USA, 2024.</div>
-                            <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/FIE61694.2024.10892994" target="_blank">10.1109/FIE61694.2024.10892994</a></div>
-                            <div class="mt-2">
-                              <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(`@INPROCEEDINGS{10892994,
-                      author={Neupane, Subash and Hossain, Elias and Keith, Jason and Tripathi, Himanshu and Ghiasi, Farbod and Golilarz, Noorbakhsh Amiri and Amirlatifi, Amin and Mittal, Sudip and Rahimi, Shahram},
-                      booktitle={2024 IEEE Frontiers in Education Conference (FIE)}, 
-                      title={From Questions to Insightful Answers: Building an Informed Chatbot for University Resources}, 
-                      year={2024},
-                      pages={1-9},
-                      keywords={Surveys;Measurement;Accuracy;Large language models;Retrieval augmented generation;Pipelines;Chatbots;User experience;Reliability;Usability;Chatbot;LLM;RAG;University resources;information access},
-                      doi={10.1109/FIE61694.2024.10892994}
-                    }`)" style="margin-top: 5px;">Copy BibTeX</button>
-                              <a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/FIE61694.2024.10892994" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a>
-                            </div>
-                          </div>
+            <!-- Selected Publications -->
+            <section class="resume-section" id="publication">
+              <div class="resume-section-content">
+                <h2 class="mb-5">Selected Publications</h2>
+
+                <ul style="list-style-type: square; font-size: 1rem; text-align: justify;">
+
+                    <li>
+                    <strong>Hossain, E.</strong>  
+                    “<em>TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts</em>,”  
+                    Master’s Thesis, Mississippi State University, 2025.  
+                    <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">[Thesis]</a>
+                  </li>
+
+                  <li>
+                    <strong>Hossain, E.</strong>, Saha, S., Roy, S., and Prasad, R.  
+                    “<em>Can Transformer Memory Be Corrupted? Investigating Cache-Side Vulnerabilities in Large Language Models</em>,”  
+                    <em>arXiv preprint</em>, 2025.  
+                    <a href="https://arxiv.org/abs/2510.17098" target="_blank">[arXiv]</a>
+                  </li>
+
+                  <li>
+                    <strong>Hossain, E.</strong>, Nuzhat, T., Masum, S., Rahimi, S., and Golilarz, N. A.  
+                    “<em>Medical-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with Limited Data</em>,”  
+                    <em>arXiv preprint</em>, 2025.  
+                    <a href="https://arxiv.org/abs/2410.15198" target="_blank">[arXiv]</a>
+                  </li>
+
+                  <li>
+                    <strong>Hossain, E.</strong>, Alshahrani, A., and Rahman, W.  
+                    “<em>News Modeling and Retrieving Information: A Data-Driven Approach</em>,”  
+                    <em>Intelligent Automation & Soft Computing</em>, vol. 38, no. 2, pp. 109–123, 2024.  
+                    <a href="https://doi.org/10.32604/iasc.2022.029511" target="_blank">[DOI]</a>
+                  </li>
+
+                  <li>
+                    <strong>Hossain, E.</strong>, Rana, R., et al.  
+                    “<em>Natural Language Processing in Electronic Health Records for Healthcare Decision-Making: A Systematic Review</em>,”  
+                    <em>Computers in Biology and Medicine</em>, vol. 155, 2023.  
+                    <a href="https://doi.org/10.1016/j.compbiomed.2023.106649" target="_blank">[DOI]</a>
+                  </li>
+
+ 
+                </ul>
+
+                <p class="mt-3">
+                  For a complete list of my publications, visit my  
+                  <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank"><strong>Google Scholar profile</strong></a>.
+                </p>
+              </div>
+            </section>
 
                       
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Rahman, M.E., Siddiqui, S., and Masum, S.</div>
-                      <div class="title">Hybrid Machine Learning Model for A Next-Generation Ecofriendly Travelling and Guides to Reduce Carbon Emissions.</div>
-                      <div class="journal"><em>Proc. 25th Int. Conf. on Computer and Information Technology (ICCIT)</em>, Bangladesh, 2022. [Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/ICCIT57492.2022.10055057">10.1109/ICCIT57492.2022.10055057</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/ICCIT57492.2022.10055057" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      
-                      <div class="publication">
-                      <div class="authors">Jannat, S.A., Hossain, S., and <u>Hossain, E.</u></div>
-                      <div class="title">ADPT: An Automated Disease Prognosis Tool Using Hybrid Deep Learning Architecture.</div>
-                      <div class="journal"><em>Proc. 25th Int. Conf. on Computer and Information Technology (ICCIT)</em>, Bangladesh, 2022.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/ICCIT57492.2022.10055867">10.1109/ICCIT57492.2022.10055867</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/ICCIT57492.2022.10055867" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Najib, A. U., and Islam, M. Z.</div>
-                      <div class="title">Combating Domestic Violence During COVID-19 Pandemic in Bangladesh: Using a Mobile Application Integrated with an Effective Solution.</div>
-                      <div class="journal"><em>Proc. 23rd Int. Conf. on Computer and Information Technology (ICCIT)</em>, IEEE, 2020.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/ICCIT51783.2020.9392691">10.1109/ICCIT51783.2020.9392691</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/ICCIT51783.2020.9392691" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors">Kulsum, M. U., Najib, A. U., and <u>Hossain, E.</u></div>
-                      <div class="title">Design and Development of MGA System: A Maternity Guidance Lightweight Mobile Application.</div>
-                      <div class="journal"><em>Proc. IEEE Int. Conf. on Signal Processing, Information, Communication &amp; Systems (SPICSCON)</em>, 2019. [Scopus]</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/SPICSCON48833.2019.9064867">10.1109/SPICSCON48833.2019.9064867</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/SPICSCON48833.2019.9064867" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      <div class="publication">
-                      <div class="authors"><u>Hossain, E.</u>, Rahman, M., Qaiduzzaman, K. M., Shakir, A. K., and Hassan, M. M.</div>
-                      <div class="title">Efficient Anti-Kidnapping and Anti-Harassment Mobile Application for Unwanted Incidents.</div>
-                      <div class="journal"><em>Proc. IEEE Student Conf. on Research and Development (SCOReD)</em>, 2019.</div>
-                      <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.1109/SCORED.2019.8896280">10.1109/SCORED.2019.8896280</a></div>
-                      <div class="mt-2"><button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('@article{...}')" style="margin-top: 5px;">Copy BibTeX</button><a class="btn btn-sm btn-outline-primary ms-2" download="" href="https://doi.org/10.1109/SCORED.2019.8896280" style="margin-top: 5px; margin-left: 10px;" target="_blank">Download PDF</a></div></div>
-                      </div>
-                      </div>
-                      </div>
+            
+<hr class="m-0" />
+<!-- Conferences -->
+<section class="resume-section" id="research">
+  <div class="resume-section-content">
+    <h2 class="mb-5">Conferences</h2>
 
-                          <!-- Preprints / arXiv -->
-                          <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingPreprints">
-                              <button aria-controls="collapsePreprints" aria-expanded="false" class="accordion-button collapsed" data-bs-target="#collapsePreprints" data-bs-toggle="collapse" type="button">
-                                Preprints (2)
-                              </button>
-                            </h2>
-                            <div aria-labelledby="headingPreprints" class="accordion-collapse collapse" data-bs-parent="#publicationAccordion" id="collapsePreprints">
-                              <div class="accordion-body">
+    <!-- Ph.D. Journey Category -->
+    <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During Ph.D. at University of Central Florida (2025–Present)</h4>
 
-                                <!-- Paper 1 -->
-                              
-                                <div class="publication">
-                                  <div class="authors"><u>Hossain, E.</u>, Nuzhat, T., Masum, S., Rahimi, S., and Golilarz, N. A.</div>
-                                  <div class="title">Medical-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with Limited Data.</div>
-                                  <div class="journal"><em>arXiv preprint</em>, 2025.</div>
-                                  <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.48550/arXiv.2410.15198" target="_blank">10.48550/arXiv.2410.15198</a></div>
-                                  <div class="mt-2">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(`@misc{hossain2025medicalgatcancerdocumentclassification,
-                                  title={Medical-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with Limited Data}, 
-                                  author={Elias Hossain and Tasfia Nuzhat and Shamsul Masum and Shahram Rahimi and Noorbakhsh Amiri Golilarz},
-                                  year={2025},
-                                  eprint={2410.15198},
-                                  archivePrefix={arXiv},
-                                  primaryClass={cs.AI},
-                                  url={https://arxiv.org/abs/2410.15198}
-                                }`)" style="margin-top: 5px;">Copy BibTeX</button>
-                                          <a class="btn btn-sm btn-outline-primary ms-2" href="https://arxiv.org/abs/2410.15198" target="_blank" style="margin-top: 5px; margin-left: 10px;">Download PDF</a>
-                                        </div>
-                                      </div>
+    <p style="text-align: justify;">
+      My doctoral journey at the <strong>University of Central Florida (UCF)</strong> began with the honor 
+      of presenting my research at the <strong>7th Molecular Machine Learning (MoML) Conference</strong> 
+      held at the <em>Massachusetts Institute of Technology (MIT)</em>, Cambridge, USA (2025). 
+      This prestigious event brought together global leaders in molecular AI and computational biology, 
+      where I presented my work on <strong>Large Language Models (LLMs)</strong> for 
+      <strong>antimicrobial resistance (AMR) prediction</strong> and <strong>drug discovery frameworks</strong>. 
+      It marked a defining milestone in my Ph.D. research on trustworthy, data-efficient biomedical AI systems.
+    </p>
+
+    <div class="row">
+      <!-- Poster Presentation -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/poster.jpeg" alt="Poster Presentation at MIT MoML">
+          <p class="photo-caption">Presenting my poster at MoML 2025, MIT</p>
+        </div>
+      </div>
+
+      <!-- Group Photo -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/group-photo.jpeg" alt="Group Photo at MIT MoML">
+          <p class="photo-caption">My labmates and advisors at MoML 2025, MIT</p>
+        </div>
+      </div>
+
+      <!-- Discussion with Professors -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/withprofessor.jpeg" alt="Discussion with Professors at MoML">
+          <p class="photo-caption">With Dr. Yousefi discussing research at MIT</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-5" style="border-top: 2px solid #EDE9F8;" />
+
+    <!-- Master's Journey Category -->
+    <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During M.S. at Mississippi State University (2024)</h4>
+
+    <p style="text-align: justify;">
+      During my master's research at <strong>Mississippi State University (MSU)</strong>, 
+      I presented my work on AI and health informatics at national conferences 
+      and graduate research symposia. These experiences strengthened my foundation 
+      in translational research and interdisciplinary collaboration within healthcare innovation.
+    </p>
+
+    <div class="row">
+      <!-- MSHIC Conference -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/conf005.jpeg" alt="MSHIC Presentation">
+          <p class="photo-caption">Presenting research at MSHIC 2024 Conference</p>
+        </div>
+      </div>
+
+      <!-- Discussion with Dr. David -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/conf004.jpeg" alt="Discussion with Dr. David">
+          <p class="photo-caption">In discussion with Dr. David, MSU Professor</p>
+        </div>
+      </div>
+
+      <!-- Graduate Symposium -->
+      <div class="col-md-4 mb-4">
+        <div class="conference-photo">
+          <img class="img-fluid" src="dist/assets/img/symposium.jpg" alt="Graduate Research Symposium">
+          <p class="photo-caption">Spring 2024 Graduate Research Symposium</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+</section>
 
 
-                                        <!-- Paper 2 -->
-                                      <div class="publication">
-                                        <div class="authors">Golilarz, N. A., <u>Hossain, E.</u>, Addeh, A., and Rahimi, K. A.</div>
-                                        <div class="title">Learning Algorithms Made Simple.</div>
-                                        <div class="journal"><em>arXiv preprint</em>, 2024.</div>
-                                        <div class="doi-box">doi: <a class="doi-link" href="https://doi.org/10.48550/arXiv.2410.09186" target="_blank">10.48550/arXiv.2410.09186</a></div>
-                                        <div class="mt-2">
-                                          <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText(`@misc{golilarz2024learningalgorithmssimple,
-                                          title={Learning Algorithms Made Simple}, 
-                                          author={Noorbakhsh Amiri Golilarz and Elias Hossain and Abdoljalil Addeh and Keyan Alexander Rahimi},
-                                          year={2024},
-                                          eprint={2410.09186},
-                                          archivePrefix={arXiv},
-                                          primaryClass={cs.LG},
-                                          url={https://arxiv.org/abs/2410.09186}
-                                        }`)" style="margin-top: 5px;">Copy BibTeX</button>
-                                                  <a class="btn btn-sm btn-outline-primary ms-2" href="https://arxiv.org/abs/2410.09186" target="_blank" style="margin-top: 5px; margin-left: 10px;">Download PDF</a>
-                                                </div>
-                                              </div>
 
-                                    </div>
-                                  </div>
-                                </div>
+<!-- Subscribe Section -->
+<section id="subscribe" style="background-color:#F9F9FF; padding:50px 0; text-align:center;">
+  <div class="container">
+    <h2 style="color:#000; font-weight:700;">Stay Updated with My Research</h2>
+    <p style="color:#555; max-width:600px; margin:10px auto 25px;">
+      Follow me on <strong>Medium</strong> to get notified whenever I publish new articles, research insights, or project updates.
+    </p>
 
-                      </div>
-                      </div>
-                      </section>
-                      
-                      
+    <a 
+      href="https://eliashossain9111.medium.com/" 
+      target="_blank" 
+      style="background-color:#6C63FF; color:#fff; padding:10px 20px; border-radius:5px; font-weight:600; text-decoration:none; transition:0.3s;"
+    >
+      Visit My Medium Profile
+    </a>
 
-            <hr class="m-0" />
-            <!-- Interests-->
-                <!-- Conferences-->
-                <section class="resume-section" id="research">
-                    <div class="resume-section-content">
-                        <h2 class="mb-5">Conferences</h2>
-                        <p style="text-align: justify;">
-                            The <strong>Mississippi Innovation Health Conference</strong> was held at the historic 
-                            <em>Christian Center within Millsaps College</em> in Jackson, United States, on 
-                            <strong>26 March 2024</strong>. This event showcased advancements in health informatics and 
-                            featured presentations from industry experts. I was invited to present my research on AI in healthcare at this conference.
-                        </p>
+    <p style="font-size:0.9rem; color:#777; margin-top:15px;">
+      You can also explore older posts and in-depth essays on AI, bioinformatics, and reasoning systems.
+    </p>
+  </div>
+</section>
 
-                        <div class="row">
-                            <!-- First row of images -->
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/conf005.jpeg" alt="Group Discussion">
-                                    <p class="photo-caption">Talking about AI in Healthcare</p>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/conf001.jpeg" alt="Conference Presentation">
-                                    <p class="photo-caption">Unveiling the Latest in Health Innovation</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/conf002.jpeg" alt="Poster Session">
-                                    <p class="photo-caption">Navigating the Digital Health and Technology</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/conf003.jpeg" alt="Group Discussion">
-                                    <p class="photo-caption">Spotlight on My Poster Research: MIHC 2024</p>
-                                </div>
-                            </div>
-                
-                            <!-- Second row of images -->
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/conf004.jpeg" alt="Group Discussion">
-                                    <p class="photo-caption">In Discussion with Dr. David, MSU Professor</p>
-                                </div>
-                            </div>
-                      
-                            <div class="col-md-4 mb-4">
-                                <div class="conference-photo">
-                                    <img class="img-fluid" src="dist/assets/img/symposium.jpg" alt="Group Discussion">
-                                    <p class="photo-caption">Spring 2024 Graduate Research Symposium</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                
 
-            <hr class="m-0" />
-            <!-- Awards-->
-            <!-- <section class="resume-section" id="awards">
-                <div class="resume-section-content">
-                    <h2 class="mb-5">Awards </h2>
-                    <ul style="list-style-type: square; text-align: left; color: rgb(51, 51, 51); background-color: rgb(255, 255, 255); font-size: 17px;">
-                        <li >4th Industrial Revolution (4IR) Skills Award, In Recognition of Notable Contribution in 4IR Skills, Organized by North South University Career and Placement Center in collaboration with Aspire to Innovate (a2i) and Thriving Skills (2023).</li>
-                        <li >DIU Research Award, In Recognition of Scholarly Publication in Reputed Indexed Journals for 2019, 2020, and 2021, Organized by Division of Research, Daffodil International University, Bangladesh (2021).</li>
-                        <li >Finalist, Dr. Pradeep P Thevannoor Innovation Awards (PPTIA), Organized by SCMS School of Engineering and Technology (SSET), Kerala, India (2019).</li>
-                        <li >Champion, University of Asia Pacific (UAP) Software and Hardware Carnival in the Best Innovative Mobile Application Development category (2018).</li>
-                        <li >Division Champion, NASA SPACE APPS Challenge on the best use of NASA data resources category, Organized by Bangladesh Association of Software and Information Services (BASIS) (2017).</li>
-                        <li >National Winner, Pilot Round of SS12 Innovation Challenge and Maker Fair at Independent University Bangladesh, Organized by IEEE Bangladesh &nbsp;Section, IEEE Bangladesh Section Humanitarian Activity Committee (HAC) along with IEEE Independent University Bangladesh Student Branch (2018).</li>
-                    </ul>
-                </div>
-            </section> -->
+<hr class="m-0" />
 
-            <section class="resume-section" id="awards">
-                <div class="resume-section-content">
-                  <h2 class="mb-5">Awards</h2>
-                  <div class="row row-cols-1 g-4">
-              
-                    <div class="col">
-                      <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                          <h5 class="card-title mb-1">4IR Skills Award (2023)</h5>
-                          <p class="card-text mb-0">
-                            In recognition of notable contribution in 4IR skills, organized by North South University Career and Placement Center, in collaboration with Aspire to Innovate (a2i) and Thriving Skills.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-              
-                    <div class="col">
-                      <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                          <h5 class="card-title mb-1">DIU Research Award (2021)</h5>
-                          <p class="card-text mb-0">
-                            For scholarly publication in reputed indexed journals (2019–2021), awarded by the Division of Research, Daffodil International University, Bangladesh.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-              
-                    <div class="col">
-                      <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                          <h5 class="card-title mb-1">Innovation Awards Finalist (2019)</h5>
-                          <p class="card-text mb-0">
-                            Finalist at Dr. Pradeep P Thevannoor Innovation Awards (PPTIA), organized by SCMS School of Engineering and Technology (SSET), Kerala, India.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-              
-                    <div class="col">
-                      <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                          <h5 class="card-title mb-1">Champion – UAP Carnival (2018)</h5>
-                          <p class="card-text mb-0">
-                            Best Innovative Mobile Application Development category, University of Asia Pacific (UAP) Software and Hardware Carnival.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-              
-              
-                    <div class="col">
-                      <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                          <h5 class="card-title mb-1">National Winner – SS12 Innovation Challenge (2018)</h5>
-                          <p class="card-text mb-0">
-                            Organized by IEEE Bangladesh Section and Humanitarian Activity Committee (HAC), held at Independent University Bangladesh.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+<!-- Contact Section -->
+<section class="resume-section" id="contact">
+  <div class="resume-section-content" style="text-align:center; padding:60px 0;">
+    <h2 class="mb-4" style="color:#000;">Contact</h2>
+    <p style="font-size:1.05rem; color:#555; max-width:600px; margin:0 auto 25px;">
+      I’m always open to discussing research collaborations, conference invitations, or ideas in 
+      <strong>AI, Bioinformatics, and Computational Biology</strong>.
+    </p>
 
-                    <div class="col">
-                        <div class="card shadow-sm border-0">
-                          <div class="card-body">
-                            <h5 class="card-title mb-1">NASA Space Apps Champion (2017)</h5>
-                            <p class="card-text mb-0">
-                              Division Champion on Best Use of NASA Data Resources, organized by Bangladesh Association of Software and Information Services (BASIS).
-                              <a href="https://2017.spaceappschallenge.org/challenges/earth-and-us/live-smart/teams/drone-for-green" target="_blank">[View Project]</a>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-              
-                  </div>
-                </div>
-              </section>
-              
+<div style="background-color:#6C63FF; color:#fff; display:inline-block; padding:10px 20px; border-radius:5px; font-weight:600;">
+  📧 elias <span style="color:#FFD700;">DOT</span> hossain <span style="color:#FFD700;">one nine one</span> <span style="color:#FFD700;">AT</span> gmail <span style="color:#FFD700;">DOT</span> com
+</div>
+
+
+    <p style="font-size:0.9rem; color:#777; margin-top:20px;">
+      University of Central Florida (UCF) · Orlando, FL, USA
+    </p>
+  </div>
+</section>
+
+
 
 
         </div>

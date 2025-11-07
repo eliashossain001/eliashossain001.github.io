@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Understanding Antimicrobial Resistance with Interpretable LLMs</title>
+
+    <!-- Bootstrap + Fonts -->
+    <link href="../dist/css/styles.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700"
+      rel="stylesheet"
+    />
+
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+
+    <style>
+      body {
+        font-family: "Muli", sans-serif;
+        line-height: 1.7;
+        background-color: #fff;
+        color: #222;
+        padding: 3rem 12%;
+      }
+
+      h1 {
+        color: #000;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        color: #000;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-top: 2rem;
+      }
+
+      p {
+        text-align: justify;
+        margin-bottom: 1.2rem;
+      }
+
+      .back-btn {
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        background-color: #000;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.3s;
+      }
+
+      .back-btn:hover {
+        background-color: #6c63ff;
+        color: #fff;
+      }
+
+      .date {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .highlight-box {
+        background-color: #f8f8f8;
+        border-left: 4px solid #6c63ff;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin: 1.2rem 0;
+      }
+
+      .figure {
+        text-align: center;
+        margin: 2rem 0;
+      }
+
+      .figure img {
+        width: 70%;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .figure-caption {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 8px;
+        font-style: italic;
+      }
+
+      .signature {
+        font-style: italic;
+        color: #444;
+        margin-top: 2rem;
+      }
+
+      hr {
+        border: none;
+        border-top: 1.5px solid #eee;
+        margin: 2rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="../index.html#research-blog" class="back-btn">← Back to Research</a>
+
+    <h1>Understanding Antimicrobial Resistance through Interpretable LLMs</h1>
+    <p class="date">Published: November 2025 | Author: Elias Hossain</p>
+
+    <p>
+      Antimicrobial resistance (AMR) has become a defining biomedical challenge
+      of our century, a silent pandemic that grows stronger with every misused
+      antibiotic. While traditional genomic models can classify resistant
+      strains, they often lack interpretability, the ability to explain the
+      reasoning behind predictions. My current research focuses on bridging this
+      gap using <strong>Large Language Models (LLMs)</strong> fine-tuned for
+      biomedical data, making AMR prediction both accurate and explainable.
+    </p>
+
+    <div class="highlight-box">
+      My motivation was simple: prediction alone is not enough. In healthcare,
+      every AI decision must be interpretable. A clinician should know why a
+      model thinks a strain is resistant.
+    </div>
+
+    <h2>From Observation to Insight</h2>
+    <p>
+      During my early experiments, I noticed that resistance is not just a
+      sequence-level phenomenon. It is ecological, behavioral, and evolutionary.
+      To visualize this, I designed a simplified model of bacterial adaptation
+      that connects exposure, mutation, and spread.
+    </p>
+
+    <div class="figure">
+      <img src="../dist/assets/img/AMR_cycle.drawio.png" alt="AMR Process Diagram" />
+      <p class="figure-caption">
+        Figure: The progression of antimicrobial resistance, from exposure to
+        global transmission.
+      </p>
+    </div>
+
+    <p>
+      The diagram shows how exposure to antibiotics triggers selective pressure.
+      Susceptible bacteria die, while resistant ones survive and replicate. Over
+      generations, these survivors dominate the population, eventually spreading
+      resistance genes across species and even environments. Understanding this
+      progression inspired me to model resistance as an evolving language, one
+      that LLMs could decode through genomic and semantic cues.
+    </p>
+
+    <h2>LLMs for AMR Reasoning</h2>
+    <p>
+      In my framework, I integrate biomedical LLMs such as BioBERT and PubMedGPT
+      with molecular embeddings to infer resistance pathways. The model does not
+      stop at predicting, it generates human-readable rationales like:
+    </p>
+
+    <div class="highlight-box">
+      <em
+        >“Resistance likely arises from beta-lactamase gene mutations impacting
+        cefotaxime degradation efficiency.”</em
+      >
+    </div>
+
+    <p>
+      These insights bridge machine predictions and biological interpretation,
+      helping researchers trace resistance at both the molecular and
+      evolutionary scales.
+    </p>
+
+    <h2>Why It Matters</h2>
+    <p>
+      Transparent AI models in microbiology can guide clinicians toward better
+      treatment strategies, reduce diagnostic uncertainty, and identify potential
+      drug targets earlier. More importantly, interpretability builds trust, a
+      fundamental requirement for AI integration in healthcare.
+    </p>
+
+    <hr />
+    <p class="signature">
+      From: <strong>Elias Hossain</strong><br />
+      Ph.D. Student, University of Central Florida (UCF)
+    </p>
+  </body>
+</html>

@@ -1,229 +1,740 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="Elias Hossain – PhD Student at University of Central Florida (UCF)" />
+  <meta name="description" content="Elias Hossain – PhD Researcher, University of Central Florida" />
   <meta name="author" content="Elias Hossain" />
-  <title>Elias Hossain</title>
-  <link rel="icon" type="image/x-icon" href="../dist/assets/img/favicon.ico" />
+  <title>Elias Hossain | PhD Researcher</title>
+  <link rel="icon" type="image/x-icon" href="dist/assets/img/favicon.ico" />
 
-  <!-- Font Awesome icons -->
+  <!-- Font Awesome -->
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
-  <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+  <!-- Google Fonts: Playfair Display (headings) + Source Sans 3 (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
 
-  <!-- Bootstrap + Core CSS -->
+  <!-- Bootstrap -->
   <link href="dist/css/styles.css" rel="stylesheet" />
 
   <!-- MathJax -->
   <script>
     MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
       svg: { fontCache: 'global' }
     };
   </script>
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
+    /* =========================================================
+       DESIGN TOKENS
+    ========================================================= */
     :root {
-      --accent: #6C63FF;
-      --accent-dark: #5147D8;
-      --bg-soft: #FAFAFF;
-      --text-main: #333333;
+      --navy:        #1B2D4F;
+      --navy-light:  #2A4070;
+      --accent:      #3A7BD5;
+      --accent-soft: #EBF2FC;
+      --gold:        #C9A84C;
+      --success:     #1a7f5a;
+      --reviewer:    #6340B8;
+      --bg:          #FFFFFF;
+      --bg-soft:     #F7F9FC;
+      --border:      #E4EAF2;
+      --text:        #2C3A50;
+      --muted:       #6B7A8F;
+      --sidebar-bg:  #F0F4FA;
     }
+
+    /* =========================================================
+       RESET & BASE
+    ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
-      color: var(--text-main);
-      background-color: #FFFFFF;
-      font-family: 'Muli', sans-serif;
+      font-family: 'Source Sans 3', sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.75;
     }
 
-    a {
-      color: var(--accent-dark);
-      text-decoration: none;
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
+      color: var(--navy);
+      line-height: 1.25;
     }
 
-    a:hover {
-      color: var(--accent);
-    }
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--navy); }
+    p { margin-bottom: 1rem; }
 
-    /* Sidebar */
+    /* =========================================================
+       SIDEBAR NAVIGATION
+    ========================================================= */
     #sideNav {
-      background-color: #EDE9F8 !important;
-      color: #3C3C3C;
-      border-right: 1px solid #DDD;
+      background-color: var(--sidebar-bg) !important;
+      border-right: 1px solid var(--border);
     }
+
+    #sideNav .navbar-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 1rem;
+    }
+
+    .img-profile {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid var(--bg);
+      box-shadow: 0 4px 18px rgba(27,45,79,0.18);
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-align: center;
+      letter-spacing: 0.3px;
+    }
+
+    .sidebar-role {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .navbar-nav { width: 100%; padding: 1rem 0; }
+    .navbar-nav .nav-item { width: 100%; }
 
     .navbar-nav .nav-link {
-      color: #3C3C3C !important;
+      color: var(--navy) !important;
       font-weight: 600;
-      letter-spacing: 0.3px;
-      padding: 8px 12px;
-      transition: all 0.3s ease-in-out;
+      font-size: 0.82rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
     }
 
     .navbar-nav .nav-link:hover,
     .navbar-nav .nav-link.active {
-      color: #6C63FF !important;
-      background-color: #F6F4FF;
-      border-radius: 6px;
+      color: var(--accent) !important;
+      background: rgba(58,123,213,0.07);
+      border-left-color: var(--accent);
     }
 
-    /* Profile image */
-    .img-profile {
-      border: 3px solid #fff;
-      box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
-      width: 140px;
-      height: 140px;
-      object-fit: cover;
+    /* =========================================================
+       MAIN CONTENT SECTIONS
+    ========================================================= */
+    .resume-section {
+      padding: 4rem 3rem;
+      border-bottom: 1px solid var(--border);
     }
+    .resume-section:last-child { border-bottom: none; }
 
-    /* Social icons */
-    .social-icons a {
-      color: #5C5C5C;
-      transition: all 0.3s ease;
-    }
-
-    .social-icons a:hover {
-      color: #6C63FF;
-    }
-
-    /* General Section Styling */
-    .section-title {
-      background-color: #760000;
-      color: white;
+    .section-heading {
+      font-size: 1.9rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+      position: relative;
       display: inline-block;
-      padding: 5px 15px;
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 20px;
     }
+    .section-heading::after {
+      content: '';
+      display: block;
+      width: 48px;
+      height: 3px;
+      background: var(--gold);
+      margin-top: 8px;
+      border-radius: 2px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* =========================================================
+       ABOUT SECTION
+    ========================================================= */
+    #about .name-block h1 {
+      font-size: 2.8rem;
+      color: var(--navy);
+      letter-spacing: -0.5px;
+    }
+    #about .name-block h1 span { color: var(--accent); }
+
+    .position-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      border: 1px solid #c5d9f3;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .bio-text {
+      font-size: 1rem;
+      color: var(--text);
+      text-align: justify;
+      max-width: 820px;
+      line-height: 1.85;
+    }
+
+    /* =========================================================
+       SOCIAL ICONS
+    ========================================================= */
+    .social-icons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .social-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      color: var(--muted) !important;
+      font-size: 0.95rem;
+      transition: all 0.25s;
+      background: var(--bg);
+    }
+
+    .social-icon:hover {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(27,45,79,0.2);
+    }
+
+    /* =========================================================
+       RECENT NEWS — ANIMATED TIMELINE FEED
+    ========================================================= */
+    #news { margin-top: 2.5rem; max-width: 820px; }
 
     .news-title {
-      border-left: 4px solid var(--accent);
-      padding-left: 10px;
-    }
-
-    /* Publication / Card Styles */
-    .publication {
-      margin-bottom: 35px;
-    }
-
-    .authors a {
-      text-decoration: underline;
-      color: #000;
-    }
-
-    .card-title {
-      font-weight: 700;
-      color: #3d3d3d;
-    }
-
-    .card-text a {
-      text-decoration: underline;
-      color: #760000;
-      font-weight: 500;
-    }
-
-    /* DOI styling */
-    .doi-box {
-      display: inline-block;
-      background-color: #ffd700;
-      color: #000;
-      padding: 3px 8px;
-      font-weight: bold;
-      border-radius: 3px;
-      margin-top: 5px;
-    }
-
-    /* Conference photos */
-    .conference-photo {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      padding: 6px;
-      margin-bottom: 10px; /* reduced gap */
-      height: 100%; /* ensures equal card height alignment */
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--navy);
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
     }
 
-    .conference-photo img {
-      width: 100%;
-      height: 240px; /* consistent height for all images */
-      object-fit: cover;
-      border-radius: 6px;
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e74c3c;
+      display: inline-block;
+      flex-shrink: 0;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%   { box-shadow: 0 0 0 0 rgba(231,76,60,0.55); }
+      70%  { box-shadow: 0 0 0 9px rgba(231,76,60,0); }
+      100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 36px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), #c5d9f3);
+      border-radius: 2px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateX(-18px);
+      animation: tlSlideIn 0.45s ease forwards;
+    }
+    .timeline-item:nth-child(1) { animation-delay: 0.10s; }
+    .timeline-item:nth-child(2) { animation-delay: 0.28s; }
+    .timeline-item:nth-child(3) { animation-delay: 0.46s; }
+    .timeline-item:nth-child(4) { animation-delay: 0.64s; }
+
+    @keyframes tlSlideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -31px; top: 14px;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px var(--accent);
+      z-index: 1;
+    }
+    .timeline-dot.reviewer {
+      background: var(--reviewer);
+      box-shadow: 0 0 0 2px var(--reviewer);
+    }
+
+    .timeline-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .timeline-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--accent);
+      border-radius: 4px 0 0 4px;
+    }
+    .timeline-card.reviewer::before { background: var(--reviewer); }
+    .timeline-card:hover {
+      box-shadow: 0 6px 24px rgba(58,123,213,0.12);
+      transform: translateY(-2px);
+    }
+
+    .news-badge {
+      display: inline-block;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 3px;
       margin-bottom: 8px;
     }
+    .badge-accepted { background: #e8f4ff; color: #1a6db8; }
+    .badge-reviewer { background: #f0eaff; color: var(--reviewer); }
 
-    .photo-caption {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #555;
-      margin-top: 0; /* remove extra space */
-      padding: 5px 5px 8px;
+    .tl-title { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; line-height: 1.4; }
+    .tl-venue { font-size: 0.83rem; color: var(--muted); font-style: italic; margin-bottom: 2px; }
+    .tl-date  { font-size: 0.76rem; color: #aaa; font-weight: 700; letter-spacing: 0.4px; }
+
+    /* =========================================================
+       EDUCATION
+    ========================================================= */
+    .edu-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
     }
-    .news-list li {
-    margin-bottom: 10px;
-    line-height: 1.6;
-}
+    .edu-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
 
-  .news-accepted {
-    color: #1f6feb;   /* professional blue */
-  }
-  
-  .news-reviewer {
-    color: #6f42c1;   /* subtle purple */
-  }
-  
-  .news-meta {
-    color: #6c757d;   /* muted gray */
-  }
+    .edu-institution { font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+    .edu-degree {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+    .edu-detail { font-size: 0.93rem; color: var(--muted); line-height: 1.65; }
+    .edu-date {
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      white-space: nowrap;
+      padding-top: 4px;
+    }
 
+    /* =========================================================
+       RESEARCH SPOTLIGHT
+    ========================================================= */
+    .spotlight-intro {
+      max-width: 740px;
+      color: var(--muted);
+      font-size: 0.96rem;
+      margin-bottom: 2.8rem;
+      line-height: 1.8;
+    }
 
+    .status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 0.9rem; }
 
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 3px;
+    }
+    .status-review   { background: #FFF3CD; color: #7D5A00; border: 1px solid #FFDA6A; }
+    .status-accepted { background: #e8f4ff; color: #1a6db8; border: 1px solid #b8d9f8; }
+    .status-ongoing  { background: #F0F0F0; color: #555;    border: 1px solid #DDD; }
+    .status-workshop { background: #f0eaff; color: #6340B8; border: 1px solid #c9b8f5; }
 
+    .paper-number {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
 
+    .spotlight-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      position: relative;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .spotlight-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--navy));
+      z-index: 1;
+      border-radius: 12px 12px 0 0;
+    }
+    .spotlight-card:hover {
+      box-shadow: 0 10px 36px rgba(27,45,79,0.1);
+      transform: translateY(-3px);
+    }
 
-    /* Responsive text adjustments */
+    /* Even cards: image on right */
+    .spotlight-card.flipped { direction: rtl; }
+    .spotlight-card.flipped > * { direction: ltr; }
+
+    .spotlight-diagram {
+      background: var(--bg-soft);
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      min-height: 240px;
+      overflow: hidden;
+    }
+    .spotlight-card.flipped .spotlight-diagram {
+      border-right: none;
+      border-left: 1px solid var(--border);
+    }
+    .spotlight-diagram img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      max-height: 280px;
+      border-radius: 6px;
+    }
+    .spotlight-diagram.placeholder {
+      background: linear-gradient(135deg, #F0F4FA 0%, #EBF2FC 100%);
+      flex-direction: column;
+      gap: 14px;
+    }
+    .placeholder-icon { font-size: 2.5rem; color: var(--accent); opacity: 0.45; }
+    .placeholder-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; max-width: 260px; }
+    .placeholder-tag {
+      background: rgba(58,123,213,0.1);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .spotlight-body {
+      padding: 1.8rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .spotlight-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+    }
+    .spotlight-tldr {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.72;
+      margin-bottom: 1.1rem;
+      text-align: justify;
+    }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.1rem; }
+    .kw-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 3px;
+    }
+
+    .spotlight-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-spotlight {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.77rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1.5px solid;
+      transition: all 0.2s;
+    }
+    .btn-arxiv { color: var(--accent); border-color: var(--accent); }
+    .btn-arxiv:hover { background: var(--accent); color: #fff; }
+    .btn-coming { color: var(--muted); border-color: var(--border); cursor: default; }
+
+    /* =========================================================
+       PUBLICATIONS
+    ========================================================= */
+    .pub-list { list-style: none; padding: 0; }
+    .pub-list li {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+    .pub-list li:last-child { border-bottom: none; }
+
+    .pub-counter {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3px;
+    }
+
+    .pub-link {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent);
+      border: 1px solid #c5d9f3;
+      padding: 1px 7px;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    .pub-link:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .scholar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 1.2rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--navy);
+      border: 1.5px solid var(--border);
+      padding: 7px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .scholar-link:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+    /* =========================================================
+       CONFERENCES
+    ========================================================= */
+    .conf-era-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .conf-era-title { font-size: 1.25rem; color: var(--navy); margin-bottom: 1rem; }
+
+    .conf-photo-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .conf-photo-card:hover {
+      box-shadow: 0 8px 24px rgba(27,45,79,0.1);
+      transform: translateY(-3px);
+    }
+    .conf-photo-card img { width: 100%; height: 220px; object-fit: cover; }
+    .conf-caption {
+      padding: 10px 14px 14px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      text-align: center;
+      flex-grow: 1;
+    }
+    .conf-separator { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+    /* =========================================================
+       SUBSCRIBE BANNER
+    ========================================================= */
+    .subscribe-banner {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+    .subscribe-banner h2 { color: #fff; font-size: 1.6rem; margin-bottom: 0.6rem; }
+    .subscribe-banner p  { color: rgba(255,255,255,0.72); max-width: 540px; margin: 0 auto 1.5rem; font-size: 0.95rem; }
+
+    .btn-subscribe {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 11px 28px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .btn-subscribe:hover { background: #b8933d; color: #fff; transform: translateY(-1px); }
+
+    /* =========================================================
+       CONTACT
+    ========================================================= */
+    .contact-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 3rem 2rem;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .contact-email {
+      display: inline-block;
+      background: var(--navy);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 24px;
+      border-radius: 8px;
+      margin: 1.2rem 0;
+      letter-spacing: 0.5px;
+    }
+    .contact-email span { color: var(--gold); }
+    .contact-affiliation { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+    @media (max-width: 991px) {
+      .resume-section { padding: 3rem 1.5rem; }
+      #about .name-block h1 { font-size: 2.1rem; }
+      .edu-entry { flex-direction: column; gap: 0.5rem; }
+    }
+
     @media (max-width: 768px) {
-      h1 {
-        font-size: 1.8rem;
+      .spotlight-card,
+      .spotlight-card.flipped {
+        grid-template-columns: 1fr;
+        direction: ltr;
       }
+      .spotlight-diagram {
+        border-right: none !important;
+        border-left: none !important;
+        border-bottom: 1px solid var(--border);
+        min-height: 180px;
+      }
+    }
 
-      .img-profile {
-        width: 120px;
-        height: 120px;
-      }
-
-      .section-title {
-        font-size: 16px;
-        padding: 4px 12px;
-      }
+    @media (max-width: 576px) {
+      .timeline { padding-left: 28px; }
+      .timeline-dot { left: -25px; }
     }
   </style>
 </head>
 
-
 <body id="page-top">
-  <!-- Navigation-->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav"
-    style="background-color: rgb(165, 161, 228) !important;">
+
+  <!-- =========================================================
+       SIDEBAR NAVIGATION
+  ========================================================= -->
+  <nav class="navbar navbar-expand-lg fixed-top" id="sideNav"
+    style="background-color: var(--sidebar-bg) !important;">
     <a class="navbar-brand js-scroll-trigger" href="#page-top">
-      <span class="d-block d-lg-none">Elias Hossain</span>
-      <span class="d-none d-lg-block">
-        <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="dist/assets/img/elias5.jpg" alt="..." />
+      <span class="d-block d-lg-none"
+        style="font-family:'Playfair Display',serif; font-weight:700; color:var(--navy);">
+        Elias Hossain
+      </span>
+      <span class="d-none d-lg-block" style="width:100%; text-align:center;">
+        <img class="img-profile" src="dist/assets/img/elias5.jpg" alt="Elias Hossain" />
+        <div class="sidebar-name">Elias Hossain</div>
+        <div class="sidebar-role">PhD Researcher · UCF</div>
       </span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
-      aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarResponsive" aria-controls="navbarResponsive"
+      aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -232,804 +743,542 @@
         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#education">Education</a></li>
         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#research-blog">Research</a></li>
-        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#publication">Publication</a></li>
-        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#research">Conference</a></li>
+        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#publication">Publications</a></li>
+        <!-- <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#conference">Conferences</a></li> -->
         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Page Content-->
+  <!-- =========================================================
+       PAGE CONTENT
+  ========================================================= -->
   <div class="container-fluid p-0">
-    <!-- About-->
-    <!-- About-->
+
+    <!-- -------------------------------------------------------
+         ABOUT
+    ------------------------------------------------------- -->
     <section class="resume-section" id="about">
       <div class="resume-section-content">
-        <h1 class="mb-0">
-          Elias
-          <span class="text-primary" style="color: rgb(165, 161, 228) !important;">Hossain</span>
-        </h1>
-        <div class="subheading mb-5">
-          <!-- Street  -  District  -  Country 
-                    -  Number -->
+
+        <div class="name-block mb-3">
+          <h1>Elias <span>Hossain</span></h1>
         </div>
-        <p class="lead mb-5" style="text-align: justify; font-size: 1.0em;">
-          I am a Ph.D. student at the <strong>University of Central Florida (UCF)</strong>, advised by
+
+        <div class="position-tag">
+          <i class="fas fa-microscope" style="font-size:0.85em;"></i>
+          PhD Researcher &nbsp;·&nbsp; University of Central Florida
+        </div>
+
+        <p class="bio-text">
+          I am a Ph.D. student in <strong>Industrial Engineering and Management Systems</strong> at the
+          <strong>University of Central Florida (UCF)</strong>, advised by
           <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>.
-          My research focuses on advancing <strong>Large Language Models (LLMs)</strong> and <strong>Machine
-            Learning</strong> for <strong>biomedical discovery</strong> and <strong>antimicrobial resistance
-            (AMR)</strong> prediction.
-
-          I am currently developing an <strong>AI-driven framework</strong> that integrates <strong>LLM-based
-            reasoning</strong> with <strong>computational biology</strong> to predict resistance mechanisms and design
-          <strong>digital twin systems</strong> capable of simulating host–pathogen interactions for <strong>drug
-            discovery</strong> in bacterial pathogens.
-          My work aims to enable <strong>trustworthy, interpretable, and data-efficient biomedical AI</strong> capable
-          of bridging computational intelligence with clinical translation.
-
-          With a professional background as a <strong>Software Engineer</strong> and <strong>Machine Learning
-            Researcher</strong>, I bring expertise in <strong>backend system design</strong>, <strong>algorithm
-            optimization</strong>, and <strong>scalable AI model deployment</strong>.
-          This combination of computational and biomedical insight drives my goal of creating robust, explainable, and
-          high-impact <strong>AI systems for healthcare and life sciences</strong>.
+          My research advances <strong>Large Language Models (LLMs)</strong> and
+          <strong>Machine Learning</strong> for <strong>biomedical discovery</strong> and
+          <strong>antimicrobial resistance (AMR)</strong> prediction.
+        </p>
+        <p class="bio-text">
+          I am developing an <strong>AI-driven framework</strong> that integrates
+          <strong>LLM-based reasoning</strong> with <strong>computational biology</strong> to predict
+          resistance mechanisms and design <strong>digital twin systems</strong> capable of simulating
+          host–pathogen interactions for <strong>drug discovery</strong> in bacterial pathogens.
+          My work aims to enable <strong>trustworthy, interpretable, and data-efficient biomedical AI</strong>
+          that bridges computational intelligence with clinical translation.
+        </p>
+        <p class="bio-text">
+          With a background as a <strong>Software Engineer</strong> and <strong>ML Researcher</strong>,
+          I bring expertise in <strong>backend system design</strong>,
+          <strong>algorithm optimization</strong>, and <strong>scalable AI model deployment</strong> —
+          driving robust, explainable AI for healthcare and life sciences.
         </p>
 
-
-
-
-        <!-- Recent News Subsection -->
+        <!-- ── Recent News ── -->
         <div id="news">
-          <h2 class="news-title">Recent News</h2>
-        
-          <ul class="news-list">
-            <li>
-              <strong class="news-accepted">Paper Accepted</strong> —
-              <em>Nature Scientific Reports</em>,
-              <span class="news-meta">Feb 09, 2026</span>
-            </li>
-        
-            <li>
-              <strong class="news-reviewer">Invited Reviewer</strong> —
-              <em>
-                Principled Design for Trustworthy AI: Interpretability, Robustness, and Safety across Modalities
-              </em>,
-              <span class="news-meta">ICLR Workshop, 2026</span>
-            </li>
-        
-            <li>
-              <strong class="news-accepted">Paper Accepted</strong> —
-              <em>Trusted AI Symposium</em>,
-              <span class="news-meta">
-                hosted by the Amazon AGI Team, New York, USA (Jan 21, 2026)
-              </span>
-            </li>
-        
-            <li>
-              <strong class="news-accepted">Paper Accepted</strong> —
-              <em>7th Molecular Machine Learning (MoML) Conference</em>,
-              <span class="news-meta">
-                Massachusetts Institute of Technology, Cambridge, USA (2025)
-              </span>
-            </li>
-          </ul>
-        </div>
+          <h2 class="news-title">
+            <span class="live-dot"></span> Recent News
+          </h2>
+          <div class="timeline">
 
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <span class="news-badge badge-accepted">✓ Paper Accepted</span>
+                <div class="tl-title">Nature Scientific Reports</div>
+                <div class="tl-venue">Nature Portfolio — Q1 Journal</div>
+                <div class="tl-date">Feb 09, 2026</div>
+              </div>
+            </div>
 
+            <div class="timeline-item">
+              <div class="timeline-dot reviewer"></div>
+              <div class="timeline-card reviewer">
+                <span class="news-badge badge-reviewer">⭐ Invited Reviewer</span>
+                <div class="tl-title">Principled Design for Trustworthy AI: Interpretability, Robustness, and Safety across Modalities</div>
+                <div class="tl-venue">ICLR Workshop, 2026</div>
+                <div class="tl-date">January 2026</div>
+              </div>
+            </div>
 
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <span class="news-badge badge-accepted">✓ Paper Accepted</span>
+                <div class="tl-title">Trusted AI Symposium</div>
+                <div class="tl-venue">Hosted by Amazon AGI Team · New York, USA</div>
+                <div class="tl-date">Jan 21, 2026</div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-card">
+                <span class="news-badge badge-accepted">✓ Paper Accepted</span>
+                <div class="tl-title">7th Molecular Machine Learning (MoML) Conference</div>
+                <div class="tl-venue">Massachusetts Institute of Technology · Cambridge, USA</div>
+                <div class="tl-date">2025</div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /#news -->
+
+        <!-- Social Icons -->
         <div class="social-icons">
-          <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-7448a736a/"><i
-              class="fab fa-linkedin-in"></i></a>
-          <a class="social-icon" href="https://github.com/eliashossain001"><i class="fab fa-github"></i></a>
-          <a class="social-icon" href="https://www.youtube.com/@eliashossain6662"><i class="fab fa-youtube"></i></a>
-          <a class="social-icon" href="https://eliashossain9111.medium.com/"><i class="fab fa-medium-m"></i></a>
-          <a class="social-icon" href="mailto:elias.hossain191@gmail.com"><i class="fa fa-envelope"></i></a>
-          <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en"><i
-              class="fas fa-graduation-cap"></i></a>
+          <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a class="social-icon" href="https://github.com/eliashossain001" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          <a class="social-icon" href="https://www.youtube.com/@eliashossain6662" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+          <a class="social-icon" href="https://eliashossain9111.medium.com/" target="_blank" title="Medium"><i class="fab fa-medium-m"></i></a>
+          <a class="social-icon" href="mailto:elias.hossain191@gmail.com" title="Email"><i class="fa fa-envelope"></i></a>
+          <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
         </div>
 
-
+      </div>
     </section>
 
+    <hr class="section-divider" />
 
-
-    <hr class="m-0" />
-
-    <!-- Education-->
+    <!-- -------------------------------------------------------
+         EDUCATION
+    ------------------------------------------------------- -->
     <section class="resume-section" id="education">
       <div class="resume-section-content">
-        <h2 class="mb-5">Education</h2>
+        <h2 class="section-heading mb-5">Education</h2>
 
-        <!-- Ph.D. Entry -->
-        <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-          <div class="flex-grow-1">
-            <h3 class="mb-0">University of Central Florida (UCF), United States</h3>
-            <div class="subheading mb-3">Doctor of Philosophy (Ph.D.) in Industrial Engineering and Management Systems
+        <div class="edu-entry">
+          <div>
+            <div class="edu-institution">University of Central Florida (UCF) &mdash; Orlando, FL, USA</div>
+            <div class="edu-degree">Doctor of Philosophy · Industrial Engineering &amp; Management Systems</div>
+            <div class="edu-detail">
+              <strong>Advisor:</strong>
+              <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a><br />
+              My research focuses on advancing Large Language Models (LLMs) for biomedical discovery,
+              with applications in antimicrobial resistance (AMR) prediction, digital twin systems,
+              and data-driven drug discovery for bacterial pathogens. I develop interpretable and
+              trustworthy AI frameworks that bridge computational modeling with biological understanding.
             </div>
-            <div>Advisor:
-              <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>
-            </div>
-            <div>My research focuses on advancing Large Language Models (LLMs) for biomedical discovery, with
-              applications in antimicrobial resistance (AMR) prediction, digital twin systems, and data-driven drug
-              discovery for bacterial pathogens. I aim to develop interpretable and trustworthy AI frameworks that
-              bridge computational modeling with biological understanding, contributing to the next generation of
-              intelligent healthcare systems.</div>
-
           </div>
-          <div class="flex-shrink-0">
-            <span class="text-primary" style="color: black!important;">Aug 2025 – Dec 2028 (Expected)</span>
-          </div>
+          <div class="edu-date">Aug 2025 – Dec 2028 (Expected)</div>
         </div>
 
-        <!-- Master's Entry -->
-        <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-          <div class="flex-grow-1">
-            <h3 class="mb-0">Mississippi State University, United States</h3>
-            <div class="subheading mb-3">Master of Science (M.S.) in Computer Science</div>
-            <div>Thesis: <em>“TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts”</em>
+        <div class="edu-entry">
+          <div>
+            <div class="edu-institution">Mississippi State University &mdash; Starkville, MS, USA</div>
+            <div class="edu-degree">Master of Science · Computer Science</div>
+            <div class="edu-detail">
+              <strong>Thesis:</strong>
+              <em>"TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts"</em>
               (July 2025) —
-              <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">Download</a>
+              <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">Download</a><br />
+              <strong>Major Professor:</strong>
+              <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank">Dr. Andy Perkins</a><br />
+              Research centered on NLP, Machine Learning, and scientific topic modeling — developing
+              AI-driven frameworks for uncovering latent structures in large-scale scientific corpora.
             </div>
-            <div>Major Professor:
-              <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank">Dr. Andy Perkins</a>
-            </div>
-            <div>My research centered on Natural Language Processing (NLP), Machine Learning, and scientific topic
-              modeling. In particular, my work focused on developing advanced AI-driven frameworks for uncovering latent
-              structures and thematic patterns in large-scale scientific corpora, contributing to more interpretable and
-              efficient methods for knowledge discovery in research literature.</div>
           </div>
-          <div class="flex-shrink-0">
-            <span class="text-primary" style="color: black!important;">Jan 2024 – July 2025</span>
-          </div>
+          <div class="edu-date">Jan 2024 – Jul 2025</div>
         </div>
 
       </div>
     </section>
 
+    <hr class="section-divider" />
 
-
-    <!-- Future or present Ph.D. entry could go here -->
-
-  </div>
-  </section>
-
-
-
-
-  <hr class="m-0" />
-
-  <!-- Research Blog Section -->
-  <section class="resume-section" id="research-blog">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Research & Insights</h2>
-
-      <p style="text-align: justify;">
-        I occasionally write about my ongoing research, methodologies, and experiments at the intersection of
-        <strong>Large Language Models (LLMs)</strong>, <strong>Computational Biology</strong>, and
-        <strong>Biomedical AI</strong>. This section highlights key ideas and progress from my recent work.
-      </p>
-
-      <div class="row">
-        <!-- Blog Card 1 -->
-        <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Building an Interpretable LLM Framework for AMR Prediction</h5>
-              <p class="card-text" style="text-align: justify;">
-                Exploring how specialized biomedical embeddings and fine-tuned reasoning layers can
-                help predict antimicrobial resistance patterns with greater interpretability and confidence.
-              </p>
-              <a href="blog/amr-framework.html" class="btn btn-outline-primary btn-sm">Read More</a>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 2 -->
-        <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Digital Twin Systems for Host–Pathogen Simulation</h5>
-              <p class="card-text" style="text-align: justify;">
-                Introducing AI-driven digital twin architectures designed to simulate biological interactions
-                and accelerate antibiotic discovery through predictive modeling and multi-agent reasoning.
-              </p>
-              <a href="blog/digital-twin.html" class="btn btn-outline-primary btn-sm">Read More</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <p class="mt-3">
-        More articles and technical discussions are available on my
-        <a href="https://eliashossain9111.medium.com/" target="_blank"><strong>Medium</strong></a>
-        and <a href="https://www.youtube.com/@eliashossain6662" target="_blank"><strong>YouTube</strong></a> channels.
-      </p>
-    </div>
-  </section>
-
-
-
-  <hr class="m-0" />
-
-
-  <!--Publication section-->
-
-
-  <!-- Selected Publications -->
-  <section class="resume-section" id="publication">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Selected Publications</h2>
-
-      <ul style="list-style-type: square; font-size: 1rem; text-align: justify;">
-
-        <li>
-          <strong>Hossain, E.</strong>
-          “<em>TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts</em>,”
-          Master’s Thesis, Mississippi State University, 2025.
-          <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">[Thesis]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Saha, S., Roy, S., and Prasad, R.
-          “<em>Can Transformer Memory Be Corrupted? Investigating Cache-Side Vulnerabilities in Large Language
-            Models</em>,”
-          <em>arXiv preprint</em>, 2025.
-          <a href="https://arxiv.org/abs/2510.17098" target="_blank">[arXiv]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Nuzhat, T., Masum, S., Rahimi, S., and Golilarz, N. A.
-          “<em>Medical-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with
-            Limited Data</em>,”
-          <em>arXiv preprint</em>, 2025.
-          <a href="https://arxiv.org/abs/2410.15198" target="_blank">[arXiv]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Alshahrani, A., and Rahman, W.
-          “<em>News Modeling and Retrieving Information: A Data-Driven Approach</em>,”
-          <em>Intelligent Automation & Soft Computing</em>, vol. 38, no. 2, pp. 109–123, 2024.
-          <a href="https://doi.org/10.32604/iasc.2022.029511" target="_blank">[DOI]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Rana, R., et al.
-          “<em>Natural Language Processing in Electronic Health Records for Healthcare Decision-Making: A Systematic
-            Review</em>,”
-          <em>Computers in Biology and Medicine</em>, vol. 155, 2023.
-          <a href="https://doi.org/10.1016/j.compbiomed.2023.106649" target="_blank">[DOI]</a>
-        </li>
-
-
-      </ul>
-
-      <p class="mt-3">
-        For a complete list of my publications, visit my
-        <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank"><strong>Google Scholar
-            profile</strong></a>.
-      </p>
-    </div>
-  </section>
-
-
-
-  <hr class="m-0" />
-  <!-- Conferences -->
-  <section class="resume-section" id="research">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Conferences</h2>
-
-      <!-- Ph.D. Journey Category -->
-      <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During Ph.D. at University of Central Florida
-        (2025–Present)</h4>
-
-      <p style="text-align: justify;">
-        My doctoral journey at the <strong>University of Central Florida (UCF)</strong> began with the honor
-        of presenting my research at the <strong>7th Molecular Machine Learning (MoML) Conference</strong>
-        held at the <em>Massachusetts Institute of Technology (MIT)</em>, Cambridge, USA (2025).
-        This prestigious event brought together global leaders in molecular AI and computational biology,
-        where I presented my work on <strong>Large Language Models (LLMs)</strong> for
-        <strong>antimicrobial resistance (AMR) prediction</strong> and <strong>drug discovery frameworks</strong>.
-        It marked a defining milestone in my Ph.D. research on trustworthy, data-efficient biomedical AI systems.
-      </p>
-
-      <div class="row">
-        <!-- Poster Presentation -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/poster.jpeg" alt="Poster Presentation at MIT MoML">
-            <p class="photo-caption">Presenting my poster at MoML Conference, MIT</p>
-          </div>
-        </div>
-
-        <!-- Group Photo -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/group-photo.jpeg" alt="Group Photo at MIT MoML">
-            <p class="photo-caption">Labmates and advisors at MoML 2025, MIT</p>
-          </div>
-        </div>
-
-        <!-- Discussion with Professors -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/withprofessor.jpeg" alt="Discussion with Professors at MoML">
-            <p class="photo-caption">With Dr. Yousefi discussing research at MIT</p>
-          </div>
-        </div>
-      </div>
-
-      <hr class="my-5" style="border-top: 2px solid #EDE9F8;" />
-
-      <!-- Master's Journey Category -->
-      <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During M.S. at Mississippi State University (2024)</h4>
-
-      <p style="text-align: justify;">
-        During my master's research at <strong>Mississippi State University (MSU)</strong>,
-        I presented my work on AI and health informatics at national conferences
-        and graduate research symposia. These experiences strengthened my foundation
-        in translational research and interdisciplinary collaboration within healthcare innovation.
-      </p>
-
-      <div class="row">
-        <!-- MSHIC Conference -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/conf005.jpeg" alt="MSHIC Presentation">
-            <p class="photo-caption">Presenting research at MSHIC 2024 Conference</p>
-          </div>
-        </div>
-
-        <!-- Discussion with Dr. David -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/conf004.jpeg" alt="Discussion with Dr. David">
-            <p class="photo-caption">In discussion with Dr. David, MSU Professor</p>
-          </div>
-        </div>
-
-        <!-- Graduate Symposium -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/symposium.jpg" alt="Graduate Research Symposium">
-            <p class="photo-caption">Spring 2024 Graduate Research Symposium</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  </section>
-
-
-
-  <hr class="m-0" />
-
-  <!-- Contact Section -->
-  <section class="resume-section" id="contact">
-    <div class="resume-section-content" style="text-align:center; padding:60px 0;">
-      <h2 class="mb-4" style="color:#000;">Contact</h2>
-      <p style="font-size:1.05rem; color:#555; max-width:600px; margin:0 auto 25px;">
-        I’m always open to discussing research collaborations, conference invitations, or ideas in
-        <strong>AI, Bioinformatics, and Computational Biology</strong>.
-      </p>
-
-      <div
-        style="background-color:#6C63FF; color:#fff; display:inline-block; padding:10px 20px; border-radius:5px; font-weight:600;">
-        📧 elias <span style="color:#FFD700;">DOT</span> hossain <span style="color:#FFD700;">one nine one</span> <span
-          style="color:#FFD700;">AT</span> gmail <span style="color:#FFD700;">DOT</span> com
-      </div>
-
-
-      <p style="font-size:0.9rem; color:#777; margin-top:20px;">
-        University of Central Florida (UCF) · Orlando, FL, USA
-      </p>
-    </div>
-  </section>
-
-
-  <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#publication">Publication</a></li>
-  <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#research">Conference</a></li>
-  <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
-
-
-  </ul>
-  </div>
-  </nav>
-  <!-- Page Content-->
-  <div class="container-fluid p-0">
-    <!-- About-->
-    <!-- About-->
-    <section class="resume-section" id="about">
+    <!-- -------------------------------------------------------
+         RESEARCH SPOTLIGHT
+         ⚠️  Copy the 3 diagram images into: dist/assets/img/research/
+             icml_diag.png  |  uat_diag.png  |  save_diag.png
+    ------------------------------------------------------- -->
+    <section class="resume-section" id="research-blog">
       <div class="resume-section-content">
-        <h1 class="mb-0">
-          Elias
-          <span class="text-primary" style="color: rgb(165, 161, 228) !important;">Hossain</span>
-        </h1>
-        <div class="subheading mb-5">
-          <!-- Street  -  District  -  Country 
-                    -  Number -->
-        </div>
-        <p class="lead mb-5" style="text-align: justify; font-size: 1.0em;">
-          I am a Ph.D. student at the <strong>University of Central Florida (UCF)</strong>, advised by
-          <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>,
-          with mentorship from
-          <a href="https://www.cs.ucf.edu/~garibay/" target="_blank">Dr. Ivan Garibay</a>.
-          My research focuses on advancing <strong>Large Language Models (LLMs)</strong> and <strong>Machine
-            Learning</strong> for <strong>biomedical discovery</strong> and <strong>antimicrobial resistance
-            (AMR)</strong> prediction.
 
-          I am currently developing an <strong>AI-driven framework</strong> that integrates <strong>LLM-based
-            reasoning</strong> with <strong>computational biology</strong> to predict resistance mechanisms and design
-          <strong>digital twin systems</strong> capable of simulating host–pathogen interactions for <strong>drug
-            discovery</strong> in bacterial pathogens.
-          My work aims to enable <strong>trustworthy, interpretable, and data-efficient biomedical AI</strong> capable
-          of bridging computational intelligence with clinical translation.
+        <h2 class="section-heading mb-4">Research Spotlight</h2>
 
-          With a professional background as a <strong>Software Engineer</strong> and <strong>Machine Learning
-            Researcher</strong>, I bring expertise in <strong>backend system design</strong>, <strong>algorithm
-            optimization</strong>, and <strong>scalable AI model deployment</strong>.
-          This combination of computational and biomedical insight drives my goal of creating robust, explainable, and
-          high-impact <strong>AI systems for healthcare and life sciences</strong>.
+        <p class="spotlight-intro">
+          My current research spans <strong>reinforcement learning for pathogen evolution</strong>,
+          <strong>Bayesian uncertainty in NLP</strong>, <strong>preference alignment robustness</strong>,
+          and <strong>tokenization theory for domain-specific language models</strong>.
+          Below are selected ongoing and recently submitted works.
         </p>
 
-
-
-
-
-        <!-- Recent News Subsection -->
-        <div id="news">
-          <h2 class="news-title">Recent News</h2>
-          <ul class="news-list">
-            <li>
-              <strong>Paper Accepted</strong> — <em>7th Molecular Machine Learning (MoML) Conference</em>,
-              Massachusetts Institute of Technology (MIT), Cambridge, USA (2025)
-            </li>
-          </ul>
+        <!-- Paper 01 — ICML 2026 -->
+        <div class="spotlight-card">
+          <div class="spotlight-diagram">
+            <img src="dist/assets/img/research/icml_diag.png"
+                 alt="Pathogen Digital Twin RL Architecture" />
+          </div>
+          <div class="spotlight-body">
+            <div class="paper-number">Paper 01</div>
+            <div class="status-row">
+              <span class="status-badge status-review">⏳ Under Review — ICML 2026</span>
+            </div>
+            <div class="spotlight-title">
+              Modeling Antimicrobial Resistance Evolution as a Biologically Constrained Sequential Decision Process
+            </div>
+            <p class="spotlight-tldr">
+              AMR evolution is modeled as a reinforcement learning problem over a digital twin
+              environment, using a GCN encoder over multi-relational biological interaction graphs.
+              The agent learns adaptive, trajectory-level resistance strategies — mutation, HGT, and
+              neutral maintenance — revealing evolutionary dynamics beyond static resistance prediction.
+            </p>
+            <div class="tag-row">
+              <span class="kw-tag">Reinforcement Learning</span>
+              <span class="kw-tag">Digital Twin</span>
+              <span class="kw-tag">AMR</span>
+              <span class="kw-tag">Graph Neural Networks</span>
+              <span class="kw-tag">Computational Biology</span>
+            </div>
+            <div class="spotlight-links">
+              <span class="btn-spotlight btn-coming">
+                <i class="fas fa-lock" style="font-size:0.7em;"></i> arXiv — Coming Soon
+              </span>
+            </div>
+          </div>
         </div>
 
-
-        <div class="social-icons">
-          <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-7448a736a/"><i
-              class="fab fa-linkedin-in"></i></a>
-          <a class="social-icon" href="https://github.com/eliashossain001"><i class="fab fa-github"></i></a>
-          <a class="social-icon" href="https://www.youtube.com/@eliashossain6662"><i class="fab fa-youtube"></i></a>
-          <a class="social-icon" href="https://eliashossain9111.medium.com/"><i class="fab fa-medium-m"></i></a>
-          <a class="social-icon" href="mailto:elias.hossain191@gmail.com"><i class="fa fa-envelope"></i></a>
-          <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en"><i
-              class="fas fa-graduation-cap"></i></a>
+        <!-- Paper 02 — ACL ARR 2026 -->
+        <div class="spotlight-card flipped">
+          <div class="spotlight-diagram">
+            <img src="dist/assets/img/research/uat_diag.png"
+                 alt="UAT-Lite Uncertainty-Aware Attention Architecture" />
+          </div>
+          <div class="spotlight-body">
+            <div class="paper-number">Paper 02</div>
+            <div class="status-row">
+              <span class="status-badge status-review">⏳ Under Review — ACL ARR 2026</span>
+            </div>
+            <div class="spotlight-title">
+              UAT-Lite: Uncertainty-Aware Attention for Pretrained Transformers via Epistemic Modulation
+            </div>
+            <p class="spotlight-tldr">
+              An inference-time method that uses epistemic uncertainty from Monte Carlo dropout to
+              modulate self-attention weights in pretrained transformers. Improves calibration,
+              selective prediction, and robustness across NLI, QA, and sentiment tasks —
+              without any retraining.
+            </p>
+            <div class="tag-row">
+              <span class="kw-tag">Bayesian NLP</span>
+              <span class="kw-tag">Uncertainty Quantification</span>
+              <span class="kw-tag">MC Dropout</span>
+              <span class="kw-tag">Transformers</span>
+              <span class="kw-tag">Calibration</span>
+            </div>
+            <div class="spotlight-links">
+              <a href="https://arxiv.org/abs/2602.02952" target="_blank"
+                 class="btn-spotlight btn-arxiv">
+                <i class="fas fa-external-link-alt" style="font-size:0.7em;"></i> arXiv
+              </a>
+            </div>
+          </div>
         </div>
 
+        <!-- Paper 03 — ICLR Trustworthy Workshop 2026 -->
+        <div class="spotlight-card">
+          <div class="spotlight-diagram">
+            <img src="dist/assets/img/research/save_diag.png"
+                 alt="SAVe-DPO Multi-Agent Verification Architecture" />
+          </div>
+          <div class="spotlight-body">
+            <div class="paper-number">Paper 03</div>
+            <div class="status-row">
+              <span class="status-badge status-workshop">
+                ICLR Trustworthy AI Workshop 2026
+              </span>
+            </div>
+            <div class="spotlight-title">
+              SAVe-DPO: Multi-Agent Verification for Robust Preference-Based Alignment
+            </div>
+            <p class="spotlight-tldr">
+              Proposes a multi-agent verification layer — comprising a Knowledge Verifier,
+              Behavior Auditor, Ethics Evaluator, and Trust Assessor — to filter corrupted
+              preference supervision prior to DPO/RLHF training, yielding more robust and
+              trustworthy aligned language models.
+            </p>
+            <div class="tag-row">
+              <span class="kw-tag">RLHF / DPO</span>
+              <span class="kw-tag">Alignment</span>
+              <span class="kw-tag">Multi-Agent</span>
+              <span class="kw-tag">Trustworthy AI</span>
+              <span class="kw-tag">LLM Safety</span>
+            </div>
+            <div class="spotlight-links">
+              <span class="btn-spotlight btn-coming">
+                <i class="fas fa-lock" style="font-size:0.7em;"></i> arXiv — Coming Soon
+              </span>
+            </div>
+          </div>
+        </div>
 
+        <!-- Paper 04 — Ongoing -->
+        <div class="spotlight-card flipped">
+          <div class="spotlight-diagram placeholder">
+            <div class="placeholder-icon"><i class="fas fa-flask"></i></div>
+            <div class="placeholder-tags">
+              <span class="placeholder-tag">Tokenization Theory</span>
+              <span class="placeholder-tag">Embedding Geometry</span>
+              <span class="placeholder-tag">Domain LLMs</span>
+              <span class="placeholder-tag">Biomedical NLP</span>
+              <span class="placeholder-tag">Optimization</span>
+              <span class="placeholder-tag">Fragmentation</span>
+            </div>
+          </div>
+          <div class="spotlight-body">
+            <div class="paper-number">Paper 04</div>
+            <div class="status-row">
+              <span class="status-badge status-ongoing">🔬 Ongoing</span>
+            </div>
+            <div class="spotlight-title">
+              Tokenization as Representation Geometry for Optimization in Domain-Specific Language Models
+            </div>
+            <p class="spotlight-tldr">
+              Treats tokenization as a representation geometry operator and studies how semantic
+              perturbations propagate through tokenization into embedding-space perturbations that
+              shape learning dynamics. Introduces a tokenizer-invariant evaluation protocol and shows
+              domain-adaptive tokenization substantially reduces biomedical fragmentation, formalizing
+              a smoothness burden that degrades descent-direction consistency over long training horizons.
+            </p>
+            <div class="tag-row">
+              <span class="kw-tag">Tokenization</span>
+              <span class="kw-tag">Representation Learning</span>
+              <span class="kw-tag">Biomedical LLM</span>
+              <span class="kw-tag">Optimization Theory</span>
+            </div>
+            <div class="spotlight-links">
+              <span class="btn-spotlight btn-coming">
+                <i class="fas fa-lock" style="font-size:0.7em;"></i> arXiv — Coming Soon
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-size:0.88rem; color:var(--muted); margin-top:0.5rem;">
+          More on
+          <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank"><strong>Google Scholar</strong></a>
+          &nbsp;·&nbsp;
+          <a href="https://eliashossain9111.medium.com/" target="_blank"><strong>Medium</strong></a>
+        </p>
+
+      </div>
     </section>
 
+    <hr class="section-divider" />
 
-
-    <hr class="m-0" />
-
-    <!-- Education-->
-    <section class="resume-section" id="education">
+    <!-- -------------------------------------------------------
+         PUBLICATIONS
+    ------------------------------------------------------- -->
+    <section class="resume-section" id="publication">
       <div class="resume-section-content">
-        <h2 class="mb-5">Education</h2>
+        <h2 class="section-heading mb-5">Selected Publications</h2>
 
-        <!-- Ph.D. Entry -->
-        <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-          <div class="flex-grow-1">
-            <h3 class="mb-0">University of Central Florida (UCF), United States</h3>
-            <div class="subheading mb-3">Doctor of Philosophy (Ph.D.) in Industrial Engineering and Management Systems
-            </div>
-            <div>Advisor:
-              <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank">Dr. Niloofar Yousefi</a>
-            </div>
-            <div>My research focuses on advancing Large Language Models (LLMs) for biomedical discovery, with
-              applications in antimicrobial resistance (AMR) prediction, digital twin systems, and data-driven drug
-              discovery for bacterial pathogens. I aim to develop interpretable and trustworthy AI frameworks that
-              bridge computational modeling with biological understanding, contributing to the next generation of
-              intelligent healthcare systems.</div>
+        <ul class="pub-list">
 
+          <li>
+            <div class="pub-counter">1</div>
+            <div>
+              <strong>Hossain, E.</strong>
+              "<em>TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts.</em>"
+              Master's Thesis, Mississippi State University, 2025.
+              <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank" class="pub-link">Thesis</a>
+            </div>
+          </li>
+
+          <li>
+            <div class="pub-counter">2</div>
+            <div>
+              <strong>Hossain, E.</strong>, Saha, S., Roy, S., and Prasad, R.
+              "<em>Can Transformer Memory Be Corrupted? Investigating Cache-Side Vulnerabilities in Large Language Models.</em>"
+              <em>arXiv preprint</em>, 2025.
+              <a href="https://arxiv.org/abs/2510.17098" target="_blank" class="pub-link">arXiv</a>
+            </div>
+          </li>
+
+          <li>
+            <div class="pub-counter">3</div>
+            <div>
+              <strong>Hossain, E.</strong>, Nuzhat, T., Masum, S., Rahimi, S., and Golilarz, N. A.
+              "<em>R-GAT: cancer document classification leveraging graph-based residual network for scenarios with limited data.</em>"
+              <em>Nature Scientific Reports</em>, 2026.
+              <a href="https://www.nature.com/articles/s41598-026-39894-6" target="_blank" class="pub-link">Nature</a>
+            </div>
+          </li>
+
+          <li>
+            <div class="pub-counter">4</div>
+            <div>
+              <strong>Hossain, E.</strong>, Hasan Nipu, M. M., Sheikh, M., Rana, R., Neupane, S., and Yousefi, N.
+              "<em>MedBayes-Lite: Bayesian Uncertainty Quantification for Safe Clinical Decision Support.</em>"
+          
+              <a href="https://arxiv.org/abs/2511.16625" target="_blank" class="pub-link">arXiv</a>
+            </div>
+          </li>
+
+          <li>
+            <div class="pub-counter">5</div>
+            <div>
+              <strong>Hossain, E.</strong>, Rana, R., et al.
+              "<em>Natural Language Processing in Electronic Health Records for Healthcare Decision-Making: A Systematic Review.</em>"
+              <em>Computers in Biology and Medicine</em>, vol. 155, 2023.
+              <a href="https://doi.org/10.1016/j.compbiomed.2023.106649" target="_blank" class="pub-link">DOI</a>
+            </div>
+          </li>
+
+        </ul>
+
+        <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank"
+           class="scholar-link">
+          <i class="fas fa-graduation-cap"></i> View Full Profile on Google Scholar
+        </a>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- -------------------------------------------------------
+         CONFERENCES
+    ------------------------------------------------------- -->
+    <section class="resume-section" id="conference">
+      <div class="resume-section-content">
+        <h2 class="section-heading mb-5">Conferences</h2>
+
+        <div class="conf-era-label">University of Central Florida · 2025–Present</div>
+        <h3 class="conf-era-title">Ph.D. Research Presentations</h3>
+
+        <p style="max-width:720px; color:var(--muted); margin-bottom:1.8rem; font-size:0.95rem;">
+          My doctoral journey began with the honor of presenting at the
+          <strong>7th Molecular Machine Learning (MoML) Conference</strong> at
+          <em>Massachusetts Institute of Technology (MIT)</em>, Cambridge, USA (2025).
+          I presented work on <strong>LLMs for AMR prediction</strong> and drug discovery frameworks,
+          marking a defining milestone in my research on trustworthy biomedical AI systems.
+        </p>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/poster.jpeg" alt="Poster at MIT MoML" loading="lazy" />
+              <div class="conf-caption">Presenting my poster at MoML 2025, MIT</div>
+            </div>
           </div>
-          <div class="flex-shrink-0">
-            <span class="text-primary" style="color: black!important;">Aug 2025 – Dec 2028 (Expected)</span>
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/group-photo.jpeg" alt="Group Photo at MIT MoML" loading="lazy" />
+              <div class="conf-caption">Labmates and advisors at MoML 2025, MIT</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/withprofessor.jpeg" alt="With Dr. Yousefi at MIT" loading="lazy" />
+              <div class="conf-caption">With Dr. Yousefi discussing research at MIT</div>
+            </div>
           </div>
         </div>
 
-        <!-- Master's Entry -->
-        <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
-          <div class="flex-grow-1">
-            <h3 class="mb-0">Mississippi State University, United States</h3>
-            <div class="subheading mb-3">Master of Science (M.S.) in Computer Science</div>
-            <div>Thesis: <em>“TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts”</em>
-              (July 2025) —
-              <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">Download</a>
+        <hr class="conf-separator" />
+
+        <div class="conf-era-label">Mississippi State University · 2024</div>
+        <h3 class="conf-era-title">M.S. Research Presentations</h3>
+
+        <p style="max-width:720px; color:var(--muted); margin-bottom:1.8rem; font-size:0.95rem;">
+          During my master's at <strong>Mississippi State University</strong>, I presented work on
+          AI and health informatics at national conferences and graduate research symposia,
+          strengthening my foundation in translational research and interdisciplinary collaboration.
+        </p>
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/conf005.jpeg" alt="MSHIC 2024 Conference" loading="lazy" />
+              <div class="conf-caption">Presenting research at MSHIC 2024 Conference</div>
             </div>
-            <div>Major Professor:
-              <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank">Dr. Andy Perkins</a>
-            </div>
-            <div>My research centered on Natural Language Processing (NLP), Machine Learning, and scientific topic
-              modeling. In particular, my work focused on developing advanced AI-driven frameworks for uncovering latent
-              structures and thematic patterns in large-scale scientific corpora, contributing to more interpretable and
-              efficient methods for knowledge discovery in research literature.</div>
           </div>
-          <div class="flex-shrink-0">
-            <span class="text-primary" style="color: black!important;">Jan 2024 – July 2025</span>
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/conf004.jpeg" alt="Discussion with Dr. David" loading="lazy" />
+              <div class="conf-caption">In discussion with Dr. David, MSU Professor</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="conf-photo-card">
+              <img src="dist/assets/img/symposium.jpg" alt="Spring 2024 Graduate Research Symposium" loading="lazy" />
+              <div class="conf-caption">Spring 2024 Graduate Research Symposium</div>
+            </div>
           </div>
         </div>
 
       </div>
     </section>
 
-
-
-    <!-- Future or present Ph.D. entry could go here -->
-
-  </div>
-  </section>
-
-
-
-
-  <hr class="m-0" />
-
-  <!-- Research Blog Section -->
-  <section class="resume-section" id="research-blog">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Research & Insights</h2>
-
-      <p style="text-align: justify;">
-        I occasionally write about my ongoing research, methodologies, and experiments at the intersection of
-        <strong>Large Language Models (LLMs)</strong>, <strong>Computational Biology</strong>, and
-        <strong>Biomedical AI</strong>. This section highlights key ideas and progress from my recent work.
+    <!-- -------------------------------------------------------
+         SUBSCRIBE BANNER
+    ------------------------------------------------------- -->
+    <div class="subscribe-banner">
+      <h2>Stay Updated with My Research</h2>
+      <p>
+        Follow me on Medium for new articles, research insights, and project updates on
+        AI, bioinformatics, and reasoning systems.
       </p>
-
-      <div class="row">
-        <!-- Blog Card 1 -->
-        <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Building an Interpretable LLM Framework for AMR Prediction</h5>
-              <p class="card-text" style="text-align: justify;">
-                Exploring how specialized biomedical embeddings and fine-tuned reasoning layers can
-                help predict antimicrobial resistance patterns with greater interpretability and confidence.
-              </p>
-              <a href="blog/amr-framework.html" class="btn btn-outline-primary btn-sm">Read More</a>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- Blog Card 2 -->
-        <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-body">
-              <h5 class="card-title">Digital Twin Systems for Host–Pathogen Simulation</h5>
-              <p class="card-text" style="text-align: justify;">
-                Introducing AI-driven digital twin architectures designed to simulate biological interactions
-                and accelerate antibiotic discovery through predictive modeling and multi-agent reasoning.
-              </p>
-              <a href="blog/digital-twin.html" class="btn btn-outline-primary btn-sm">Read More</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <p class="mt-3">
-        More articles and technical discussions are available on my
-        <a href="https://eliashossain9111.medium.com/" target="_blank"><strong>Medium</strong></a>
-        and <a href="https://www.youtube.com/@eliashossain6662" target="_blank"><strong>YouTube</strong></a> channels.
-      </p>
-    </div>
-  </section>
-
-
-
-
-  <hr class="m-0" />
-
-
-  <!--Publication section-->
-
-
-  <!-- Selected Publications -->
-  <section class="resume-section" id="publication">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Selected Publications</h2>
-
-      <ul style="list-style-type: square; font-size: 1rem; text-align: justify;">
-
-        <li>
-          <strong>Hossain, E.</strong>
-          “<em>TopNet R1: A Multi-Stage AI Framework for Topic Discovery in Scientific Abstracts</em>,”
-          Master’s Thesis, Mississippi State University, 2025.
-          <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank">[Thesis]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Saha, S., Roy, S., and Prasad, R.
-          “<em>Can Transformer Memory Be Corrupted? Investigating Cache-Side Vulnerabilities in Large Language
-            Models</em>,”
-          <em>arXiv preprint</em>, 2025.
-          <a href="https://arxiv.org/abs/2510.17098" target="_blank">[arXiv]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Nuzhat, T., Masum, S., Rahimi, S., and Golilarz, N. A.
-          “<em>Medical-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with
-            Limited Data</em>,”
-          <em>arXiv preprint</em>, 2025.
-          <a href="https://arxiv.org/abs/2410.15198" target="_blank">[arXiv]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Alshahrani, A., and Rahman, W.
-          “<em>News Modeling and Retrieving Information: A Data-Driven Approach</em>,”
-          <em>Intelligent Automation & Soft Computing</em>, vol. 38, no. 2, pp. 109–123, 2024.
-          <a href="https://doi.org/10.32604/iasc.2022.029511" target="_blank">[DOI]</a>
-        </li>
-
-        <li>
-          <strong>Hossain, E.</strong>, Rana, R., et al.
-          “<em>Natural Language Processing in Electronic Health Records for Healthcare Decision-Making: A Systematic
-            Review</em>,”
-          <em>Computers in Biology and Medicine</em>, vol. 155, 2023.
-          <a href="https://doi.org/10.1016/j.compbiomed.2023.106649" target="_blank">[DOI]</a>
-        </li>
-
-
-      </ul>
-
-      <p class="mt-3">
-        For a complete list of my publications, visit my
-        <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank"><strong>Google Scholar
-            profile</strong></a>.
-      </p>
-    </div>
-  </section>
-
-
-
-  <hr class="m-0" />
-  <!-- Conferences -->
-  <section class="resume-section" id="research">
-    <div class="resume-section-content">
-      <h2 class="mb-5">Conferences</h2>
-
-      <!-- Ph.D. Journey Category -->
-      <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During Ph.D. at University of Central Florida
-        (2025–Present)</h4>
-
-      <p style="text-align: justify;">
-        My doctoral journey at the <strong>University of Central Florida (UCF)</strong> began with the honor
-        of presenting my research at the <strong>7th Molecular Machine Learning (MoML) Conference</strong>
-        held at the <em>Massachusetts Institute of Technology (MIT)</em>, Cambridge, USA (2025).
-        This prestigious event brought together global leaders in molecular AI and computational biology,
-        where I presented my work on <strong>Large Language Models (LLMs)</strong> for
-        <strong>antimicrobial resistance (AMR) prediction</strong> and <strong>drug discovery frameworks</strong>.
-        It marked a defining milestone in my Ph.D. research on trustworthy, data-efficient biomedical AI systems.
-      </p>
-
-      <div class="row">
-        <!-- Poster Presentation -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/poster.jpeg" alt="Poster Presentation at MIT MoML">
-            <p class="photo-caption">Presenting my poster at MoML 2025, MIT</p>
-          </div>
-        </div>
-
-        <!-- Group Photo -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/group-photo.jpeg" alt="Group Photo at MIT MoML">
-            <p class="photo-caption">My labmates and advisors at MoML 2025, MIT</p>
-          </div>
-        </div>
-
-        <!-- Discussion with Professors -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/withprofessor.jpeg" alt="Discussion with Professors at MoML">
-            <p class="photo-caption">With Dr. Yousefi discussing research at MIT</p>
-          </div>
-        </div>
-      </div>
-
-      <hr class="my-5" style="border-top: 2px solid #EDE9F8;" />
-
-      <!-- Master's Journey Category -->
-      <h4 class="mb-4" style="color:#6C63FF; font-weight:600;">During M.S. at Mississippi State University (2024)</h4>
-
-      <p style="text-align: justify;">
-        During my master's research at <strong>Mississippi State University (MSU)</strong>,
-        I presented my work on AI and health informatics at national conferences
-        and graduate research symposia. These experiences strengthened my foundation
-        in translational research and interdisciplinary collaboration within healthcare innovation.
-      </p>
-
-      <div class="row">
-        <!-- MSHIC Conference -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/conf005.jpeg" alt="MSHIC Presentation">
-            <p class="photo-caption">Presenting research at MSHIC 2024 Conference</p>
-          </div>
-        </div>
-
-        <!-- Discussion with Dr. David -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/conf004.jpeg" alt="Discussion with Dr. David">
-            <p class="photo-caption">In discussion with Dr. David, MSU Professor</p>
-          </div>
-        </div>
-
-        <!-- Graduate Symposium -->
-        <div class="col-md-4 mb-4">
-          <div class="conference-photo">
-            <img class="img-fluid" src="dist/assets/img/symposium.jpg" alt="Graduate Research Symposium">
-            <p class="photo-caption">Spring 2024 Graduate Research Symposium</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  </section>
-
-
-
-  <!-- Subscribe Section -->
-  <section id="subscribe" style="background-color:#F9F9FF; padding:50px 0; text-align:center;">
-    <div class="container">
-      <h2 style="color:#000; font-weight:700;">Stay Updated with My Research</h2>
-      <p style="color:#555; max-width:600px; margin:10px auto 25px;">
-        Follow me on <strong>Medium</strong> to get notified whenever I publish new articles, research insights, or
-        project updates.
-      </p>
-
-      <a href="https://eliashossain9111.medium.com/" target="_blank"
-        style="background-color:#6C63FF; color:#fff; padding:10px 20px; border-radius:5px; font-weight:600; text-decoration:none; transition:0.3s;">
+      <a href="https://eliashossain9111.medium.com/" target="_blank" class="btn-subscribe">
         Visit My Medium Profile
       </a>
-
-      <p style="font-size:0.9rem; color:#777; margin-top:15px;">
-        You can also explore older posts and in-depth essays on AI, bioinformatics, and reasoning systems.
-      </p>
     </div>
-  </section>
 
+    <!-- -------------------------------------------------------
+         CONTACT
+    ------------------------------------------------------- -->
+    <section class="resume-section" id="contact">
+      <div class="resume-section-content">
+        <h2 class="section-heading mb-4" style="display:block; text-align:center;">Contact</h2>
 
-  <hr class="m-0" />
+        <div class="contact-box">
+          <p style="color:var(--muted); font-size:0.95rem; margin-bottom:0.5rem;">
+            Open to research collaborations, conference invitations, and discussions in
+            <strong>AI, Bioinformatics, and Computational Biology</strong>.
+          </p>
+          <div class="contact-email">
+            📧 elias<span>.</span>hossain<span>191</span><span>@</span>gmail<span>.</span>com
+          </div>
+          <div class="contact-affiliation">
+            <i class="fas fa-map-marker-alt" style="color:var(--accent); margin-right:5px;"></i>
+            University of Central Florida (UCF) &nbsp;·&nbsp; Orlando, FL, USA
+          </div>
 
-  <!-- Contact Section -->
-  <section class="resume-section" id="contact">
-    <div class="resume-section-content" style="text-align:center; padding:60px 0;">
-      <h2 class="mb-4" style="color:#000;">Contact</h2>
-      <p style="font-size:1.05rem; color:#555; max-width:600px; margin:0 auto 25px;">
-        I’m always open to discussing research collaborations, conference invitations, or ideas in
-        <strong>AI, Bioinformatics, and Computational Biology</strong>.
-      </p>
+          <div class="social-icons" style="justify-content:center; margin-top:1.5rem;">
+            <a class="social-icon" href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a class="social-icon" href="https://github.com/eliashossain001" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+            <a class="social-icon" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ&hl=en" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+            <a class="social-icon" href="https://eliashossain9111.medium.com/" target="_blank" title="Medium"><i class="fab fa-medium-m"></i></a>
+            <a class="social-icon" href="https://www.youtube.com/@eliashossain6662" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
 
-      <div
-        style="background-color:#6C63FF; color:#fff; display:inline-block; padding:10px 20px; border-radius:5px; font-weight:600;">
-        📧 elias <span style="color:#FFD700;">DOT</span> hossain <span style="color:#FFD700;">one nine one</span> <span
-          style="color:#FFD700;">AT</span> gmail <span style="color:#FFD700;">DOT</span> com
       </div>
+    </section>
 
+  </div><!-- /.container-fluid -->
 
-      <p style="font-size:0.9rem; color:#777; margin-top:20px;">
-        University of Central Florida (UCF) · Orlando, FL, USA
-      </p>
-    </div>
-  </section>
-
-
-
-
-  </div>
-  <!-- Bootstrap core JS-->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Core theme JS-->
+  <!-- Core theme JS -->
   <script src="js/scripts.js"></script>
-</body>
 
+</body>
 </html>

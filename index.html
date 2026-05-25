@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elias Hossain · Researcher</title>
+<meta name="description" content="PhD researcher at UCF working on trustworthy LLMs, uncertainty quantification, and AI-driven drug discovery for antimicrobial resistance." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66;
+    --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c;
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --hot-bg: #fde4d6;
+    --hot-border: #e85a4f;
+    --hot-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.04);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111311;
+    --bg-elev: #181b18;
+    --ink: #ecebe4;
+    --ink-soft: #b8b7ad;
+    --ink-muted: #80807a;
+    --line: #262a25;
+    --accent: #4ed1b3;
+    --accent-soft: #14302a;
+    --accent-ink: #7ee0c5;
+    --pill-bg: #1f2320;
+    --pill-ink: #c4c3bb;
+    --hot-bg: #2e1a16;
+    --hot-border: #ff7a6b;
+    --hot-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 84px;
+  }
+  @media (max-width: 600px) {
+    html { scroll-padding-top: 72px; }
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    margin: 0;
+  }
+  a {
+    color: var(--accent-ink);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  a:hover { border-bottom-color: var(--accent); }
+
+  /* TOP NAVBAR */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .nav-left { display: flex; align-items: center; gap: 18px; }
+  .nav-brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    border: none;
+  }
+  .nav-brand .dot { color: var(--accent); }
+  .nav-icons {
+    display: flex;
+    gap: 6px;
+  }
+  .nav-icons a {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--ink-soft);
+    border: none;
+    transition: all 0.18s ease;
+  }
+  .nav-icons a:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+  }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a {
+    color: var(--ink-soft);
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+  }
+  .nav-links a:hover { color: var(--accent-ink); }
+
+  /* More dropdown */
+  .nav-more { position: relative; display: inline-block; }
+  .nav-more-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 0; margin: 0;
+    font: inherit; font-size: 13.5px;
+    color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: color 0.15s;
+  }
+  .nav-more-btn:hover { color: var(--accent-ink); }
+  .nav-more-arrow { font-size: 9px; transition: transform 0.2s; line-height: 1; }
+  .nav-more-btn[aria-expanded="true"] .nav-more-arrow { transform: rotate(180deg); }
+  .nav-more-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+    z-index: 100;
+  }
+  .nav-more-menu a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-more-menu a:hover {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border: none;
+  }
+  .theme-toggle {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: grid; place-items: center;
+    color: var(--ink-soft);
+    transition: all 0.2s;
+    padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    cursor: pointer;
+    place-items: center;
+    color: var(--ink);
+    padding: 0;
+    transition: all 0.2s;
+  }
+  .nav-toggle:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute;
+      top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: var(--bg-elev);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0;
+      box-shadow: var(--shadow);
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .nav-more { width: 100%; }
+    .nav-more-btn { padding: 12px 24px; width: 100%; justify-content: space-between; }
+    .nav-more-menu {
+      position: static;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      min-width: 0;
+      padding: 0;
+      margin-top: 4px;
+    }
+    .nav-more-menu a { padding: 10px 40px; }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* MAIN LAYOUT */
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 28px 0;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: static;
+    border-right: 1px solid var(--line);
+    padding-right: 28px;
+  }
+  @media (max-width: 860px) {
+    .sidebar { border-right: none; padding-right: 0; }
+  }
+  .avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 3px solid var(--accent);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    transition: opacity 0.4s ease;
+  }
+  .avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 25%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .avatar img.loaded { opacity: 1; }
+  .sidebar h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .sidebar h1 .accent { color: var(--accent); font-style: italic; font-weight: 500; }
+  .sidebar .role {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .sidebar .email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 14px;
+    word-break: break-all;
+  }
+  .sidebar .email a { color: var(--ink-muted); border: none; }
+  .sidebar .email a:hover { color: var(--accent-ink); }
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    background: var(--accent);
+    color: var(--bg-elev);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--accent);
+    transition: all 0.15s;
+  }
+  .btn:hover {
+    background: var(--accent-ink);
+    border-color: var(--accent-ink);
+    transform: translateY(-1px);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--accent-ink);
+  }
+  .btn.ghost:hover { background: var(--accent-soft); }
+  .btn svg { width: 13px; height: 13px; }
+
+  .stat-row {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .stat .num {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: color 0.2s;
+  }
+  .stat .num.live { color: var(--accent-ink); }
+  .stat .num.live::after {
+    content: '•';
+    color: var(--accent);
+    font-size: 0.7em;
+    margin-left: 4px;
+    animation: pulse 1.6s ease-in-out infinite;
+    vertical-align: super;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .stat .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-top: 5px;
+    display: block;
+  }
+
+  /* SIDEBAR EXPERIENCE LIST */
+  .side-section { margin-bottom: 22px; }
+  .side-section .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-ink);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .exp-card {
+    border-left: 2px solid var(--line);
+    padding: 6px 0 6px 14px;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .exp-card:hover { border-left-color: var(--accent); }
+  .exp-card .where-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 8px;
+    row-gap: 1px;
+    margin-bottom: 2px;
+  }
+  .exp-card .where {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    flex: 1 1 100%;
+  }
+  .exp-card .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  .exp-card .role-line {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 2px;
+  }
+  .exp-card .mentor {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+  }
+  .exp-card .mentor a { white-space: nowrap; }
+
+  /* See-more toggle for education */
+  .exp-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    margin-bottom: 12px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+    transition: color 0.15s;
+  }
+  .exp-toggle:hover { color: var(--accent-ink); }
+  .exp-toggle .exp-toggle-icon {
+    display: inline-block;
+    font-size: 10px;
+    line-height: 1;
+    transition: transform 0.2s;
+  }
+  .exp-toggle[aria-expanded="true"] .exp-toggle-icon { transform: rotate(180deg); }
+
+  /* Education cards (uni full-width, degree+date and advisor+grade on rows) */
+  .edu-list { margin-top: 2px; }
+  .edu-card .edu-uni {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .edu-card .edu-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 2px;
+    line-height: 1.4;
+  }
+  .edu-card .edu-row .edu-degree { color: var(--ink-soft); }
+  .edu-card .edu-row a { white-space: nowrap; }
+  .edu-card .edu-row .date,
+  .edu-card .edu-row .grade {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .edu-card .edu-foot {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+  .edu-card .edu-foot-nowrap {
+    white-space: nowrap;
+    font-size: 11px;
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 400px) {
+    .edu-card .edu-foot-nowrap {
+      font-size: 10.5px;
+    }
+  }
+
+  .peer-intro {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .peer-intro strong { color: var(--ink); font-weight: 600; }
+  .peer-cat { margin-bottom: 10px; }
+  .peer-cat .cat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-bottom: 6px;
+  }
+  .peer-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+  .peer-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    background: var(--pill-bg);
+    color: var(--pill-ink);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .peer-pill:hover { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent); }
+
+  .mentee-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .mentee-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .mentee-list li:last-child { border-bottom: none; }
+  .mentee-list strong,
+  .mentee-list .mentee-name {
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 12.5px;
+    border: none;
+    transition: color 0.15s;
+  }
+  .mentee-list .mentee-name:hover {
+    color: var(--accent-ink);
+    border-bottom: 1px solid var(--accent);
+  }
+  .mentee-flag { font-size: 16px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+  .mentee-head {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .mentee-where { color: var(--ink-muted); font-size: 11.5px; margin-top: 2px; display: block; }
+  .mentee-dates {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--accent-ink);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .mentee-papers { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .mentee-pub {
+    display: inline-block;
+    background: var(--pill-bg);
+    color: var(--pill-ink);
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    border: none;
+    transition: all 0.15s;
+  }
+  .mentee-pub:hover { background: var(--accent); color: var(--bg-elev); border: none; }
+
+  .now-box {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--accent-ink);
+    line-height: 1.5;
+  }
+  .now-box strong { color: var(--accent-ink); display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+  .now-box a { color: var(--accent-ink); font-weight: 600; border-bottom: 1px solid var(--accent); }
+
+  /* Upcoming Travel box */
+  .travel-box {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .travel-title {
+    color: var(--accent-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .travel-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-ink);
+    margin: 12px 0 6px;
+    opacity: 0.85;
+  }
+  .travel-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .travel-list li {
+    padding: 3px 0;
+    color: var(--ink);
+  }
+  .travel-list li strong { font-weight: 600; }
+  .travel-list .travel-when {
+    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+  .travel-list li em { color: var(--ink-muted); font-style: italic; font-size: 11px; }
+  .travel-empty { color: var(--ink-muted); font-style: italic; font-size: 12px; padding: 2px 0; }
+  .travel-cta {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--accent);
+    font-size: 12px;
+    color: var(--accent-ink);
+  }
+  .travel-cta a { color: var(--accent-ink); font-weight: 600; border-bottom: 1px solid var(--accent); }
+
+  /* MAIN CONTENT */
+  .content section { padding: 0 0 44px; }
+  .content section + section { border-top: 1px solid var(--line); padding-top: 36px; }
+  .content .first-section { padding-top: 0; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent-ink);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .content h2 { font-size: 24px; margin-bottom: 18px; }
+  .bio p {
+    font-size: 16px;
+    color: var(--ink);
+    margin: 0 0 14px;
+    line-height: 1.65;
+  }
+  .bio p strong { font-weight: 600; }
+  .bio .lead {
+    font-size: 17px;
+    text-align: justify;
+    text-wrap: pretty;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+
+  .research-list {
+    margin: 16px 0 8px;
+    padding-left: 22px;
+    counter-reset: research;
+  }
+  .research-list > li {
+    margin-bottom: 14px;
+    padding-left: 4px;
+    list-style: none;
+    position: relative;
+    counter-increment: research;
+  }
+  .research-list > li::before {
+    content: counter(research) ".";
+    position: absolute;
+    left: -22px;
+    top: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    font-style: italic;
+  }
+  .research-list > li > strong {
+    font-family: 'Inter', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .research-list ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+  }
+  .research-list ul li { margin-bottom: 3px; line-height: 1.5; }
+  .research-list ul li::marker { color: var(--ink-muted); }
+  .research-list .tag {
+    display: inline-block;
+    background: var(--pill-bg);
+    color: var(--pill-ink);
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    margin-left: 4px;
+    border: none;
+  }
+  .research-list .tag:hover { background: var(--accent); color: var(--bg-elev); }
+
+  .callout {
+    background: var(--hot-bg);
+    border: 1px solid var(--hot-border);
+    border-left: 3px solid var(--hot-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 22px 0 8px;
+    font-size: 13.5px;
+    color: var(--hot-ink);
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(232, 90, 79, 0.10);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+  }
+  .callout::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 90px; height: 90px;
+    background: radial-gradient(circle, var(--hot-border) 0%, transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .callout .ico {
+    font-size: 18px;
+    line-height: 1;
+    flex-shrink: 0;
+    animation: nudge 2.6s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 60%, 100% { transform: rotate(0deg); }
+    70% { transform: rotate(-12deg); }
+    80% { transform: rotate(10deg); }
+    90% { transform: rotate(-6deg); }
+  }
+  .callout strong { color: var(--hot-ink); font-weight: 700; }
+  .callout a {
+    color: var(--hot-ink);
+    font-weight: 700;
+    border-bottom: 1.5px solid var(--hot-border);
+  }
+  .callout a:hover { background: var(--hot-border); color: #fff; border-bottom-color: var(--hot-border); padding: 0 4px; border-radius: 4px; }
+
+  .news-list { display: flex; flex-direction: column; gap: 10px; }
+  .news-item {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 14px;
+    align-items: baseline;
+    font-size: 14px;
+    color: var(--ink-soft);
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent-ink);
+  }
+  .news-item strong { color: var(--ink); font-weight: 600; }
+
+  /* FULL-WIDTH SECTIONS BELOW */
+  .full-section {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 56px 28px 24px;
+    border-top: 1px solid var(--line);
+  }
+  .full-section h2 { font-size: 28px; margin-bottom: 22px; }
+
+  /* PUBLICATIONS */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .filter-btn.active {
+    background: var(--accent);
+    color: var(--bg-elev);
+    border-color: var(--accent);
+  }
+  .pubs { display: flex; flex-direction: column; }
+  .pub { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .pub:last-child { border-bottom: none; }
+  .pub.hidden { display: none; }
+  .pub-venue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .pub h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .pub .authors { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 8px; }
+  .pub .authors .me { color: var(--ink); font-weight: 600; }
+  .pub-links { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pub-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    background: var(--pill-bg);
+    color: var(--pill-ink);
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    border: none;
+    transition: all 0.15s;
+  }
+  .pub-pill:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* FEATURED PUBLICATIONS (card layout) */
+  .pubs-sub { color: var(--ink-soft); font-size: 14px; margin: 4px 0 22px; }
+  .pubs-sub a { color: var(--accent-ink); border-bottom: 1px solid var(--accent); font-weight: 600; }
+  .pubs-cards { display: flex; flex-direction: column; gap: 16px; }
+  .pub-card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 18px;
+    padding: 12px 14px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    align-items: stretch;
+  }
+  .pub-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .pub-card.hidden { display: none; }
+  @media (max-width: 720px) {
+    .pub-card { grid-template-columns: 1fr; }
+    .pub-thumb { height: 110px; }
+  }
+
+  .pub-thumb {
+    position: relative;
+    min-height: 120px;
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-align: center;
+    padding: 8px;
+  }
+  .pub-thumb.t-bio   { background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); }
+  .pub-thumb.t-rl    { background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%); }
+  .pub-thumb.t-nature{ background: linear-gradient(135deg, #6A1B9A 0%, #4A148C 100%); }
+  .pub-thumb.t-trust { background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%); }
+  .pub-thumb.t-nlp   { background: linear-gradient(135deg, #EF6C00 0%, #E65100 100%); }
+  .pub-thumb.t-bio2  { background: linear-gradient(135deg, #00838F 0%, #006064 100%); }
+
+  .pub-status {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(255,255,255,0.92);
+    color: var(--ink);
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .pub-status.s-pub  { color: #1B5E20; }
+  .pub-status.s-pre  { color: #E65100; }
+  .pub-status.s-sub  { color: #C62828; }
+  .pub-status.s-rev {
+    color: #8a5a00;
+    background: rgba(255, 248, 220, 0.96);
+    animation: revHalo 2.2s ease-in-out infinite;
+  }
+  .pub-status.s-rev::after {
+    content: '•';
+    color: #c77100;
+    margin-left: 5px;
+    font-size: 1.05em;
+    line-height: 0;
+    vertical-align: middle;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes revHalo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(199, 113, 0, 0.55); }
+    50%      { box-shadow: 0 0 0 7px rgba(199, 113, 0, 0); }
+  }
+  [data-theme="dark"] .pub-status.s-rev {
+    color: #ffd07a;
+    background: rgba(60, 40, 10, 0.95);
+  }
+  [data-theme="dark"] .pub-status.s-rev::after { color: #ffb547; }
+  @media (prefers-reduced-motion: reduce) {
+    .pub-status.s-rev,
+    .pub-status.s-rev::after { animation: none; }
+  }
+
+  /* Live venue-line shimmer (for in-review papers) */
+  .pub-venue-line.live-venue {
+    background-image: linear-gradient(
+      90deg,
+      #C62828 0%,
+      #C62828 38%,
+      #ed8836 50%,
+      #C62828 62%,
+      #C62828 100%
+    );
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: venueShine 4.8s linear infinite;
+  }
+  @keyframes venueShine {
+    0%   { background-position: 220% 0; }
+    100% { background-position: -120% 0; }
+  }
+  [data-theme="dark"] .pub-venue-line.live-venue {
+    background-image: linear-gradient(
+      90deg,
+      #ff8a7a 0%,
+      #ff8a7a 38%,
+      #ffd07a 50%,
+      #ff8a7a 62%,
+      #ff8a7a 100%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pub-venue-line.live-venue {
+      animation: none;
+      -webkit-text-fill-color: #C62828;
+      color: #C62828;
+    }
+    [data-theme="dark"] .pub-venue-line.live-venue {
+      -webkit-text-fill-color: #ff8a7a;
+      color: #ff8a7a;
+    }
+  }
+
+  .pub-info { display: flex; flex-direction: column; min-width: 0; }
+  .pub-info h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    color: var(--ink);
+  }
+  .pub-info .pub-authors { color: var(--ink-soft); font-size: 13.5px; margin-bottom: 4px; line-height: 1.5; }
+  .pub-info .pub-authors strong { color: var(--ink); font-weight: 600; }
+  .pub-info .pub-venue-line {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 14px;
+    color: #C62828;
+    margin: 2px 0 6px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .pub-info .pub-desc { font-size: 13px; color: var(--ink-muted); margin: 0 0 8px; line-height: 1.5; }
+  .pub-info .pub-links { margin-top: auto; padding-top: 4px; }
+
+  /* AWARDS */
+  .awards { display: flex; flex-direction: column; gap: 12px; }
+  .award {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  .award-year { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-ink); }
+  .award strong { color: var(--ink); font-weight: 600; }
+
+  /* PROJECT CARDS (animated icon + content) */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 720px) { .proj-grid { grid-template-columns: 1fr; } }
+  .proj-card {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .proj-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .proj-icon {
+    width: 88px;
+    height: 88px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    line-height: 1;
+    overflow: hidden;
+  }
+  .proj-icon.p-safe  { background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); }
+  .proj-icon.p-brain { background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); }
+  .proj-icon.p-radar { background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); }
+  .proj-icon.p-pill  { background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%); }
+  .proj-emoji { display: inline-block; transform-origin: center; }
+  .proj-content { min-width: 0; }
+  .proj-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .proj-content h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+  .proj-content p {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .proj-content p a {
+    color: var(--accent-ink);
+    border-bottom: 1px solid var(--accent);
+    font-weight: 600;
+  }
+
+  /* Project icon animations */
+  @keyframes pBob   { 0%,100% { transform: translateY(0) }     50% { transform: translateY(-5px) } }
+  @keyframes pPulse { 0%,100% { transform: scale(1) }          50% { transform: scale(1.1) } }
+  @keyframes pSway  { 0%,100% { transform: rotate(-6deg) }     50% { transform: rotate(6deg) } }
+  @keyframes pSpin  { 0% { transform: rotate(0deg) }           100% { transform: rotate(360deg) } }
+  @media (prefers-reduced-motion: reduce) {
+    .proj-emoji { animation: none !important; }
+  }
+
+  footer {
+    padding: 56px 28px 80px;
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+    margin-top: 48px;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* BG TEXTURE */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background-image: radial-gradient(circle at 1px 1px, var(--ink) 0.5px, transparent 0);
+    background-size: 24px 24px; opacity: 0.015;
+  }
+  main { position: relative; z-index: 1; }
+
+  /* === MOBILE RESPONSIVE === */
+  @media (max-width: 860px) {
+    .wrap { padding: 24px 18px 0; max-width: 100%; }
+    .layout { gap: 28px; grid-template-columns: 1fr; }
+    .sidebar { border-right: none; padding-right: 0; }
+    .avatar { width: 120px; height: 120px; }
+    .stat-row { gap: 14px 22px; flex-wrap: wrap; padding: 12px 0; }
+    .pub-thumb { padding: 22px 18px; font-size: 14px; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 14.5px; }
+    .hero h1 { font-size: clamp(32px, 8vw, 42px); }
+    h2 { font-size: 22px !important; }
+    .content h2 { font-size: 22px; margin-bottom: 14px; }
+    .avatar { width: 104px; height: 104px; border-width: 2px; }
+    .sidebar h1 { font-size: 24px; }
+    .stat-row { gap: 12px 18px; }
+    .stat .num { font-size: 16px; }
+    .stat .label { font-size: 9px; }
+    .actions { gap: 6px; }
+    .btn { padding: 6px 12px; font-size: 12.5px; }
+    .news-item, .award {
+      grid-template-columns: 1fr;
+      gap: 2px;
+      padding-bottom: 12px;
+    }
+    .news-date, .award-year { font-size: 11px; }
+    .callout { padding: 12px 14px; font-size: 13px; gap: 10px; }
+    .callout .ico { font-size: 18px; }
+    .filters { gap: 6px; }
+    .filter-btn { padding: 5px 10px; font-size: 12px; }
+    .pub-card { grid-template-columns: 1fr !important; }
+    .pub-thumb { min-height: 90px; padding: 18px 14px; }
+    .pub-links { gap: 4px; }
+    .pub-pill { font-size: 11px; padding: 3px 8px; }
+    .research-list { padding-left: 18px; }
+    .research-list > li::before { left: -18px; font-size: 14px; }
+    .research-list > li > strong { font-size: 14.5px; }
+    .research-list ul { font-size: 13.5px; }
+    .exp-card .where { font-size: 13px; }
+    .exp-card .role-line { font-size: 12px; }
+    .exp-card .mentor { font-size: 11px; }
+    footer { padding: 32px 18px 50px; font-size: 12px; }
+  }
+  @media (max-width: 400px) {
+    .wrap { padding: 18px 14px 0; }
+    .nav-brand { font-size: 14px; }
+    .hero h1 { font-size: 28px; }
+    .avatar { width: 92px; height: 92px; }
+    .actions { flex-direction: column; align-items: stretch; }
+    .btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <div class="nav-icons">
+        <a href="mailto:mdelias.hossain@ucf.edu" title="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Google Scholar">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+        </a>
+        <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+        </a>
+        <a href="https://medium.com/@eliashossain9111" target="_blank" rel="noopener" title="Medium">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg>
+        </a>
+      </div>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">About</a>
+      <a href="/cv/Elias_Resume.pdf" target="_blank">Resume</a>
+      <a href="#publications">Publications</a>
+      <a href="/notes">Notes</a>
+      <a href="/oss">Open Source</a>
+      <a href="#news">News</a>
+      <div class="nav-more">
+        <button type="button" class="nav-more-btn" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu">
+          More
+          <span class="nav-more-arrow">&#9662;</span>
+        </button>
+        <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
+          <a href="#certificates" role="menuitem">Certificate</a>
+          <a href="#projects" role="menuitem">Projects</a>
+          <a href="#awards" role="menuitem">Awards / Recognition</a>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<div class="wrap">
+  <div class="layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div class="avatar">
+        <img id="avatarImg" alt="Elias Hossain" />
+      </div>
+      <h1>Elias <span class="accent">Hossain</span></h1>
+      <div class="role">PhD Researcher · UCF</div>
+      <div class="email"><a href="mailto:mdelias.hossain@ucf.edu">mdelias.hossain@ucf.edu</a></div>
+      <div class="actions">
+        <a class="btn" href="/cv/Elias_Resume.pdf" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Resume
+        </a>
+        <a class="btn ghost" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>
+          Scholar
+        </a>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><span class="num" data-target="890" data-suffix="+" data-metric="cites">0</span><span class="label">Cites</span></div>
+        <div class="stat"><span class="num" data-target="12" data-suffix="" data-metric="hindex">0</span><span class="label">h-index</span></div>
+        <div class="stat"><span class="num" data-target="25" data-suffix="+" data-metric="pubs">0</span><span class="label">Pubs</span></div>
+      </div>
+
+      <div class="side-section">
+        <div class="lbl">Experience</div>
+
+        <div class="exp-card">
+          <div class="where-line">
+            <span class="where"><a href="https://complexity.cecs.ucf.edu/" target="_blank" rel="noopener" style="color: inherit; border: none;">UCF · CASL Lab</a></span>
+            <span class="date">Aug 2025 — Now</span>
+          </div>
+          <div class="role-line">PhD Researcher</div>
+          <div class="mentor">
+            Focus: Trustworthy LLMs &middot; Scalable Oversight<br/>
+            Director: <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a><br/>
+            Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="where-line">
+            <span class="where"><a href="https://patent.cse.msstate.edu/" target="_blank" rel="noopener" style="color: inherit; border: none;">MS State · PATENT Lab</a></span>
+            <span class="date">Jan 2024 — Jul 2025</span>
+          </div>
+          <div class="role-line">Graduate Research Assistant</div>
+          <div class="mentor">
+            Focus: Conversational AI for Education<br/>
+            Primary Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a><br/>
+            Thesis Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a>
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="where-line">
+            <span class="where">REVE Systems</span>
+            <span class="date">Dec 2022 — Nov 2023</span>
+          </div>
+          <div class="role-line">Software Engineer</div>
+          <div class="mentor">
+            Focus: Speech AI<br/>
+            Dhaka, Bangladesh
+          </div>
+        </div>
+
+        <div class="exp-card">
+          <div class="where-line">
+            <span class="where">Time Research &amp; Innovation</span>
+            <span class="date">Oct 2020 — Nov 2022</span>
+          </div>
+          <div class="role-line">AI/ML Researcher (Remote)</div>
+          <div class="mentor">
+            Focus: AI in Healthcare<br/>
+            Manager: <a href="https://timerni.com/team-member-details/dr-shah-siddiqui" target="_blank" rel="noopener">Dr. Shah Siddiqui</a><br/>
+            Mentor: <a href="https://www.port.ac.uk/about-us/structure-and-governance/our-people/our-staff/shamsul-masum" target="_blank" rel="noopener">Dr. Shamsul Masum</a><br/>
+            Portsmouth, United Kingdom
+          </div>
+        </div>
+
+        <button type="button" class="exp-toggle" id="eduToggle" aria-expanded="false" aria-controls="eduList">
+          <span class="exp-toggle-text">See more</span>
+          <span class="exp-toggle-icon">&#9662;</span>
+        </button>
+
+        <div class="edu-list" id="eduList" hidden>
+          <div class="exp-card edu-card">
+            <div class="edu-uni">University of Central Florida</div>
+            <div class="edu-row">
+              <span class="edu-degree">PhD in IEMS</span>
+              <span class="date">Aug 2025 — Present</span>
+            </div>
+            <div class="edu-row">
+              <span>Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a></span>
+            </div>
+            <div class="edu-row">
+              <span>Co-Advisor: <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a></span>
+            </div>
+            <div class="edu-foot edu-foot-nowrap">Focus: Trustworthy LLMs &middot; Scalable Oversight</div>
+          </div>
+
+          <div class="exp-card edu-card">
+            <div class="edu-uni">Mississippi State University</div>
+            <div class="edu-row">
+              <span class="edu-degree">M.S in CS (Research)</span>
+              <span class="date">Jan 2024 — Jul 2025</span>
+            </div>
+            <div class="edu-row">
+              <span>Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a></span>
+            </div>
+            <div class="edu-foot">Focus: Generative AI &middot; Topic Modeling</div>
+            <div class="edu-foot">Degree awarded: Aug 7, 2025</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="travel-box">
+          <div class="travel-title">Upcoming Travel</div>
+          <div class="travel-empty">Nothing scheduled right now.</div>
+
+          <div class="travel-sub">Previous</div>
+          <ul class="travel-list">
+            <li>&#10060; <strong>ICLR 2026</strong> in Rio de Janeiro, Brazil <span class="travel-when">(Apr 23&ndash;27)</span> <em>(canceled)</em></li>
+            <li>&#9989; <strong>Amazon Trusted AI Symposium</strong>, JFK&nbsp;27, New&nbsp;York <span class="travel-when">(Jan 2026)</span></li>
+            <li>&#9989; <strong>NeurIPS 2025</strong> in San Diego, CA <span class="travel-when">(Dec 2&ndash;7, 2025)</span></li>
+            <li>&#9989; <strong>7th MoML</strong> at MIT Jameel Clinic <span class="travel-when">(Oct 2025)</span></li>
+          </ul>
+
+          <div class="travel-cta">
+            &#128075; Open to meet. <a href="mailto:mdelias.hossain@ucf.edu">Email me</a> to schedule a chat.
+          </div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="lbl">Peer Review</div>
+        <div class="peer-intro">Reviewer since <strong>2024</strong>. Evaluating rigor, novelty, and reproducibility of AI/ML in healthcare and biomedical data science.</div>
+        <div class="peer-cat">
+          <div class="cat-label">Workshops</div>
+          <div class="peer-pills">
+            <span class="peer-pill">ICLR Trustworthy AI</span>
+          </div>
+        </div>
+        <div class="peer-cat">
+          <div class="cat-label">Journals</div>
+          <div class="peer-pills">
+            <span class="peer-pill">Scientific Reports</span>
+            <span class="peer-pill">PLOS ONE</span>
+            <span class="peer-pill">CMBBE</span>
+            <span class="peer-pill">Elsevier</span>
+            <span class="peer-pill">Taylor &amp; Francis</span>
+            <span class="peer-pill">Springer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="lbl">Mentorship</div>
+        <div class="peer-intro">Mentored undergraduates and early-career researchers; several now pursuing graduate study abroad.</div>
+        <ul class="mentee-list">
+          <li><span class="mentee-flag">🇦🇺</span><div><div class="mentee-head"><a class="mentee-name" href="https://github.com/Ilmi-Tabassum" target="_blank" rel="noopener">Ilmi Tabassum</a><span class="mentee-dates">2022 — 2023</span></div><div class="mentee-where">Graduate Student, Macquarie University</div></div></li>
+          <li><span class="mentee-flag">🇺🇸</span><div><div class="mentee-head"><a class="mentee-name" href="https://scholar.google.com/citations?user=PTNWEXYAAAAJ&hl=en" target="_blank" rel="noopener">Sabila Al Jannat</a><span class="mentee-dates">2021 — 2022</span></div><div class="mentee-where">PhD Candidate, William &amp; Mary</div><div class="mentee-papers"><a class="mentee-pub" href="https://ieeexplore.ieee.org/abstract/document/10055867" target="_blank" rel="noopener">ADPT</a><a class="mentee-pub" href="https://link.springer.com/chapter/10.1007/978-981-19-1012-8_55" target="_blank" rel="noopener">COVID-19 Risk Factors</a></div></div></li>
+          <li><span class="mentee-flag">🇺🇸</span><div><div class="mentee-head"><a class="mentee-name" href="https://scholar.google.com/citations?user=PaBcNmIAAAAJ&hl=en" target="_blank" rel="noopener">Tasfia Nuzhat</a><span class="mentee-dates">2021 — Present</span></div><div class="mentee-where">PhD Student, University of Central Florida</div></div></li>
+          <li><span class="mentee-flag">🇧🇩</span><div><div class="mentee-head"><a class="mentee-name" href="https://scholar.google.com/citations?user=ToPoa3EAAAAJ&hl=en" target="_blank" rel="noopener">M.H. Bhuiyan Nipu</a><span class="mentee-dates">2025 — Present</span></div><div class="mentee-where">Graduate Student, North South University</div></div></li>
+          <li><span class="mentee-flag">🇧🇩</span><div><div class="mentee-head"><a class="mentee-name" href="https://www.linkedin.com/in/ghoshoishee/" target="_blank" rel="noopener">Oishee Ghosh</a><span class="mentee-dates">2020 — 2022</span></div><div class="mentee-where">Graduate Student, Jahangirnagar University</div></div></li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT -->
+    <article class="content">
+
+      <section class="first-section bio" id="about">
+        <p class="lead">
+          I am a <strong>Ph.D. researcher in IEMS</strong> at the University of Central Florida's <strong>Complex Adaptive Systems Lab</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Four concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? <strong>(4)</strong> Can we steer a model away from outdated parametric memory at test time, without retraining or retrieval? My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
+        </p>
+
+        <ol class="research-list">
+          <li>
+            <strong>Test-Time Uncertainty in Pretrained Transformers</strong>
+            <ul>
+              <li>Inference-time uncertainty-aware attention for pretrained transformers <a class="tag" href="https://arxiv.org/abs/2602.02952" target="_blank">UAT-LITE</a></li>
+              <li>Bayesian uncertainty quantification for safe clinical decision support <a class="tag" href="https://arxiv.org/abs/2511.16625" target="_blank">MedBayes-Lite</a></li>
+            </ul>
+          </li>
+          <li>
+            <strong>Reliable AI Supervision</strong>
+            <ul>
+              <li>Fault-tolerant preference alignment via multi-agent verification <a class="tag" href="#" target="_blank">MAV</a></li>
+              <li>Reliability-aware filtering when LLM judges share blind spots <a class="tag" href="#" target="_blank">CorrFilter</a></li>
+            </ul>
+          </li>
+          <li>
+            <strong>Runtime Safety and Evaluation for LLM Agents</strong>
+            <ul>
+              <li>Structured-plan intervention policies for tool-using agents <a class="tag" href="#" target="_blank">NEXUS</a></li>
+              <li>Process-level evaluation of clinical LLM agents under uncertainty <a class="tag" href="#" target="_blank">CareBench</a></li>
+            </ul>
+          </li>
+          <li>
+            <strong>Test-Time Steering Without Retraining</strong>
+            <ul>
+              <li>Activation steering for parametric temporal conflict in LLMs <a class="tag" href="#" target="_blank">TAS</a></li>
+              <li>Closed-form post-training steering when policies cannot be retrained <a class="tag" href="https://arxiv.org/abs/2604.22873" target="_blank">PoE-Steer</a></li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="callout">
+          <span class="ico">📢</span>
+          <div>Graduating <strong>Spring 2028</strong>. Open to a <strong>Research Scientist internship</strong> or <strong>PostDoc position</strong> in LLM training, reinforcement learning, LLM safety, and AI for drug discovery. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
+        </div>
+      </section>
+
+      <section id="news" class="reveal">
+        <div class="section-label">News</div>
+        <h2>Recent updates</h2>
+        <div class="news-list">
+          <div class="news-item">
+            <div class="news-date">Apr 2026</div>
+            <div>&#127881; First-author paper <strong>Fault-Tolerant Preference Alignment</strong> accepted at <strong>ICLR 2026 Trustworthy AI Workshop</strong>: multi-agent verification that filters corrupted supervision before RLHF/DPO.</div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">Mar 2026</div>
+            <div>&#10024; Two PhD papers out the same month: AMR computational paradigms survey in <a href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener"><strong>Briefings in Bioinformatics</strong></a>, and the follow-up agentic RNA-seq paper in <strong>Frontiers in Bioinformatics</strong>.</div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">Jan 2026</div>
+            <div>&#127908; At <strong>Amazon JFK&nbsp;27</strong> in New&nbsp;York for the <strong>Trusted AI Symposium</strong>, presenting <strong>SAVe V.1</strong>: multi-agent safe alignment verification for preference-based LLM optimization.</div>
+          </div>
+          <div class="news-item">
+            <div class="news-date">Oct 2025</div>
+            <div>&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener"><strong>CITE V.1</strong></a> (evidence-grounded LLM interpretation of RNA-seq clusters) at MIT Jameel Clinic's <strong>7th Molecular Machine Learning Conference</strong>.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="reveal" id="publications">
+        <div class="section-label">Selected Work</div>
+        <h2>Featured Publications</h2>
+        <p class="pubs-sub">Check out <a href="https://scholar.google.com/citations?user=fkXc4dgAAAAJ" target="_blank" rel="noopener">Google Scholar</a> for a full list of my publications.</p>
+
+        <div class="filters" id="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="bio">Biomedical AI</button>
+          <button class="filter-btn" data-filter="agentic">Agentic &amp; RL</button>
+          <button class="filter-btn" data-filter="trust">Trustworthy LLMs</button>
+          <button class="filter-btn" data-filter="nlp">Applied NLP</button>
+        </div>
+
+        <div class="pubs-cards" id="pubs">
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb t-trust">
+              <span class="pub-status s-rev">Under Review</span>
+              EMNLP &middot; 2026
+            </div>
+            <div class="pub-info">
+              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay</div>
+              <div class="pub-venue-line live-venue">ACL ARR meta-review: borderline conference accept &middot; committing to EMNLP 2026</div>
+              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
+  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan},
+  journal={arXiv preprint arXiv:2602.02952},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="bio">
+            <div class="pub-thumb t-bio">
+              <span class="pub-status s-pub">Published</span>
+              BiB &middot; 2026
+            </div>
+            <div class="pub-info">
+              <h3>Computational Paradigms for Antimicrobial Resistance Prediction: Integrating Multi-Omics, Structural Modeling, and Foundation AI Systems</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, N. Yousefi</div>
+              <div class="pub-venue-line">Briefings in Bioinformatics, 2026</div>
+              <p class="pub-desc">Survey unifying multi-omics, structural modeling, and foundation models for AMR prediction; positions where each paradigm shines and where they break.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener">ARTICLE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026computational,
+  title={Computational paradigms for antimicrobial resistance prediction: integrating multi-omics, structural modeling, and foundation artificial intelligence systems},
+  author={Hossain, Elias and Yousefi, Niloofar},
+  journal={Briefings in Bioinformatics},
+  volume={27},
+  number={3},
+  pages={bbag219},
+  year={2026},
+  publisher={Oxford University Press}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="bio agentic">
+            <div class="pub-thumb t-bio">
+              <span class="pub-status s-pub">Published</span>
+              Frontiers &middot; 2026
+            </div>
+            <div class="pub-info">
+              <h3>BIOGEN: Evidence-Grounded Multi-Agent Reasoning Framework for Transcriptomic Interpretation in Antimicrobial Resistance</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. Shoeibi, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">Frontiers in Bioinformatics, vol.&nbsp;6, 2026 &middot; Drug Discovery in Bioinformatics</div>
+              <p class="pub-desc">A multi-agent framework that interprets RNA-Seq gene clusters by combining biomedical retrieval with evidence verification; every cluster interpretation cites at least one PMID, DOI, or UniProt accession across five bacterial datasets.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2026.1846404/abstract" target="_blank" rel="noopener">ARTICLE</a>
+                <a class="pub-pill" href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">ARXIV</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026biogen,
+  title={BIOGEN: Evidence-Grounded Multi-Agent Reasoning Framework for Transcriptomic Interpretation in Antimicrobial Resistance},
+  author={Hossain, Elias and Shoeibi, Mehrdad and Garibay, Ivan and Yousefi, Niloofar},
+  journal={Frontiers in Bioinformatics},
+  volume={6},
+  year={2026},
+  publisher={Frontiers Media}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb t-rl">
+              <span class="pub-status s-pre">Preprint</span>
+              NeurIPS &middot; 2026
+            </div>
+            <div class="pub-info">
+              <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">Preprint, 2026 &middot; Under review at NeurIPS</div>
+              <p class="pub-desc">A closed-form analysis of post-training policy steering in offline RL, showing when interventions help, hurt, or leave a frozen policy unchanged.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026policies,
+  title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
+  author={Hossain, Elias and Basher, M. J. I. and Garibay, Ivan and Garibay, Ozlem and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2604.22873},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="bio">
+            <div class="pub-thumb t-nature">
+              <span class="pub-status s-pub">Published</span>
+              Nature SR &middot; 2026
+            </div>
+            <div class="pub-info">
+              <h3>R-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with Limited Data</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, T. Nuzhat, S. Masum, S. Rahimi, N. A. Golilarz</div>
+              <div class="pub-venue-line">Scientific Reports (Nature), 2026</div>
+              <p class="pub-desc">Residual graph attention network for biomedical document classification under limited data; matches transformer baselines on cancer abstracts at a fraction of the cost.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://www.nature.com/articles/s41598-026-39894-6" target="_blank" rel="noopener">ARTICLE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026rgat,
+  title={R-GAT: cancer document classification leveraging graph-based residual network for scenarios with limited data},
+  author={Hossain, Elias and Nuzhat, Tasfia and Masum, Shamsul and Rahimi, Shahram and Golilarz, Noorbakhsh Amiri},
+  journal={Scientific Reports},
+  year={2026},
+  publisher={Nature Publishing Group}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="nlp">
+            <div class="pub-thumb t-nlp">
+              <span class="pub-status s-pub">Published</span>
+              IEEE FIE &middot; 2024
+            </div>
+            <div class="pub-info">
+              <h3>From Questions to Insightful Answers: Building an Informed Chatbot for University Resources</h3>
+              <div class="pub-authors">S. Neupane, <strong>E. Hossain</strong>, J. Keith, H. Tripathi, F. Ghiasi, N. A. Golilarz, A. Amirlatifi, S. Mittal, S. Rahimi</div>
+              <div class="pub-venue-line">IEEE Frontiers in Education Conference (FIE), 2024</div>
+              <p class="pub-desc">Retrieval-augmented, domain-informed chatbot framework for university support; demonstrates effective conversational agents on grounded institutional knowledge.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://ieeexplore.ieee.org/abstract/document/10892994" target="_blank" rel="noopener">IEEE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{neupane2024questions,
+  title={From Questions to Insightful Answers: Building an Informed Chatbot for University Resources},
+  author={Neupane, Subash and Hossain, Elias and Keith, Jason and Tripathi, Himanshu and Ghiasi, Farbod and Golilarz, Noorbakhsh Amiri and Amirlatifi, Amin and Mittal, Sudip and Rahimi, Shahram},
+  booktitle={2024 IEEE Frontiers in Education Conference (FIE)},
+  year={2024},
+  organization={IEEE}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+    </article>
+  </div>
+</div>
+
+
+<section class="full-section reveal" id="certificates">
+  <div class="section-label">Professional Development</div>
+  <h2>Certifications</h2>
+  <div class="awards">
+    <div class="award">
+      <div class="award-year">2023</div>
+      <div><strong>AI for Medicine Specialization</strong> &mdash; DeepLearning.AI on Coursera. Three-course track covering medical diagnosis, prognosis, and treatment-effectiveness prediction with deep learning. <a href="https://www.coursera.org/account/accomplishments/specialization/9MUSRK9VHA8N" target="_blank" rel="noopener">Verify</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2022</div>
+      <div><strong>IBM Professional Data Science Certificate</strong> &mdash; Coursera. End-to-end data science workflows: statistical modeling, machine learning with Python, and production pipelines. <a href="https://www.coursera.org/account/accomplishments/specialization/7XUWGHVG9R5C" target="_blank" rel="noopener">Verify</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="full-section reveal" id="projects">
+  <div class="section-label">Selected Projects</div>
+  <h2>Projects</h2>
+  <div class="proj-grid">
+
+    <article class="proj-card">
+      <div class="proj-icon p-safe"><span class="proj-emoji" style="animation: pBob 3s ease-in-out infinite">&#128737;&#65039;</span></div>
+      <div class="proj-content">
+        <div class="proj-year">2026</div>
+        <h3>SAVe V.1</h3>
+        <p>Multi-agent safe alignment verification for preference-based LLM optimization. Presented as a poster at the Amazon Trusted AI Symposium, JFK&nbsp;27, New&nbsp;York.</p>
+      </div>
+    </article>
+
+    <article class="proj-card">
+      <div class="proj-icon p-brain"><span class="proj-emoji" style="animation: pPulse 2.6s ease-in-out infinite">&#129504;</span></div>
+      <div class="proj-content">
+        <div class="proj-year">2025</div>
+        <h3>MiniHealthLM</h3>
+        <p>Lightweight, secure transformer language model trained from scratch for healthcare text. <a href="https://github.com/eliashossain001/MiniHealthLM" target="_blank" rel="noopener">GitHub</a></p>
+      </div>
+    </article>
+
+    <article class="proj-card">
+      <div class="proj-icon p-radar"><span class="proj-emoji" style="animation: pSway 3.4s ease-in-out infinite">&#128202;</span></div>
+      <div class="proj-content">
+        <div class="proj-year">2025</div>
+        <h3>mldriguard</h3>
+        <p>Python package for detecting and mitigating data drift in machine learning models. <a href="https://github.com/eliashossain001/mldriguard" target="_blank" rel="noopener">GitHub</a></p>
+      </div>
+    </article>
+
+    <article class="proj-card">
+      <div class="proj-icon p-pill"><span class="proj-emoji" style="animation: pSpin 5s linear infinite">&#128138;</span></div>
+      <div class="proj-content">
+        <div class="proj-year">2025</div>
+        <h3>MedXpert</h3>
+        <p>AI-powered drug discovery and comparison system. <a href="https://github.com/eliashossain001/MedXpert-drug-discovery" target="_blank" rel="noopener">GitHub</a></p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="full-section reveal" id="awards">
+  <div class="section-label">Awards &amp; Honors</div>
+  <h2>Awards / Recognition</h2>
+  <div class="awards">
+    <div class="award">
+      <div class="award-year">2025</div>
+      <div><strong>Graduate Presentation Fellowship</strong>, UCF. Selective award funding research presentation at MIT.</div>
+    </div>
+    <div class="award">
+      <div class="award-year">2019</div>
+      <div><strong>Finalist</strong>, Dr. Pradeep P. Thevannoor Innovation Awards, India.</div>
+    </div>
+    <div class="award">
+      <div class="award-year">2023</div>
+      <div><strong>Award</strong>, Fourth Industrial Revolution Skills Summit, North South University (NSU).</div>
+    </div>
+    <div class="award">
+      <div class="award-year">2018</div>
+      <div><strong>Winner</strong>, IEEE SS12 Innovation Challenge &amp; Maker Fair, for the Kidnap Prevention Mobile App.</div>
+    </div>
+    <div class="award">
+      <div class="award-year">2017</div>
+      <div><strong>Divisional Champion &amp; Global Nominee</strong>, NASA Space Apps Challenge, for the Drone for Green Project.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 Elias Hossain · Last updated May 2026 · University of Central Florida.
+</footer>
+
+</main>
+
+<script>
+  // Animated stat counters fed by stats.json (auto-updated weekly by GitHub Action)
+  (function () {
+    var stats = document.querySelectorAll('.stat .num[data-target]');
+    if (!stats.length) return;
+
+    function animate(el) {
+      var target = parseInt(el.dataset.target, 10) || 0;
+      var suffix = el.dataset.suffix || '';
+      var duration = 1400;
+      var start = performance.now();
+      function tick(now) {
+        var t = Math.min((now - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - t, 3);
+        var value = Math.floor(eased * target);
+        el.textContent = value + (t === 1 ? suffix : '');
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function applyLive(data) {
+      if (!data) return;
+      var map = {
+        cites:  { val: data.citations,    suffix: '+' },
+        hindex: { val: data.h_index,      suffix: ''  },
+        pubs:   { val: data.publications, suffix: '+' }
+      };
+      stats.forEach(function (el) {
+        var entry = map[el.dataset.metric];
+        if (!entry || typeof entry.val !== 'number') return;
+        el.dataset.target = String(entry.val);
+        el.dataset.suffix = entry.suffix;
+        el.classList.add('live');
+        if (el.dataset.animated) el.textContent = entry.val + entry.suffix;
+      });
+    }
+
+    function setupObserver() {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && !e.target.dataset.animated) {
+            e.target.dataset.animated = '1';
+            animate(e.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      stats.forEach(function (s) { io.observe(s); });
+    }
+
+    // Fetch live stats from /stats.json (auto-updated by the Update Scholar Stats GitHub Action)
+    fetch('/stats.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(applyLive)
+      .catch(function () { /* keep seeded values */ })
+      .finally(setupObserver);
+  })();
+
+  // Profile photo rotator: changes on load, nav clicks, and scroll-up-from-below
+  // Per-photo crop position (defaults to 'center 25%' if not listed)
+  const photoCandidates = [
+    '/assets/photos/photo1.jpg',
+    '/assets/photos/photo2.jpg',
+    '/assets/photos/photo3.jpg',
+    '/assets/photos/photo4.jpg',
+    '/assets/photos/photo5.jpg',
+    '/assets/photos/photo6.jpg',
+    '/assets/photos/photo7.png',
+  ];
+  const photoCrop = {
+    '/assets/photos/photo6.jpg': 'center 55%',
+  };
+  const avatarImg = document.getElementById('avatarImg');
+  let currentPhoto = null;
+
+  function rotatePhoto() {
+    if (!avatarImg) return;
+    const pool = photoCandidates.filter(c => c !== currentPhoto);
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    avatarImg.classList.remove('loaded');
+    avatarImg.onload = () => avatarImg.classList.add('loaded');
+    avatarImg.onerror = () => { rotatePhoto(); };
+    avatarImg.style.objectPosition = photoCrop[choice] || 'center 25%';
+    avatarImg.src = choice;
+    currentPhoto = choice;
+  }
+  rotatePhoto();
+
+  // Change on nav-link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', rotatePhoto);
+  });
+
+  // Change when user scrolls down past 400px then comes back up near the top
+  let wentDown = false;
+  let scrollTicking = false;
+  window.addEventListener('scroll', () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      const y = window.scrollY;
+      if (y > 400) wentDown = true;
+      if (y < 60 && wentDown) {
+        wentDown = false;
+        rotatePhoto();
+      }
+      scrollTicking = false;
+    });
+  });
+
+  const root = document.documentElement;
+  const stored = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (stored === 'dark' || (!stored && prefersDark)) {
+    root.setAttribute('data-theme', 'dark');
+  }
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') root.setAttribute('data-theme', 'dark');
+    else root.removeAttribute('data-theme');
+    localStorage.setItem('theme', next);
+  });
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const pubs = document.querySelectorAll('.pub');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      pubs.forEach(p => {
+        const tags = (p.dataset.tag || '').split(/\s+/);
+        if (filter === 'all' || tags.includes(filter)) p.classList.remove('hidden');
+        else p.classList.add('hidden');
+      });
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Mobile hamburger toggle
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if (!toggle || !links) return;
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = !links.classList.contains('open');
+      links.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    // Close menu when clicking outside or on a link
+    document.addEventListener('click', function (e) {
+      if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // Nav "More" dropdown
+  (function () {
+    var moreBtn = document.getElementById('moreBtn');
+    var moreMenu = document.getElementById('moreMenu');
+    if (!moreBtn || !moreMenu) return;
+    function close() {
+      moreMenu.setAttribute('hidden', '');
+      moreBtn.setAttribute('aria-expanded', 'false');
+    }
+    function open() {
+      moreMenu.removeAttribute('hidden');
+      moreBtn.setAttribute('aria-expanded', 'true');
+    }
+    moreBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (moreMenu.hasAttribute('hidden')) open(); else close();
+    });
+    document.addEventListener('click', function (e) {
+      if (!moreMenu.contains(e.target) && e.target !== moreBtn) close();
+    });
+    moreMenu.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', close);
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+
+  // BibTeX copy-to-clipboard
+  document.querySelectorAll('.pub-bibtex-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const pre = btn.nextElementSibling;
+      if (!pre) return;
+      const bib = (pre.textContent || '').trim();
+      const orig = btn.textContent;
+      try {
+        await navigator.clipboard.writeText(bib);
+        btn.textContent = 'COPIED!';
+      } catch (e) {
+        btn.textContent = 'COPY FAILED';
+      }
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+  });
+
+  // Education toggle in the Experience sidebar
+  (function () {
+    var btn = document.getElementById('eduToggle');
+    var list = document.getElementById('eduList');
+    if (!btn || !list) return;
+    btn.addEventListener('click', function () {
+      var open = !list.hidden ? false : true;
+      list.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.querySelector('.exp-toggle-text').textContent = open ? 'See less' : 'See more';
+      if (open) {
+        // After expansion, smoothly bring the new content into view
+        requestAnimationFrame(function () {
+          var btnRect = btn.getBoundingClientRect();
+          // Scroll so the button sits about 1/3 from the top of the viewport
+          var targetY = window.scrollY + btnRect.top - window.innerHeight * 0.33;
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        });
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

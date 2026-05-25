@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Open Source · Elias Hossain</title>
+<meta name="description" content="Open-source projects by Elias Hossain across LLM training, agentic AI, healthcare ML, and tutorials." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb; --bg-elev: #fdfaf3;
+    --ink: #1b1d1a; --ink-soft: #4a4d47; --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66; --accent-soft: #d6efe7; --accent-ink: #0a5c4c;
+    --pill-bg: #efe9da; --pill-ink: #3a3d36;
+    --hot-bg: #fde4d6; --hot-border: #e85a4f; --hot-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20,24,18,0.04), 0 8px 24px rgba(20,24,18,0.04);
+  }
+  [data-theme="dark"] {
+    --bg: #111311; --bg-elev: #181b18;
+    --ink: #ecebe4; --ink-soft: #b8b7ad; --ink-muted: #80807a;
+    --line: #262a25;
+    --accent: #4ed1b3; --accent-soft: #14302a; --accent-ink: #7ee0c5;
+    --pill-bg: #1f2320; --pill-ink: #c4c3bb;
+    --hot-bg: #2e1a16; --hot-border: #ff7a6b; --hot-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 84px;
+  }
+  @media (max-width: 600px) {
+    html { scroll-padding-top: 72px; }
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.6; font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV (same as other pages) */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .nav-more { position: relative; display: inline-block; }
+  .nav-more-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 0; margin: 0;
+    font: inherit; font-size: 13.5px;
+    color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: color 0.15s;
+  }
+  .nav-more-btn:hover { color: var(--accent-ink); }
+  .nav-more-arrow { font-size: 9px; transition: transform 0.2s; line-height: 1; }
+  .nav-more-btn[aria-expanded="true"] .nav-more-arrow { transform: rotate(180deg); }
+  .nav-more-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+    z-index: 100;
+  }
+  .nav-more-menu a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-more-menu a:hover {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    cursor: pointer;
+    place-items: center;
+    color: var(--ink);
+    padding: 0;
+    transition: all 0.2s;
+  }
+  .nav-toggle:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute;
+      top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: var(--bg-elev);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0;
+      box-shadow: var(--shadow);
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .nav-more { width: 100%; }
+    .nav-more-btn { padding: 12px 24px; width: 100%; justify-content: space-between; }
+    .nav-more-menu {
+      position: static; box-shadow: none; border: none;
+      background: transparent; min-width: 0; padding: 0; margin-top: 4px;
+    }
+    .nav-more-menu a { padding: 10px 40px; }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* LAYOUT */
+  .wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 36px 28px 0;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+  }
+  @media (max-width: 860px) {
+    .wrap { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  /* SIDEBAR */
+  .side {
+    position: sticky; top: 80px;
+    align-self: start;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 600;
+    margin-bottom: 18px; color: var(--ink);
+  }
+  .brand .em { font-size: 26px; }
+  .brand .of { color: var(--ink-muted); font-style: italic; font-weight: 400; }
+
+  .search-wrap { position: relative; margin-bottom: 22px; }
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 14px 8px 32px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-family: inherit; font-size: 13px;
+    color: var(--ink); outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: var(--ink-muted);
+  }
+  .search-wrap .kbd {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-muted);
+    background: var(--bg); border: 1px solid var(--line);
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  .side-group { margin-bottom: 20px; }
+  .side-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.15em; color: var(--ink-muted);
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 12px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .filter-bar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .filter-bar .select-wrap { flex: 1; max-width: 340px; }
+  @media (max-width: 600px) {
+    .filter-bar { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 14px; }
+    .filter-bar .select-wrap { max-width: 100%; }
+  }
+  .select-wrap { position: relative; }
+  .cat-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 9px 32px 9px 14px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    color: var(--ink);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .cat-select:hover { border-color: var(--accent); }
+  .cat-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .select-arrow {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+    font-size: 10px;
+    pointer-events: none;
+    transition: color 0.15s;
+  }
+  .cat-select:hover + .select-arrow,
+  .cat-select:focus + .select-arrow { color: var(--accent); }
+
+  .side-link {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px;
+    color: var(--ink-soft); font-size: 13.5px;
+    border-radius: 6px; margin-bottom: 2px;
+  }
+  .side-link:hover { background: var(--accent-soft); color: var(--accent-ink); }
+
+  /* MAIN */
+  .main { min-width: 0; padding-bottom: 80px; }
+  h1.page-title {
+    font-size: 38px; line-height: 1.1; margin-bottom: 8px;
+  }
+  h1.page-title .em { font-size: 32px; margin-right: 6px; }
+  .page-sub {
+    color: var(--ink-soft); font-size: 15px; margin-bottom: 24px;
+  }
+  .intro {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    color: var(--accent-ink);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 30px;
+  }
+  .intro strong { color: var(--accent-ink); font-weight: 700; }
+  .intro a { color: var(--accent-ink); border-bottom: 1px solid var(--accent); font-weight: 600; }
+
+  /* PROJECT CARDS */
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 760px) {
+    .projects { grid-template-columns: 1fr; }
+  }
+  .project {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+    display: flex; flex-direction: column;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .project:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+  }
+  .project.hidden { display: none; }
+  .project-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .project-head .icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    display: grid; place-items: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .project-head h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .project-desc {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin-bottom: 14px;
+    flex-grow: 1;
+  }
+  .project-meta {
+    display: flex; align-items: center;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+    flex-wrap: wrap;
+  }
+  .project-meta .stars { display: inline-flex; align-items: center; gap: 4px; }
+  .project-meta .stars svg { width: 11px; height: 11px; }
+  .project-meta .lang {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .project-meta .lang::before {
+    content: '';
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--lang-color, var(--accent));
+  }
+  .project-tags {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .project-tag {
+    background: var(--pill-bg); color: var(--pill-ink);
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 10.5px; font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* CATEGORY HEADERS */
+  .cat-head {
+    display: flex; align-items: baseline; gap: 10px;
+    margin: 28px 0 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .cat-head:first-child { margin-top: 0; }
+  .cat-head h2 { font-size: 22px; }
+  .cat-head .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--ink-muted);
+  }
+  .cat-group.hidden { display: none; }
+
+  /* === MOBILE RESPONSIVE === */
+  @media (max-width: 860px) {
+    .wrap { padding: 24px 18px 0; }
+    .side { position: static; top: auto; }
+    .side-group { margin-bottom: 14px; }
+    .brand { margin-bottom: 14px; }
+    .search-wrap { margin-bottom: 16px; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 14.5px; }
+    .wrap { padding: 16px 14px 0; }
+    h1.page-title { font-size: 28px; line-height: 1.15; }
+    h1.page-title .em { font-size: 24px; }
+    .page-sub { font-size: 14px; margin-bottom: 18px; }
+    .intro { padding: 12px 14px; font-size: 13.5px; line-height: 1.5; }
+    .cat-head { margin: 22px 0 12px; gap: 8px; flex-wrap: wrap; }
+    .cat-head h2 { font-size: 20px; }
+    .project { padding: 14px 16px; }
+    .project-head { flex-wrap: wrap; gap: 6px; }
+    .project-head h3 { font-size: 14px; word-break: break-word; }
+    .project-desc { font-size: 13px; }
+    .brand { font-size: 19px; margin-bottom: 12px; }
+    .brand .em { font-size: 22px; }
+    .search-wrap .kbd { display: none; }
+    .side-link { font-size: 13px; padding: 6px 8px; }
+    .cat-select { padding: 8px 28px 8px 12px; font-size: 13px; }
+    main.main { padding-bottom: 40px; }
+  }
+  @media (max-width: 400px) {
+    .wrap { padding: 14px 12px 0; }
+    h1.page-title { font-size: 26px; }
+    .project { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+      <a href="https://medium.com/@eliashossain9111" target="_blank" title="Medium"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="/">About</a>
+      <a href="/cv/Elias_Resume.pdf" target="_blank">Resume</a>
+      <a href="/#publications">Publications</a>
+      <a href="/notes">Notes</a>
+      <a href="/oss" class="active">Open Source</a>
+      <a href="/#news">News</a>
+      <div class="nav-more">
+        <button type="button" class="nav-more-btn" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu">
+          More
+          <span class="nav-more-arrow">&#9662;</span>
+        </button>
+        <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
+          <a href="/#certificates" role="menuitem">Certificate</a>
+          <a href="/#projects" role="menuitem">Projects</a>
+          <a href="/#awards" role="menuitem">Awards / Recognition</a>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <aside class="side">
+    <div class="brand">
+      <span class="em">⌨️</span>
+      <span><span class="of">Open Source by</span> Elias</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="search" placeholder="Search open source..." />
+      <span class="kbd">⌘K</span>
+    </div>
+
+    <div class="side-group">
+      <div class="side-lbl">External</div>
+      <a class="side-link" href="https://github.com/eliashossain001" target="_blank">⌨️ All on GitHub</a>
+      <a class="side-link" href="https://medium.com/@eliashossain9111" target="_blank">✍️ Medium</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <h1 class="page-title"><span class="em">⌨️</span> Open Source</h1>
+    <div class="page-sub">Selected projects across LLM training, agentic AI, and biomedical machine learning.</div>
+
+    <div class="intro">
+      Most of my open-source work lives on <strong><a href="https://github.com/eliashossain001" target="_blank">GitHub</a></strong>, where I publish training recipes, fine-tuning code, and research artifacts. Below are the ones I'd recommend looking at first.
+    </div>
+
+    <div class="filter-bar">
+      <label for="catSelect" class="filter-bar-label">Filter by category</label>
+      <div class="select-wrap">
+        <select id="catSelect" class="cat-select">
+          <option value="all">All open source (12)</option>
+          <option value="llm">LLM Training &amp; Fine-tuning (3)</option>
+          <option value="agentic">Agentic AI &amp; RAG (3)</option>
+          <option value="health">Healthcare &amp; Bio AI (3)</option>
+          <option value="other">Other / Tutorials (3)</option>
+        </select>
+        <span class="select-arrow">&#9662;</span>
+      </div>
+    </div>
+
+    <!-- LLM TRAINING -->
+    <div class="cat-group" data-cat="llm">
+      <div class="cat-head">
+        <h2>🧠 LLM Training &amp; Fine-tuning</h2>
+        <span class="count">3 projects</span>
+      </div>
+      <div class="projects">
+
+        <a class="project" href="https://github.com/eliashossain001/qwen-scratch-0.6B" target="_blank" rel="noopener" data-cat="llm" data-search="qwen scratch pretraining transformer 0.6B from scratch">
+          <div class="project-head">
+            <div class="icon">🐉</div>
+            <h3>qwen-scratch-0.6B</h3>
+          </div>
+          <div class="project-desc">Building a Qwen-style 0.6B transformer from scratch in PyTorch, end-to-end pretraining recipe with tokenizer, data pipeline, and training loop.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+            <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.847L19.336 24 12 19.897 4.664 24 6 15.597 0 9.75l8.332-1.595z"/></svg> 11</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">pretraining</span>
+            <span class="project-tag">transformer</span>
+            <span class="project-tag">pytorch</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/Continual-pre-training" target="_blank" rel="noopener" data-cat="llm" data-search="continual pretraining domain adaptation">
+          <div class="project-head">
+            <div class="icon">🔁</div>
+            <h3>Continual-pre-training</h3>
+          </div>
+          <div class="project-desc">Continual pretraining recipes for adapting base LLMs to new domains without catastrophic forgetting. Includes data mixing strategies and eval pipeline.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">cpt</span>
+            <span class="project-tag">domain-adapt</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/efficient-gemma3-finetuning" target="_blank" rel="noopener" data-cat="llm" data-search="gemma3 finetuning lora qlora peft">
+          <div class="project-head">
+            <div class="icon">💎</div>
+            <h3>efficient-gemma3-finetuning</h3>
+          </div>
+          <div class="project-desc">LoRA / QLoRA fine-tuning recipes for Gemma3, optimized for single-GPU and multi-GPU setups. Includes data formatting and inference scripts.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">finetune</span>
+            <span class="project-tag">lora</span>
+            <span class="project-tag">gemma</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- AGENTIC AI & RAG -->
+    <div class="cat-group" data-cat="agentic">
+      <div class="cat-head">
+        <h2>🤖 Agentic AI &amp; RAG</h2>
+        <span class="count">3 projects</span>
+      </div>
+      <div class="projects">
+
+        <a class="project" href="https://github.com/eliashossain001/RAG_Agentic_AI" target="_blank" rel="noopener" data-cat="agentic" data-search="rag agent retrieval augmented generation">
+          <div class="project-head">
+            <div class="icon">🔍</div>
+            <h3>RAG_Agentic_AI</h3>
+          </div>
+          <div class="project-desc">Retrieval-augmented agentic AI system combining vector search with multi-step reasoning loops. MIT-licensed reference implementation.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+            <span>MIT</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">rag</span>
+            <span class="project-tag">agents</span>
+            <span class="project-tag">retrieval</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/Multi-PDF-Chat-Agent" target="_blank" rel="noopener" data-cat="agentic" data-search="multi pdf chat agent rag chatbot documents">
+          <div class="project-head">
+            <div class="icon">📚</div>
+            <h3>Multi-PDF-Chat-Agent</h3>
+          </div>
+          <div class="project-desc">Chat with multiple PDFs at once via a RAG pipeline. Vector store, chunking strategies, and a clean conversational interface.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+            <span>MIT</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">rag</span>
+            <span class="project-tag">chatbot</span>
+            <span class="project-tag">pdf</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/conversational-chatbot" target="_blank" rel="noopener" data-cat="agentic" data-search="conversational chatbot memory dialogue">
+          <div class="project-head">
+            <div class="icon">💬</div>
+            <h3>conversational-chatbot</h3>
+          </div>
+          <div class="project-desc">A conversational chatbot with memory and context tracking. Reference for building stateful dialogue agents on top of open LLMs.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">chatbot</span>
+            <span class="project-tag">dialogue</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- HEALTHCARE & BIO AI -->
+    <div class="cat-group" data-cat="health">
+      <div class="cat-head">
+        <h2>🧬 Healthcare &amp; Bio AI</h2>
+        <span class="count">3 projects</span>
+      </div>
+      <div class="projects">
+
+        <a class="project" href="https://github.com/eliashossain001/MiniHealthLM" target="_blank" rel="noopener" data-cat="health" data-search="medical healthcare lm clinical domain">
+          <div class="project-head">
+            <div class="icon">🏥</div>
+            <h3>MiniHealthLM</h3>
+          </div>
+          <div class="project-desc">A small domain-adapted language model for healthcare and clinical tasks. Pretraining + instruction tuning recipe on medical corpora.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">clinical</span>
+            <span class="project-tag">healthcare</span>
+            <span class="project-tag">domain-lm</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/Bone-Fracture-Detection" target="_blank" rel="noopener" data-cat="health" data-search="bone fracture x-ray imaging classification">
+          <div class="project-head">
+            <div class="icon">🦴</div>
+            <h3>Bone-Fracture-Detection</h3>
+          </div>
+          <div class="project-desc">Deep learning pipelines for detecting fractures on X-ray imagery. Compares ResNet, DenseNet, and EfficientNet backbones on benchmark data.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+            <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.847L19.336 24 12 19.897 4.664 24 6 15.597 0 9.75l8.332-1.595z"/></svg> 15</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">medical-imaging</span>
+            <span class="project-tag">cnn</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/RNA-Seq-MoML" target="_blank" rel="noopener" data-cat="health" data-search="rna seq multi-omics bioinformatics genomics">
+          <div class="project-head">
+            <div class="icon">🧪</div>
+            <h3>RNA-Seq-MoML</h3>
+          </div>
+          <div class="project-desc">Multi-omics machine learning pipeline for RNA-Seq data analysis. Companion code for biological reasoning research.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">rna-seq</span>
+            <span class="project-tag">bioinformatics</span>
+            <span class="project-tag">multi-omics</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- OTHER / TUTORIALS -->
+    <div class="cat-group" data-cat="other">
+      <div class="cat-head">
+        <h2>🛠️ Other &amp; Tutorials</h2>
+        <span class="count">3 projects</span>
+      </div>
+      <div class="projects">
+
+        <a class="project" href="https://github.com/eliashossain001/Neural-network-visualizer" target="_blank" rel="noopener" data-cat="other" data-search="neural network visualizer education explainability">
+          <div class="project-head">
+            <div class="icon">📊</div>
+            <h3>Neural-network-visualizer</h3>
+          </div>
+          <div class="project-desc">Interactive neural network visualizer for teaching forward passes, activations, and gradients. Useful for explainability and intro courses.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+            <span class="stars"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.847L19.336 24 12 19.897 4.664 24 6 15.597 0 9.75l8.332-1.595z"/></svg> 1</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">education</span>
+            <span class="project-tag">viz</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/Quantum-ML" target="_blank" rel="noopener" data-cat="other" data-search="quantum machine learning qml notebook">
+          <div class="project-head">
+            <div class="icon">⚛️</div>
+            <h3>Quantum-ML</h3>
+          </div>
+          <div class="project-desc">Quantum machine learning experiments and notebooks. Comparing classical and quantum approaches on small benchmark tasks.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #DA5B0B">Jupyter</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">quantum</span>
+            <span class="project-tag">research</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://github.com/eliashossain001/deepspeech2" target="_blank" rel="noopener" data-cat="other" data-search="deepspeech speech recognition asr audio">
+          <div class="project-head">
+            <div class="icon">🎙️</div>
+            <h3>deepspeech2</h3>
+          </div>
+          <div class="project-desc">DeepSpeech2-based speech recognition implementation from earlier industry work. CNN + RNN architecture for end-to-end ASR.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #3572A5">Python</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">asr</span>
+            <span class="project-tag">speech</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+  const root = document.documentElement;
+  const stored = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (stored === 'dark' || (!stored && prefersDark)) {
+    root.setAttribute('data-theme', 'dark');
+  }
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    localStorage.setItem('theme', next);
+  });
+
+  // Category filter (dropdown)
+  const catSelect = document.getElementById('catSelect');
+  const catGroups = document.querySelectorAll('.cat-group');
+  const projects = document.querySelectorAll('.project');
+  if (catSelect) {
+    catSelect.addEventListener('change', () => {
+      const cat = catSelect.value;
+      catGroups.forEach(g => {
+        if (cat === 'all' || g.dataset.cat === cat) g.classList.remove('hidden');
+        else g.classList.add('hidden');
+      });
+    });
+  }
+
+  // Search
+  const searchInput = document.getElementById('search');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    projects.forEach(p => {
+      const text = (p.textContent + ' ' + (p.dataset.search || '')).toLowerCase();
+      if (!q || text.includes(q)) p.classList.remove('hidden');
+      else p.classList.add('hidden');
+    });
+  });
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Mobile hamburger toggle
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if (!toggle || !links) return;
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = !links.classList.contains('open');
+      links.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function (e) {
+      if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // Nav "More" dropdown
+  (function () {
+    var moreBtn = document.getElementById('moreBtn');
+    var moreMenu = document.getElementById('moreMenu');
+    if (!moreBtn || !moreMenu) return;
+    function close() { moreMenu.setAttribute('hidden', ''); moreBtn.setAttribute('aria-expanded', 'false'); }
+    function open()  { moreMenu.removeAttribute('hidden'); moreBtn.setAttribute('aria-expanded', 'true'); }
+    moreBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (moreMenu.hasAttribute('hidden')) open(); else close();
+    });
+    document.addEventListener('click', function (e) {
+      if (!moreMenu.contains(e.target) && e.target !== moreBtn) close();
+    });
+    moreMenu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<title>Notes · Elias Hossain</title>
+<meta name="description" content="Rough research notes on trustworthy LLMs, RL alignment, drug discovery, and more." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66;
+    --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c;
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --hot-bg: #fde4d6;
+    --hot-border: #e85a4f;
+    --hot-ink: #9a2f25;
+    --highlight-bg: #fde68a;
+    --highlight-ink: #1b1d1a;
+    --shadow: 0 1px 2px rgba(20,24,18,0.04), 0 8px 24px rgba(20,24,18,0.04);
+  }
+  [data-theme="dark"] {
+    --bg: #111311; --bg-elev: #181b18;
+    --ink: #ecebe4; --ink-soft: #b8b7ad; --ink-muted: #80807a;
+    --line: #262a25; --accent: #4ed1b3; --accent-soft: #14302a; --accent-ink: #7ee0c5;
+    --pill-bg: #1f2320; --pill-ink: #c4c3bb;
+    --hot-bg: #2e1a16; --hot-border: #ff7a6b; --hot-ink: #ffb8a8;
+    --highlight-bg: #614b16;
+    --highlight-ink: #fef3c7;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  /* Keyword pill (used inside My notes for central concepts) */
+  .keyword {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    padding: 1px 8px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.94em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .keyword:hover {
+    background: var(--accent);
+    color: var(--bg-elev);
+    transform: translateY(-1px);
+  }
+  .note-detail[open] .keyword {
+    animation: keywordPop 0.4s 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  @keyframes keywordPop {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Highlighter pen */
+  mark {
+    background: transparent !important;
+    background-image: linear-gradient(transparent 55%, #fde68a 55%) !important;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100% !important;
+    background-position: 0 0 !important;
+    color: #1b1d1a !important;
+    padding: 0 3px;
+    border-radius: 2px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    font-weight: 500;
+  }
+  [data-theme="dark"] mark {
+    background-image: linear-gradient(transparent 55%, #614b16 55%) !important;
+    color: #fef3c7 !important;
+  }
+  .note-detail[open] mark {
+    animation: drawHighlight 0.55s 0.25s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  @keyframes drawHighlight {
+    from { background-size: 0% 100%; }
+    to   { background-size: 100% 100%; }
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 84px;
+  }
+  @media (max-width: 600px) {
+    html { scroll-padding-top: 72px; }
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.6; font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; margin: 0; }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent-ink); }
+  .nav-links a.active { color: var(--accent-ink); }
+  .nav-more { position: relative; display: inline-block; }
+  .nav-more-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 0; margin: 0;
+    font: inherit; font-size: 13.5px;
+    color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 5px;
+    transition: color 0.15s;
+  }
+  .nav-more-btn:hover { color: var(--accent-ink); }
+  .nav-more-arrow { font-size: 9px; transition: transform 0.2s; line-height: 1; }
+  .nav-more-btn[aria-expanded="true"] .nav-more-arrow { transform: rotate(180deg); }
+  .nav-more-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 200px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+    z-index: 100;
+  }
+  .nav-more-menu a {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-more-menu a:hover {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+  }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    cursor: pointer;
+    place-items: center;
+    color: var(--ink);
+    padding: 0;
+    transition: all 0.2s;
+  }
+  .nav-toggle:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute;
+      top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: var(--bg-elev);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 0;
+      box-shadow: var(--shadow);
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .nav-more { width: 100%; }
+    .nav-more-btn { padding: 12px 24px; width: 100%; justify-content: space-between; }
+    .nav-more-menu {
+      position: static; box-shadow: none; border: none;
+      background: transparent; min-width: 0; padding: 0; margin-top: 4px;
+    }
+    .nav-more-menu a { padding: 10px 40px; }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* LAYOUT */
+  .wrap {
+    max-width: 1200px; margin: 0 auto;
+    padding: 36px 28px 0;
+    display: grid;
+    grid-template-columns: 240px 1fr 200px;
+    gap: 40px;
+  }
+  @media (max-width: 980px) {
+    .wrap { grid-template-columns: 1fr; gap: 24px; }
+    .toc-side { display: none; }
+  }
+
+  /* SIDEBAR */
+  .side {
+    position: sticky; top: 80px;
+    align-self: start;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 600;
+    margin-bottom: 18px;
+    color: var(--ink);
+  }
+  .brand .em { font-size: 26px; }
+  .brand .of { color: var(--ink-muted); font-style: italic; font-weight: 400; }
+
+  .search-wrap {
+    position: relative; margin-bottom: 22px;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 14px 8px 32px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    border-radius: 8px;
+    font-family: inherit; font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 14px; height: 14px; color: var(--ink-muted);
+  }
+  .search-wrap .kbd {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-muted);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  .side-group { margin-bottom: 20px; }
+  .side-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.15em; color: var(--ink-muted);
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .side-link {
+    display: flex; align-items: center; gap: 8px;
+    width: 100%;
+    padding: 5px 8px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: all 0.12s;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  .side-link:hover { background: var(--accent-soft); color: var(--accent-ink); }
+  .side-link.active { background: var(--accent); color: var(--bg-elev); font-weight: 600; }
+  .side-link .ic { width: 14px; opacity: 0.8; }
+
+  /* MAIN */
+  .main { min-width: 0; padding-bottom: 80px; }
+  .intro {
+    background: var(--hot-bg);
+    border-left: 3px solid var(--hot-border);
+    color: var(--hot-ink);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+  .intro strong { font-weight: 700; }
+  .intro a { color: var(--hot-ink); border-bottom: 1px solid var(--hot-border); font-weight: 600; }
+
+  h1.page-title {
+    font-size: 38px; line-height: 1.1; margin-bottom: 8px;
+  }
+  h1.page-title .em { font-size: 32px; margin-right: 6px; }
+  .page-sub {
+    color: var(--ink-soft); font-size: 15px; margin-bottom: 30px;
+  }
+
+  .section-head {
+    display: flex; align-items: baseline; gap: 10px;
+    margin: 36px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-head h2 { font-size: 22px; }
+  .section-head .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--ink-muted);
+  }
+
+  /* NOTE LIST */
+  .note-list { display: flex; flex-direction: column; gap: 4px; }
+  .note {
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--line);
+    transition: opacity 0.2s;
+  }
+  .note:last-child { border-bottom: none; }
+  .note.hidden { display: none; }
+  .note-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .note-title a { color: var(--ink); }
+  .note-title a:hover { color: var(--accent-ink); }
+  .note-summary {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .note-meta {
+    display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--ink-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .note-tag {
+    background: var(--pill-bg); color: var(--pill-ink);
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .note-tag:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* TL;DR + EXPANDABLE PERSONAL NOTE */
+  .note-tldr {
+    margin: 6px 0 10px;
+    padding: 8px 14px;
+    border-left: 3px solid var(--accent);
+    background: color-mix(in srgb, var(--accent-soft) 60%, transparent);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.55;
+    border-radius: 0 6px 6px 0;
+  }
+  .note-tldr strong { color: var(--accent-ink); font-weight: 700; }
+
+  .note-detail {
+    margin-top: 10px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0 18px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .note-detail[open] { border-color: var(--accent); }
+  .note-detail summary {
+    cursor: pointer;
+    padding: 10px 0;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .note-detail summary::-webkit-details-marker { display: none; }
+  .note-detail summary::before {
+    content: '+';
+    display: inline-grid;
+    place-items: center;
+    width: 16px; height: 16px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    color: var(--accent);
+    font-size: 13px;
+    line-height: 1;
+    transition: transform 0.2s;
+  }
+  .note-detail[open] summary::before { content: '−'; }
+  .note-body {
+    padding: 6px 0 16px;
+    border-top: 1px solid var(--line);
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+  /* Orchestrated reveal animations for note content */
+  .note-section h4 { position: relative; }
+  .note-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 1.5px;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+  .note-detail[open] .note-section h4 {
+    animation: noteSlideRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .note-detail[open] .note-section h4::after {
+    animation: noteUnderline 0.5s 0.15s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .note-detail[open] .note-section > p,
+  .note-detail[open] .note-section > ul {
+    animation: noteFadeIn 0.4s ease backwards;
+  }
+  .note-detail[open] .note-section li {
+    animation: noteSlideRight 0.4s ease backwards;
+  }
+  @keyframes noteFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes noteSlideRight {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes noteUnderline {
+    from { width: 0; }
+    to   { width: 28px; }
+  }
+  /* Section 1 delays */
+  .note-detail[open] .note-section:nth-child(1) h4         { animation-delay: 0.04s; }
+  .note-detail[open] .note-section:nth-child(1) > p,
+  .note-detail[open] .note-section:nth-child(1) > ul       { animation-delay: 0.16s; }
+  .note-detail[open] .note-section:nth-child(1) li:nth-child(1) { animation-delay: 0.20s; }
+  .note-detail[open] .note-section:nth-child(1) li:nth-child(2) { animation-delay: 0.28s; }
+  .note-detail[open] .note-section:nth-child(1) li:nth-child(3) { animation-delay: 0.36s; }
+  /* Section 2 delays */
+  .note-detail[open] .note-section:nth-child(2) h4         { animation-delay: 0.18s; }
+  .note-detail[open] .note-section:nth-child(2) > p,
+  .note-detail[open] .note-section:nth-child(2) > ul       { animation-delay: 0.30s; }
+  .note-detail[open] .note-section:nth-child(2) li:nth-child(1) { animation-delay: 0.34s; }
+  .note-detail[open] .note-section:nth-child(2) li:nth-child(2) { animation-delay: 0.42s; }
+  .note-detail[open] .note-section:nth-child(2) li:nth-child(3) { animation-delay: 0.50s; }
+  /* Section 3 delays */
+  .note-detail[open] .note-section:nth-child(3) h4         { animation-delay: 0.34s; }
+  .note-detail[open] .note-section:nth-child(3) > p,
+  .note-detail[open] .note-section:nth-child(3) > ul       { animation-delay: 0.46s; }
+  /* Section 4 delays */
+  .note-detail[open] .note-section:nth-child(4) h4         { animation-delay: 0.50s; }
+  .note-detail[open] .note-section:nth-child(4) > p,
+  .note-detail[open] .note-section:nth-child(4) > ul       { animation-delay: 0.62s; }
+  .note-detail summary::before {
+    transition: transform 0.25s ease, background 0.2s ease;
+  }
+  .note-detail[open] summary::before {
+    background: var(--accent);
+    color: var(--bg-elev);
+  }
+  .note-detail summary:hover::before {
+    transform: scale(1.1);
+  }
+  .note-section {
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .note-section:last-child { margin-bottom: 4px; }
+  .note-section h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 12px 0 6px;
+  }
+  .note-section ul { margin: 4px 0 0; padding-left: 18px; }
+  .note-section li { margin-bottom: 4px; line-height: 1.55; }
+  .note-section p { margin: 0; }
+  .note-section strong { color: var(--ink); font-weight: 600; }
+  .note-section a { border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+
+  /* FEATURED CARDS */
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .featured-card {
+    padding: 18px 20px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .featured-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+  }
+  .featured-card .em {
+    font-size: 22px; margin-bottom: 8px; display: block;
+  }
+  .featured-card h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 6px; line-height: 1.35;
+    color: var(--ink);
+  }
+  .featured-card p {
+    margin: 0; color: var(--ink-soft);
+    font-size: 13px; line-height: 1.5;
+  }
+
+  /* TOPICS (keyword-style pills) */
+  .topics { display: flex; flex-wrap: wrap; gap: 8px; }
+  .topic {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    transition: all 0.18s ease;
+    cursor: pointer;
+  }
+  .topic:hover {
+    background: var(--accent);
+    color: var(--bg-elev);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .topic.active {
+    background: var(--accent);
+    color: var(--bg-elev);
+  }
+  .topic .num {
+    margin-left: 6px;
+    padding: 1px 6px;
+    background: color-mix(in srgb, var(--accent-ink) 18%, transparent);
+    color: var(--accent-ink);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .topic:hover .num,
+  .topic.active .num {
+    background: color-mix(in srgb, var(--bg-elev) 30%, transparent);
+    color: var(--bg-elev);
+  }
+
+  /* TOC SIDEBAR */
+  .toc-side {
+    position: sticky; top: 80px;
+    align-self: start;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .toc-side .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.15em; color: var(--ink-muted);
+    margin-bottom: 10px;
+  }
+  .toc-side ul { list-style: none; padding: 0; margin: 0; border-left: 2px solid var(--line); }
+  .toc-side li { padding-left: 12px; margin: 8px 0; }
+  .toc-side a { color: var(--ink-soft); }
+  .toc-side a:hover { color: var(--accent-ink); }
+
+  /* === MOBILE RESPONSIVE === */
+  @media (max-width: 980px) {
+    .wrap { padding: 24px 18px 0; }
+    .side { position: static; top: auto; }
+    .side-group { margin-bottom: 14px; }
+    .brand { margin-bottom: 14px; }
+    .search-wrap { margin-bottom: 16px; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 14.5px; }
+    .wrap { padding: 16px 14px 0; }
+    h1.page-title { font-size: 28px; line-height: 1.15; }
+    h1.page-title .em { font-size: 24px; }
+    .page-sub { font-size: 14px; margin-bottom: 18px; }
+    .intro {
+      padding: 12px 14px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .section-head { margin: 24px 0 12px; gap: 8px; flex-wrap: wrap; }
+    .section-head h2 { font-size: 20px; }
+    .section-head .count { font-size: 11px; }
+    .brand { font-size: 19px; margin-bottom: 12px; }
+    .brand .em { font-size: 22px; }
+    .search-wrap .kbd { display: none; }
+    .side-link { font-size: 13px; padding: 6px 8px; }
+    .featured-grid { grid-template-columns: 1fr; gap: 10px; }
+    .featured-card { padding: 14px 16px; }
+    .featured-card h3 { font-size: 14.5px; }
+    .featured-card p { font-size: 12.5px; }
+    .note { padding: 14px 0; }
+    .note-title { font-size: 15px; line-height: 1.35; word-break: break-word; }
+    .note-summary { font-size: 13px; }
+    .note-tldr { font-size: 13.5px; padding: 7px 12px; line-height: 1.5; }
+    .note-meta { gap: 6px; font-size: 11px; }
+    .note-tag { font-size: 10.5px; padding: 2px 6px; }
+    .note-detail { padding: 0 12px; border-radius: 8px; }
+    .note-detail summary { padding: 9px 0; font-size: 11.5px; }
+    .note-body { padding: 4px 0 12px; }
+    .note-section { font-size: 13.5px; line-height: 1.55; }
+    .note-section h4 { font-size: 11.5px; margin: 10px 0 5px; }
+    .note-section ul { padding-left: 16px; }
+    .topics { gap: 6px; }
+    .topic { padding: 4px 10px; font-size: 12px; }
+    .topic .num { font-size: 9.5px; padding: 1px 5px; }
+    main.main { padding-bottom: 40px; }
+    .keyword { font-size: 0.92em; padding: 1px 6px; }
+  }
+  @media (max-width: 400px) {
+    .wrap { padding: 14px 12px 0; }
+    h1.page-title { font-size: 26px; }
+    .featured-card { padding: 12px 14px; }
+    .note-detail { padding: 0 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+      <a href="https://medium.com/@eliashossain9111" target="_blank" title="Medium"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.54 12a6.8 6.8 0 0 1-6.77 6.82A6.8 6.8 0 0 1 0 12a6.8 6.8 0 0 1 6.77-6.82A6.8 6.8 0 0 1 13.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="/">About</a>
+      <a href="/cv/Elias_Resume.pdf" target="_blank">Resume</a>
+      <a href="/#publications">Publications</a>
+      <a href="/notes" class="active">Notes</a>
+      <a href="/oss">Open Source</a>
+      <a href="/#news">News</a>
+      <div class="nav-more">
+        <button type="button" class="nav-more-btn" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu">
+          More
+          <span class="nav-more-arrow">&#9662;</span>
+        </button>
+        <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
+          <a href="/#certificates" role="menuitem">Certificate</a>
+          <a href="/#projects" role="menuitem">Projects</a>
+          <a href="/#awards" role="menuitem">Awards / Recognition</a>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="side">
+    <div class="brand">
+      <span class="em">🧠</span>
+      <span><span class="of">of</span> Elias</span>
+    </div>
+
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="search" placeholder="Search notes..." />
+      <span class="kbd">⌘K</span>
+    </div>
+
+    <div class="side-group">
+      <a class="side-link active" href="#home">🏠 Home</a>
+      <a class="side-link" href="#recent">🕒 Recent Notes</a>
+      <a class="side-link" href="#featured">⭐ Featured</a>
+      <a class="side-link" href="#topics">🔖 All Topics</a>
+    </div>
+
+    <div class="side-group">
+      <div class="side-lbl">Categories</div>
+      <button class="side-link cat-filter" data-cats="safety uncertainty calibration selective-prediction temperature-scaling" type="button">🛡️ LLM Safety &amp; Uncertainty</button>
+      <button class="side-link cat-filter" data-cats="alignment dpo rlhf online-learning rlaif sft" type="button">⚖️ RL &amp; Alignment</button>
+      <button class="side-link cat-filter" data-cats="agents tools reasoning" type="button">🤖 Agentic AI &amp; Tools</button>
+      <button class="side-link cat-filter" data-cats="transformers theory gnn" type="button">🔬 LLM Theory</button>
+      <button class="side-link cat-filter" data-cats="" type="button">🗒️ Show all notes</button>
+    </div>
+
+    <div class="side-group">
+      <div class="side-lbl">External</div>
+      <a class="side-link" href="https://medium.com/@eliashossain9111" target="_blank">✍️ Medium</a>
+      <a class="side-link" href="https://github.com/eliashossain001" target="_blank">⌨️ GitHub</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <h1 class="page-title"><span class="em">🧠</span> Notes</h1>
+    <div class="page-sub">Rough research notes, paper summaries, and working ideas.</div>
+
+    <div class="intro">
+      These are <strong>rough notes</strong> on trustworthy LLMs, RL alignment, biomedical AI, and other things I'm thinking through. Writing them quickly means I share more, but quality varies, take with a grain of salt. If something looks wrong, please <a href="mailto:mdelias.hossain@ucf.edu">let me know</a>.
+    </div>
+
+    <!-- FEATURED -->
+    <div class="section-head" id="featured">
+      <h2>⭐ Featured Notes</h2>
+      <span class="count">my four must-reads</span>
+    </div>
+    <div class="featured-grid">
+      <a class="featured-card note" href="#dpo" data-tags="dpo alignment rlhf">
+        <span class="em">⚖️</span>
+        <h3>Direct Preference Optimization</h3>
+        <p>The cleanest result I've seen in alignment. Skip the reward model, just classify. MAV builds directly on this.</p>
+      </a>
+      <a class="featured-card note" href="#oaif" data-tags="alignment dpo online-learning">
+        <span class="em">🔗</span>
+        <h3>Online AI Feedback (OAIF)</h3>
+        <p>On-policy DPO with an LLM annotator. They assume reliability; MAV is what happens when you can't.</p>
+      </a>
+      <a class="featured-card note" href="#selective-classification" data-tags="uncertainty safety selective-prediction">
+        <span class="em">🛡️</span>
+        <h3>Selective Classification for DNNs</h3>
+        <p>Pick a risk budget, the model abstains on uncertain inputs. The formal framework behind MedBayes-Lite.</p>
+      </a>
+      <a class="featured-card note" href="#react" data-tags="agents reasoning tools">
+        <span class="em">🤖</span>
+        <h3>ReAct: Reasoning + Acting</h3>
+        <p>Interleave thought and tool call, repeat. The agentic-LLM loop that BioGen extends with verifier agents.</p>
+      </a>
+    </div>
+
+    <!-- READING LOG -->
+    <div class="section-head" id="recent">
+      <h2>🗒️ Reading Log</h2>
+      <span class="count">my annotations, not summaries</span>
+    </div>
+    <div class="note-list" id="noteList">
+
+      <article class="note" data-tags="dpo alignment rlhf" id="dpo">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2305.18290" target="_blank" rel="noopener">Direct Preference Optimization: Your Language Model is Secretly a Reward Model</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Re-read this after a year of preference optimization work. The <mark>"skip the reward model, just classify"</mark> framing still feels too clean to be real. It is.
+        </div>
+        <div class="note-meta">
+          <span>read 2026-05-12</span>
+          <span class="note-tag">dpo</span>
+          <span class="note-tag">alignment</span>
+          <span class="note-tag">rlhf</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>MAV uses DPO as the inner alignment loss, so I wanted to revisit the original framing now that I've actually <mark>shipped a DPO-based pipeline</mark>.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>The <span class="keyword">closed-form policy extraction</span> is the kind of result that makes you wonder why nobody noticed it earlier.</li>
+                <li>The real win isn't the metric numbers, it's the <strong>stability</strong>: no PPO collapse, no separate reward-model drift.</li>
+                <li>"Your LM is secretly a reward model" reframed how I think about implicit rewards hiding inside supervised data.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>MAV filters corrupted preferences <em>before</em> DPO. The intuition that <span class="keyword">verification can replace fine-tuning</span> partly comes from DPO showing how much complexity the explicit reward model was hiding.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Compare MAV-filtered DPO against vanilla DPO at a fixed <span class="keyword">corruption budget</span>. I want to find where MAV's gain saturates.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="alignment safety rlaif anthropic" id="constitutional-ai">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2212.08073" target="_blank" rel="noopener">Constitutional AI: Harmlessness from AI Feedback</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> A model can self-critique using a written constitution. <mark>The direct ancestor of what I'm doing with MAV</mark>, just with one verifier instead of many.
+        </div>
+        <div class="note-meta">
+          <span>read 2026-05-05</span>
+          <span class="note-tag">alignment</span>
+          <span class="note-tag">safety</span>
+          <span class="note-tag">rlaif</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>MAV uses multi-agent verification. CAI was the first major paper to show AI feedback could replace human red-teaming for safety alignment, so it's foundational reading.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>The two-stage SL + RL design is more elegant than I remembered.</li>
+                <li>Chain-of-thought during the critique step improves both the judged quality and the interpretability of the decision.</li>
+                <li><span class="keyword">Non-evasive harmlessness</span>, engage with harmful queries by explaining the objection rather than refusing flatly, is an underrated framing.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>MAV is essentially CAI extended to multiple verifier agents with <span class="keyword">disagreement-aware aggregation</span>. Re-reading CAI exposed which design choices I'd quietly inherited.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Test whether constitutional rules can be made domain-specific. A <span class="keyword">drug discovery constitution</span> for BioGen's reasoning verifier would be a clean experiment.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="agents reasoning tools" id="react">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct: Synergizing Reasoning and Acting in Language Models</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Interleave a thought with an action, then repeat. <mark>Almost every "agentic LLM" framework today is some version of this loop.</mark>
+        </div>
+        <div class="note-meta">
+          <span>read 2026-04-28</span>
+          <span class="note-tag">agents</span>
+          <span class="note-tag">reasoning</span>
+          <span class="note-tag">tools</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>BioGen is an agentic LLM framework for RNA-Seq reasoning. I needed to understand the agent-reasoning literature from the source, and ReAct is the source.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>The <span class="keyword">thought-action-observation</span> trace is human-readable and auditable. That alone makes it a win over opaque chain-of-thought.</li>
+                <li>Hallucinations drop sharply when reasoning is grounded in real tool calls.</li>
+                <li>Big jumps with only 1-2 in-context examples and no fine-tuning. Hard to overstate how surprising this was at the time.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>BioGen extends ReAct with <span class="keyword">verifier agents</span> that check biological plausibility at each step. ReAct's "act on the world to ground reasoning" maps directly to my "verify biological evidence before continuing."</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Measure how often BioGen's verifier disagrees with the ReAct-style reasoning trace. Are <span class="keyword">disagreements informative</span> or just noise?</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="rlhf alignment sft" id="instructgpt">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">Training Language Models to Follow Instructions with Human Feedback (InstructGPT)</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> The paper that productionized RLHF. 1.3B aligned beats 175B base on user preference. <mark>The clearest argument I've seen that data quality beats parameters.</mark>
+        </div>
+        <div class="note-meta">
+          <span>read 2026-04-20</span>
+          <span class="note-tag">rlhf</span>
+          <span class="note-tag">alignment</span>
+          <span class="note-tag">sft</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>To understand the full PPO-based RLHF pipeline before working on top of the cleaner DPO version. Knowing the original cost makes me appreciate DPO's simplification more.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li><span class="keyword">1.3B aligned vs 175B base</span> is a stunning result for data quality &gt; parameters.</li>
+                <li>The <span class="keyword">alignment tax</span> exists but is much smaller than feared. Reassuring for production.</li>
+                <li>Truthfulness and toxicity gains came at minimal capability cost, counter to the "scale only" narrative of the time.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>This is the recipe MAV operates on top of. Replace the human labelers in the reward-modeling step with a <span class="keyword">verifier agent</span>, and you get something MAV-shaped.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Sketch a comparison: PPO-RLHF vs DPO vs OAIF vs MAV. Where does each fit on the supervision-quality × compute frontier?</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="calibration uncertainty temperature-scaling" id="calibration">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/1706.04599" target="_blank" rel="noopener">On Calibration of Modern Neural Networks</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Modern deep nets are wildly overconfident. <mark>One scalar (temperature scaling) fixes most of it.</mark> The starting point of basically every uncertainty paper since.
+        </div>
+        <div class="note-meta">
+          <span>read 2026-04-10</span>
+          <span class="note-tag">calibration</span>
+          <span class="note-tag">uncertainty</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>UAT-LITE is about uncertainty in pretrained transformers. Guo et al. is the foundational reference, almost every calibration paper since builds on it.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>Depth, width, weight decay, BatchNorm. Every "deep learning wins" choice hurts calibration. Striking <span class="keyword">inverse correlation</span>.</li>
+                <li>One scalar parameter <span class="keyword">T (temperature scaling)</span> is enough to mostly fix it. The simplicity is the message.</li>
+                <li>Calibration is a "free" deployment win, no retraining, just a held-out set.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>UAT-LITE inherits this lineage. Where Guo et al. tunes T post-hoc, I modulate attention with <span class="keyword">epistemic uncertainty</span> at inference time. Same spirit, deeper intervention.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Run temperature scaling on top of UAT-LITE outputs and check if calibration improves further. A clean ablation.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="agents tools sft" id="toolformer">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener">Toolformer: Language Models Can Teach Themselves to Use Tools</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Models can self-supervise tool use. The <mark>"insert API calls during pretraining, keep the ones that lower loss"</mark> trick is one of those moves I now see reused everywhere.
+        </div>
+        <div class="note-meta">
+          <span>read 2026-03-28</span>
+          <span class="note-tag">agents</span>
+          <span class="note-tag">tools</span>
+          <span class="note-tag">sft</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>For BioGen's tool-calling design. BioGen needs to call BLAST, GO ontology lookups, and pathway databases. Toolformer is the cleanest paper on how to teach a model <em>when</em> to call a tool.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>Pure <span class="keyword">self-supervision</span>, no human tool-use labels. Scales nicely.</li>
+                <li>The <span class="keyword">candidate API + loss-decrease filter</span> is a clever trick I now see reused in many follow-ups.</li>
+                <li>Core LM perplexity preserved. Matters for production deployment.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>BioGen's tool selection follows Toolformer's pattern but adds <span class="keyword">verifier feedback</span> as an additional filter. The verifier catches "tool calls that look right but return biologically implausible answers."</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Compare BioGen's verifier-filtered tool calls against pure loss-filtered Toolformer-style calls on a biomedical QA benchmark.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="alignment dpo online-learning" id="oaif">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2402.04792" target="_blank" rel="noopener">Direct Language Model Alignment from Online AI Feedback (OAIF)</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Online-policy DPO with an LLM annotator. Beats offline DPO and PPO-RLHF. <mark>They assume the annotator is reliable; MAV is what happens when you can't.</mark>
+        </div>
+        <div class="note-meta">
+          <span>read 2026-03-15</span>
+          <span class="note-tag">alignment</span>
+          <span class="note-tag">dpo</span>
+          <span class="note-tag">online-learning</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>Directly relevant to my "verified online supervision" thesis. They use an LLM as annotator without verification. MAV is what happens when the annotator can be wrong.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li><span class="keyword">Annotator-prompt-as-objective-knob</span> is elegant. Want a different alignment objective? Change the prompt.</li>
+                <li><span class="keyword">On-policy sampling</span> closes the train-deploy gap that offline DPO has.</li>
+                <li>The ablations are clean. Online vs offline is isolated as a single variable.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>MAV is essentially <span class="keyword">OAIF + verification</span>. They assume the LLM annotator is reliable. I show how to filter when it isn't.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Replicate OAIF's setup with a corrupted annotator (e.g., random label flip at p=0.2) and check if MAV closes the gap.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="uncertainty safety selective-prediction" id="selective-classification">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/1705.08500" target="_blank" rel="noopener">Selective Classification for Deep Neural Networks</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Pick a risk budget, the model abstains on uncertain inputs. <mark>The cleanest framework for safe medical AI I've found.</mark>
+        </div>
+        <div class="note-meta">
+          <span>read 2026-02-25</span>
+          <span class="note-tag">uncertainty</span>
+          <span class="note-tag">safety</span>
+          <span class="note-tag">selective-prediction</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>Bridges to MedBayes-Lite. Clinical models need to say "I don't know" rather than be confidently wrong. Geifman gave the formal framework I've been leaning on.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li><span class="keyword">Reject-option for deep nets</span>, simple but powerful. Surprising it didn't show up earlier.</li>
+                <li>2% top-5 ImageNet error at 60% coverage with 99.9% confidence is wild for 2017.</li>
+                <li>Works on any pre-trained net via softmax response or <span class="keyword">MC-dropout</span>. Zero retraining.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>MedBayes-Lite uses <span class="keyword">calibrated uncertainty</span> for selective prediction. Geifman gave the framework. I extend it with Bayesian uncertainty in transformer attention.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Compare MedBayes-Lite's risk-coverage curve against vanilla softmax + Geifman's method on a clinical decision support benchmark.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+      <article class="note" data-tags="transformers theory gnn" id="transformers-glasses">
+        <h3 class="note-title"><a href="https://arxiv.org/abs/2406.04267" target="_blank" rel="noopener">Transformers Need Glasses! Information Over-squashing in Language Tasks</a></h3>
+        <div class="note-tldr">
+          <strong>TL;DR.</strong> Decoder-only Transformers can collapse distinct inputs to identical hidden states, especially in low precision. <mark>Connects LLM failure modes to GNN over-squashing</mark> in a satisfying way.
+        </div>
+        <div class="note-meta">
+          <span>read 2026-02-12</span>
+          <span class="note-tag">transformers</span>
+          <span class="note-tag">theory</span>
+          <span class="note-tag">gnn</span>
+        </div>
+        <details class="note-detail">
+          <summary>My notes</summary>
+          <div class="note-body">
+            <div class="note-section">
+              <h4>Why I picked this up</h4>
+              <p>One of the few recent theory papers that explains LLM failure modes in a way I find satisfying. The GNN over-squashing connection was unexpected and worth chasing.</p>
+            </div>
+            <div class="note-section">
+              <h4>What stood out</h4>
+              <ul>
+                <li>Connects LLM failures (counting, copying) to <span class="keyword">GNN over-squashing</span>. A beautiful theoretical bridge.</li>
+                <li><span class="keyword">Low-precision floats</span> exacerbate collapse. A real production concern with bf16 / fp8 inference.</li>
+                <li>Their proposed fixes are surprisingly simple, mostly higher-precision final layers.</li>
+              </ul>
+            </div>
+            <div class="note-section">
+              <h4>Connection to my work</h4>
+              <p>UAT-LITE is about <span class="keyword">salvaging information in attention</span> at inference time. Barbero's collapse result suggests <em>where</em> in the network the information loss happens. Useful for designing better attention interventions.</p>
+            </div>
+            <div class="note-section">
+              <h4>What I'm trying next</h4>
+              <p>Check if UAT-LITE attention modulation reduces representational collapse on counting tasks. Could be a nice qualitative experiment.</p>
+            </div>
+          </div>
+        </details>
+      </article>
+
+    </div>
+
+    <!-- TOPICS -->
+    <div class="section-head" id="topics">
+      <h2>🔖 All Topics</h2>
+      <span class="count">click to filter notes</span>
+    </div>
+    <div class="topics" id="topicCloud">
+      <button class="topic" data-topic="alignment">alignment <span class="num">4</span></button>
+      <button class="topic" data-topic="agents">agents <span class="num">2</span></button>
+      <button class="topic" data-topic="dpo">dpo <span class="num">2</span></button>
+      <button class="topic" data-topic="rlhf">rlhf <span class="num">2</span></button>
+      <button class="topic" data-topic="safety">safety <span class="num">2</span></button>
+      <button class="topic" data-topic="sft">sft <span class="num">2</span></button>
+      <button class="topic" data-topic="tools">tools <span class="num">2</span></button>
+      <button class="topic" data-topic="uncertainty">uncertainty <span class="num">2</span></button>
+      <button class="topic" data-topic="anthropic">anthropic <span class="num">1</span></button>
+      <button class="topic" data-topic="calibration">calibration <span class="num">1</span></button>
+      <button class="topic" data-topic="gnn">gnn <span class="num">1</span></button>
+      <button class="topic" data-topic="online-learning">online-learning <span class="num">1</span></button>
+      <button class="topic" data-topic="reasoning">reasoning <span class="num">1</span></button>
+      <button class="topic" data-topic="rlaif">rlaif <span class="num">1</span></button>
+      <button class="topic" data-topic="selective-prediction">selective-prediction <span class="num">1</span></button>
+      <button class="topic" data-topic="temperature-scaling">temperature-scaling <span class="num">1</span></button>
+      <button class="topic" data-topic="theory">theory <span class="num">1</span></button>
+      <button class="topic" data-topic="transformers">transformers <span class="num">1</span></button>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="section-head" id="comments">
+      <h2>💬 Discussion</h2>
+    </div>
+    <p style="color: var(--ink-soft); font-size: 14px; margin: 0 0 16px;">
+      Sign in with GitHub below to leave a comment or react. Powered by <a href="https://giscus.app" target="_blank" rel="noopener">Giscus</a>.
+    </p>
+    <div class="giscus"></div>
+    <!--
+      To activate: replace the four data-* placeholders below with values from https://giscus.app
+      after you (1) make a public GitHub repo, (2) enable Discussions on it, and
+      (3) install the Giscus app: https://github.com/apps/giscus
+    -->
+    <script src="https://giscus.app/client.js"
+      data-repo="eliashossain001/eliashossain001.github.io"
+      data-repo-id="R_kgDOL2Dksg"
+      data-category="General"
+      data-category-id="DIC_kwDOL2Dkss4C9kr9"
+      data-mapping="pathname"
+      data-strict="0"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="bottom"
+      data-theme="preferred_color_scheme"
+      data-lang="en"
+      crossorigin="anonymous"
+      async>
+    </script>
+
+  </main>
+
+  <!-- RIGHT TOC -->
+  <aside class="toc-side">
+    <div class="lbl">On this page</div>
+    <ul>
+      <li><a href="#featured">⭐ Featured Notes</a></li>
+      <li><a href="#recent">🕒 Recent Notes</a></li>
+      <li><a href="#topics">🔖 All Topics</a></li>
+      <li><a href="#comments">💬 Discussion</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<script>
+  // Theme persistence (shared with main site)
+  const root = document.documentElement;
+  const stored = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (stored === 'dark' || (!stored && prefersDark)) {
+    root.setAttribute('data-theme', 'dark');
+  }
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    localStorage.setItem('theme', next);
+  });
+
+  // Search filter
+  const searchInput = document.getElementById('search');
+  const notes = document.querySelectorAll('.note');
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    notes.forEach(n => {
+      const text = (n.textContent + ' ' + (n.dataset.tags || '')).toLowerCase();
+      if (!q || text.includes(q)) n.classList.remove('hidden');
+      else n.classList.add('hidden');
+    });
+  });
+
+  // Cmd/Ctrl+K focuses search
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+
+  // Click a topic chip to filter notes by tag
+  (function () {
+    var chips = document.querySelectorAll('#topicCloud .topic');
+    var notes = document.querySelectorAll('.note');
+    var catBtns = document.querySelectorAll('.cat-filter');
+    var activeTopic = null;
+
+    function clearCats() { catBtns.forEach(function (b) { b.classList.remove('active'); }); }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var topic = chip.dataset.topic;
+        if (activeTopic === topic) {
+          activeTopic = null;
+          chips.forEach(function (c) { c.classList.remove('active'); });
+          notes.forEach(function (n) { n.classList.remove('hidden'); });
+          return;
+        }
+        activeTopic = topic;
+        chips.forEach(function (c) { c.classList.toggle('active', c === chip); });
+        clearCats();
+        notes.forEach(function (n) {
+          var tags = (n.dataset.tags || '').split(/\s+/);
+          if (tags.includes(topic)) n.classList.remove('hidden');
+          else n.classList.add('hidden');
+        });
+        document.getElementById('recent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Sidebar category buttons (filter by multiple tags)
+    catBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var cats = (btn.dataset.cats || '').trim().split(/\s+/).filter(Boolean);
+        // clear topic chip selection
+        activeTopic = null;
+        chips.forEach(function (c) { c.classList.remove('active'); });
+        // toggle active class on category buttons
+        catBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+        if (cats.length === 0) {
+          notes.forEach(function (n) { n.classList.remove('hidden'); });
+        } else {
+          notes.forEach(function (n) {
+            var tags = (n.dataset.tags || '').split(/\s+/);
+            var match = cats.some(function (c) { return tags.includes(c); });
+            if (match) n.classList.remove('hidden');
+            else n.classList.add('hidden');
+          });
+        }
+        document.getElementById('recent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+
+  // Animated open/close for note details
+  (function () {
+    var DURATION = 400;
+    document.querySelectorAll('.note-detail').forEach(function (details) {
+      var summary = details.querySelector('summary');
+      var body = details.querySelector('.note-body');
+      if (!summary || !body) return;
+      var animating = false;
+      summary.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (animating) return;
+        animating = true;
+        if (details.open) {
+          var h = body.scrollHeight;
+          body.style.maxHeight = h + 'px';
+          body.style.opacity = '1';
+          requestAnimationFrame(function () {
+            body.style.maxHeight = '0px';
+            body.style.opacity = '0';
+          });
+          setTimeout(function () {
+            details.open = false;
+            body.style.maxHeight = '';
+            body.style.opacity = '';
+            animating = false;
+          }, DURATION);
+        } else {
+          details.open = true;
+          body.style.maxHeight = '0px';
+          body.style.opacity = '0';
+          requestAnimationFrame(function () {
+            body.style.maxHeight = body.scrollHeight + 'px';
+            body.style.opacity = '1';
+          });
+          setTimeout(function () {
+            body.style.maxHeight = '';
+            animating = false;
+          }, DURATION);
+        }
+      });
+    });
+  })();
+
+  // Mobile hamburger toggle
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var links = document.getElementById('navLinks');
+    if (!toggle || !links) return;
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var open = !links.classList.contains('open');
+      links.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', function (e) {
+      if (!links.contains(e.target) && e.target !== toggle && !toggle.contains(e.target)) {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  })();
+
+  // Nav "More" dropdown
+  (function () {
+    var moreBtn = document.getElementById('moreBtn');
+    var moreMenu = document.getElementById('moreMenu');
+    if (!moreBtn || !moreMenu) return;
+    function close() { moreMenu.setAttribute('hidden', ''); moreBtn.setAttribute('aria-expanded', 'false'); }
+    function open()  { moreMenu.removeAttribute('hidden'); moreBtn.setAttribute('aria-expanded', 'true'); }
+    moreBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (moreMenu.hasAttribute('hidden')) open(); else close();
+    });
+    document.addEventListener('click', function (e) {
+      if (!moreMenu.contains(e.target) && e.target !== moreBtn) close();
+    });
+    moreMenu.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', close); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>

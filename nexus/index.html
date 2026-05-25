@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXUS · Structured Runtime Safety for Tool-Using LLM Agents</title>
+<meta name="description" content="NEXUS is a runtime safety monitor for tool-using LLM agents. Structured plan IR, deterministic rules, calibrated risk scoring, and a four-class intervention policy." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66;
+    --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c;
+    --accent-glow: rgba(14, 124, 102, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111311;
+    --bg-elev: #181b18;
+    --bg-code: #0a0c0a;
+    --ink: #ecebe4;
+    --ink-soft: #b8b7ad;
+    --ink-muted: #80807a;
+    --line: #262a25;
+    --accent: #4ed1b3;
+    --accent-soft: #14302a;
+    --accent-ink: #7ee0c5;
+    --accent-glow: rgba(78, 209, 179, 0.25);
+    --pill-bg: #1f2320;
+    --pill-ink: #c4c3bb;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .nexus-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 820px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 720px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 2.6rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.5rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 760px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* RESULTS TABLE */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(14, 124, 102, 0.08);
+    border-bottom: 1px solid var(--line);
+  }
+  [data-theme="dark"] .code-header {
+    background: rgba(78, 209, 179, 0.06);
+  }
+  .code-header .code-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; font-weight: 600;
+    color: var(--accent);
+  }
+  [data-theme="dark"] .code-header .code-title { color: var(--accent-ink); }
+  .code-header .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: #8a8a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .code-block pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7;
+    color: #d4d4d4;
+  }
+  .cm { color: #7a8a78; } .kw { color: #ff8c69; } .st { color: #a5d6ff; }
+  .fn { color: #d2a8ff; } .hl { color: #7ee0c5; font-weight: 600; }
+  .nu { color: #79c0ff; }
+
+  /* STEPS */
+  .steps {
+    display: flex; flex-direction: column;
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .step {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1.2rem 1.4rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step-num {
+    flex-shrink: 0; width: 36px; height: 36px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600; color: var(--accent-ink);
+  }
+  .step-content h3 {
+    font-size: 0.98rem; font-weight: 600;
+    margin-bottom: 0.2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .step-content p { font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(14, 124, 102, 0.18);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  [data-theme="dark"] .copy-btn { color: var(--accent-ink); }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* LICENSE NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+  .license-notice .license-text a {
+    color: var(--warn-ink); border-bottom: 1px solid var(--warn-border); font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a {
+    color: var(--accent-ink);
+    margin: 0 6px;
+  }
+
+  /* FADE-IN (visible by default; JS just adds gentle enter animation if it runs) */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .step { flex-direction: column; gap: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="../oss.html">Open Source</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#quickstart">Quick Start</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="nexus-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- four intervention arms -->
+      <line x1="0" y1="0" x2="0.85"  y2="-0.85" stroke="#2f9e7a" stroke-width="0.10" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="-0.85" y2="-0.85" stroke="#c0392b" stroke-width="0.10" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="-0.85" y2="0.85"  stroke="#e08e3a" stroke-width="0.10" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="0.85"  y2="0.85"  stroke="#3a9c95" stroke-width="0.10" stroke-linecap="round"/>
+      <!-- badges -->
+      <circle cx="0.98" cy="-0.98" r="0.22" fill="#2f9e7a" stroke="#fdfaf3" stroke-width="0.04"/>
+      <text x="0.98" y="-0.92" text-anchor="middle" font-family="Inter, sans-serif" font-size="0.26" font-weight="700" fill="#fdfaf3">&#10003;</text>
+      <circle cx="-0.98" cy="-0.98" r="0.22" fill="#c0392b" stroke="#fdfaf3" stroke-width="0.04"/>
+      <text x="-0.98" y="-0.90" text-anchor="middle" font-family="Inter, sans-serif" font-size="0.30" font-weight="700" fill="#fdfaf3">&#10007;</text>
+      <circle cx="-0.98" cy="0.98" r="0.22" fill="#e08e3a" stroke="#fdfaf3" stroke-width="0.04"/>
+      <text x="-0.98" y="1.06" text-anchor="middle" font-family="Inter, sans-serif" font-size="0.28" font-weight="700" fill="#fdfaf3">?</text>
+      <circle cx="0.98" cy="0.98" r="0.22" fill="#3a9c95" stroke="#fdfaf3" stroke-width="0.04"/>
+      <text x="0.98" y="1.07" text-anchor="middle" font-family="Inter, sans-serif" font-size="0.30" font-weight="700" fill="#fdfaf3">&#x21BB;</text>
+      <!-- center hub -->
+      <circle cx="0" cy="0" r="0.46" fill="#d6efe7" stroke="#0a5c4c" stroke-width="0.10"/>
+      <text x="0" y="0.16" text-anchor="middle" font-family="Fraunces, serif" font-size="0.55" font-weight="700" fill="#0a5c4c">N</text>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">EMNLP 2026 · Under Review</div>
+  <h1 class="fade-in"><span class="brand-text">NEXUS</span>: Structured Runtime Safety<br>for Tool-Using LLM Agents</h1>
+  <p class="subtitle fade-in">A plan-level safety monitor that combines deterministic rules, argument-level inspection, and a calibrated risk scorer to route tool-using LLM plans to one of four interventions: allow, block, confirm, or revise.</p>
+  <div class="cta-row fade-in">
+    <a href="assets/nexus_paper.pdf" class="btn btn-primary" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Paper
+    </a>
+    <a href="https://github.com/eliashossain001/nexus" class="btn btn-outline" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> Code
+    </a>
+    <a href="https://huggingface.co/datasets/EliasHossain/nexus-synthetic" class="btn btn-outline" target="_blank">🤗 Dataset</a>
+    <a href="https://huggingface.co/EliasHossain/nexus-risk-scorer" class="btn btn-outline" target="_blank">🤗 Model</a>
+  </div>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">0.949</div><div class="stat-label">Binary F₁</div></div>
+    <div class="stat"><div class="stat-value">+27.3 pp</div><div class="stat-label">Intervention Acc.</div></div>
+    <div class="stat"><div class="stat-value">0%</div><div class="stat-label">IPI ASR</div></div>
+    <div class="stat"><div class="stat-value">0.205 ms</div><div class="stat-label">Median Latency</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">How NEXUS works</h2>
+  <p class="section-desc fade-in">NEXUS intercepts the agent's structured plan <em>before</em> any tool runs. Four complementary components produce signals that a formal intervention policy <em>Π</em> combines into a single decision: <strong>allow</strong>, <strong>block</strong>, <strong>request confirmation</strong>, or <strong>request revision</strong>.</p>
+  <div class="method-figure fade-in"><img src="assets/architecture.png" alt="NEXUS architecture"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> The NEXUS runtime pipeline. (a) The agent emits a structured plan with tool name, arguments, permissions, side-effect class, irreversibility, sensitivity, and estimated cost. (b) Four components evaluate the plan: deterministic rules, argument inspection, a calibrated logistic-regression risk score ρ(P), and a session manager tracking cross-turn state. (c) The intervention policy Π routes each plan to one of four graded actions.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">R</div>
+      <h3>Deterministic Rules</h3>
+      <p>Nine plan-level rules covering permissions, irreversible actions, sensitive access, network egress, budget limits, suspicious patterns, scope ambiguity, broad-scope ops, and untrusted-input-driven actions.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">A</div>
+      <h3>Argument Inspector</h3>
+      <p>Scans step arguments for credentials, sensitive paths, sensitive tables and fields, and suspicious URLs. Lifts <em>sensitive data access</em> F₁ from 0.273 → 1.000.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">ρ</div>
+      <h3>Calibrated Risk Score</h3>
+      <p>Platt-scaled logistic regression over a 9-D plan feature vector. ECE reduced ~6.5× over the raw scorer. Gates the block/confirm split when exactly one critical rule fires.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">S</div>
+      <h3>Session Manager</h3>
+      <p>Tracks exposed entities, cumulative permissions, repeated unsafe attempts, and cumulative cost. Lifts multi-step escalation detection from 0/95 → 95/95 critical turns.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Cross-distribution evaluation</h2>
+  <p class="section-desc fade-in">NEXUS is evaluated across in-distribution synthetic plans, the external R-Judge benchmark, and a paired-control indirect-prompt-injection (IPI) split. The headline gain is in fine-grained intervention routing: <strong>+27.3 pp over rule-only monitoring</strong> (permutation p &lt; 0.001).</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr>
+          <th rowspan="2">Monitor</th>
+          <th colspan="2">Synthetic (n=128)</th>
+          <th colspan="2">R-Judge (n=564)</th>
+          <th colspan="2">IPI (n=200)</th>
+        </tr>
+        <tr>
+          <th>F₁</th><th>Int.-Acc</th>
+          <th>F₁</th><th>Prec.</th>
+          <th>F₁</th><th>Int.-Acc</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Rule-only</td>
+          <td class="num">0.949</td><td class="num">0.367</td>
+          <td class="num">0.849</td><td class="num">0.858</td>
+          <td class="num">1.000</td><td class="num">1.000</td>
+        </tr>
+        <tr>
+          <td>Learned-only</td>
+          <td class="num">0.549</td><td class="num">0.195</td>
+          <td class="num">—</td><td class="num">—</td>
+          <td class="num">1.000</td><td class="num">1.000</td>
+        </tr>
+        <tr class="highlight">
+          <td>NEXUS</td>
+          <td class="num"><strong>0.949</strong></td><td class="num"><strong>0.641</strong></td>
+          <td class="num"><strong>0.861</strong></td><td class="num">0.858</td>
+          <td class="num">0.995</td><td class="num"><strong>0.995</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> Headline results. Synthetic and R-Judge measure in-distribution and external performance; IPI is a robustness check for plan-level monitoring under injected context. NEXUS matches rule-only binary F₁ on the synthetic split but lifts 4-class intervention accuracy from 0.367 → 0.641 — the scorer's contribution is in routing severity, not detection volume.</p>
+  </div>
+
+  <div class="feature-grid fade-in">
+    <div class="feature-card">
+      <div class="feature-icon">★</div>
+      <h3>R-Judge generalization</h3>
+      <p>F₁ = 0.861 on 564 external trajectories, +0.012 over rule-only. Strongest on Finance / Program / Web (≥0.89); IoT remains hardest (0.518) after enabling the permanence-flag rule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">↯</div>
+      <h3>Multi-turn sessions</h3>
+      <p>Session-aware Π catches 95/95 critical unsafe turns on a 120-session benchmark with 0 false positives on legitimate controls.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Runtime efficiency</h3>
+      <p>0.205 ms median latency, 0.456 ms P99 on a single CPU core. About 4,349 decisions/sec — under 0.1% overhead per typical agent turn.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- QUICK START -->
+<section id="quickstart" class="content">
+  <div class="section-label fade-in">Quick Start</div>
+  <h2 class="section-title fade-in">Use NEXUS in minutes</h2>
+  <p class="section-desc fade-in">Wrap any tool-using agent: build a structured plan, hand it to the monitor, and dispatch on the returned intervention.</p>
+  <div class="steps fade-in">
+    <div class="step"><div class="step-num">1</div><div class="step-content"><h3>Clone &amp; install</h3><p>Install dependencies and the trained risk scorer.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-content"><h3>Build a structured plan</h3><p>Convert agent tool calls into the plan IR (tools, arguments, permissions, side effects).</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-content"><h3>Run the monitor</h3><p>Call <code>monitor.evaluate(plan)</code> and dispatch on the returned intervention before executing any tool.</p></div></div>
+  </div>
+  <div class="code-block fade-in">
+    <div class="code-header"><span class="code-title">install.sh</span><span class="code-lang">Bash</span></div>
+<pre><span class="cm"># Clone the repository</span>
+git clone https://github.com/eliashossain001/nexus.git
+<span class="kw">cd</span> nexus
+pip install -e .
+
+<span class="cm"># Download the calibrated risk scorer from HuggingFace</span>
+huggingface-cli download <span class="hl">EliasHossain/nexus-risk-scorer</span> \
+  --local-dir checkpoints/risk_scorer/</pre>
+  </div>
+  <div class="code-block fade-in">
+    <div class="code-header"><span class="code-title">monitor_plan.py</span><span class="code-lang">Python</span></div>
+<pre><span class="kw">from</span> nexus <span class="kw">import</span> <span class="fn">Monitor</span>, <span class="fn">Plan</span>, <span class="fn">PlanStep</span>
+
+<span class="cm"># Build a structured plan from your agent's tool calls</span>
+plan = <span class="fn">Plan</span>(steps=[
+    <span class="fn">PlanStep</span>(
+        tool=<span class="st">"file.write"</span>,
+        args={<span class="st">"path"</span>: <span class="st">"/etc/passwd"</span>, <span class="st">"content"</span>: <span class="st">"..."</span>},
+        side_effect=<span class="st">"file"</span>,
+        irreversible=<span class="hl">True</span>,
+        sensitive=<span class="hl">True</span>,
+        permissions=[<span class="st">"file.write"</span>, <span class="st">"system.admin"</span>],
+        cost=<span class="nu">1.0</span>,
+    ),
+])
+
+<span class="cm"># Evaluate the plan before any tool runs</span>
+monitor = <span class="fn">Monitor</span>.<span class="fn">from_pretrained</span>(<span class="st">"checkpoints/risk_scorer/"</span>)
+decision = monitor.<span class="fn">evaluate</span>(plan)
+
+<span class="cm"># decision.action in {"allow", "block", "confirm", "revise"}</span>
+<span class="kw">print</span>(decision.action, decision.violations, decision.risk_score)
+
+<span class="kw">if</span> decision.action == <span class="st">"allow"</span>:
+    agent.<span class="fn">execute</span>(plan)
+<span class="kw">elif</span> decision.action == <span class="st">"confirm"</span>:
+    <span class="kw">if</span> user.<span class="fn">approve</span>(plan, decision.violations):
+        agent.<span class="fn">execute</span>(plan)
+<span class="kw">elif</span> decision.action == <span class="st">"revise"</span>:
+    plan = agent.<span class="fn">revise</span>(plan, decision.violations)
+<span class="kw">else</span>:
+    agent.<span class="fn">refuse</span>(decision.violations)</pre>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- DATASET -->
+<section id="dataset" class="content">
+  <div class="section-label fade-in">Datasets &amp; Model</div>
+  <h2 class="section-title fade-in">NEXUS-Bench</h2>
+  <p class="section-desc fade-in">We release two synthetic splits and a pretrained risk scorer. The synthetic benchmark covers nine risk categories and the multistep split contains 120 ordered sessions for session-aware evaluation.</p>
+  <div class="code-block fade-in">
+    <div class="code-header"><span class="code-title">Download datasets &amp; model</span><span class="code-lang">Bash</span></div>
+<pre><span class="cm"># Synthetic split (428 instances, 9 risk categories)</span>
+huggingface-cli download \
+  <span class="hl">EliasHossain/nexus-synthetic</span> \
+  --repo-type dataset \
+  --local-dir data/nexus-synthetic/
+
+<span class="cm"># Multi-turn sessions (120 ordered sessions)</span>
+huggingface-cli download \
+  <span class="hl">EliasHossain/nexus-multistep</span> \
+  --repo-type dataset \
+  --local-dir data/nexus-multistep/
+
+<span class="cm"># Calibrated risk scorer (Platt-scaled logistic regression)</span>
+huggingface-cli download \
+  <span class="hl">EliasHossain/nexus-risk-scorer</span> \
+  --local-dir checkpoints/risk_scorer/</pre>
+  </div>
+  <div class="license-notice fade-in">
+    <div class="license-icon">⚠</div>
+    <div class="license-text">
+      <strong>License notice.</strong> The NEXUS benchmarks aggregate synthesized plan templates over multiple tool categories. By using these datasets, you agree to use them solely for research on agent safety and to respect the linked dataset cards on HuggingFace. See the <a href="https://huggingface.co/datasets/EliasHossain/nexus-synthetic" target="_blank">dataset card</a> for the full release terms.
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite NEXUS</h2>
+  <p class="section-desc fade-in">If you find NEXUS useful in your research, please consider citing the paper.</p>
+  <div class="citation-block fade-in" id="bibtex">
+<button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@inproceedings{hossain2026nexus,
+  title     = {NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
+  author    = {Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat
+               and Rana, Rajib and Yousefi, Niloofar},
+  booktitle = {Proceedings of EMNLP},
+  year      = {2026},
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>NEXUS</strong> — Structured Runtime Safety for Tool-Using LLM Agents &nbsp;·&nbsp;
+    <a href="assets/nexus_paper.pdf" target="_blank">Paper</a> ·
+    <a href="https://github.com/eliashossain001/nexus" target="_blank">GitHub</a> ·
+    <a href="https://huggingface.co/datasets/EliasHossain/nexus-synthetic" target="_blank">HuggingFace</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  // Mark JS as enabled — only then do fade-in elements start hidden
+  document.documentElement.classList.add('js-on');
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  // Safety: reveal everything after 2s in case the observer never fires
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  // Theme toggle (persists across pages via localStorage)
+  const themeBtn = document.getElementById('themeBtn');
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+
+  // Copy BibTeX
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

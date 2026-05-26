@@ -316,8 +316,12 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
   }
+  .cat-group[data-cat="data"] .projects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   @media (max-width: 760px) {
     .projects { grid-template-columns: 1fr; }
+    .cat-group[data-cat="data"] .projects { grid-template-columns: 1fr; }
   }
   .project {
     background: var(--bg-elev);
@@ -514,10 +518,11 @@
       <label for="catSelect" class="filter-bar-label">Filter by category</label>
       <div class="select-wrap">
         <select id="catSelect" class="cat-select">
-          <option value="all">All open source (12)</option>
+          <option value="all">All open source (15)</option>
           <option value="llm">LLM Training &amp; Fine-tuning (3)</option>
-          <option value="agentic">Agentic AI &amp; RAG (4)</option>
+          <option value="agentic">Agentic AI &amp; RAG (3)</option>
           <option value="health">Healthcare &amp; Bio AI (3)</option>
+          <option value="data">Datasets &amp; Benchmarks (4)</option>
           <option value="other">Other / Tutorials (3)</option>
         </select>
         <span class="select-arrow">&#9662;</span>
@@ -587,7 +592,7 @@
     <div class="cat-group" data-cat="agentic">
       <div class="cat-head">
         <h2>🤖 Agentic AI &amp; RAG</h2>
-        <span class="count">4 projects</span>
+        <span class="count">3 projects</span>
       </div>
       <div class="projects">
 
@@ -639,21 +644,6 @@
             <span class="project-tag">rag</span>
             <span class="project-tag">chatbot</span>
             <span class="project-tag">pdf</span>
-          </div>
-        </a>
-
-        <a class="project" href="https://github.com/eliashossain001/conversational-chatbot" target="_blank" rel="noopener" data-cat="agentic" data-search="conversational chatbot memory dialogue">
-          <div class="project-head">
-            <div class="icon">💬</div>
-            <h3>conversational-chatbot</h3>
-          </div>
-          <div class="project-desc">A conversational chatbot with memory and context tracking. Reference for building stateful dialogue agents on top of open LLMs.</div>
-          <div class="project-meta">
-            <span class="lang" style="--lang-color: #3572A5">Python</span>
-          </div>
-          <div class="project-tags">
-            <span class="project-tag">chatbot</span>
-            <span class="project-tag">dialogue</span>
           </div>
         </a>
 
@@ -713,6 +703,85 @@
             <span class="project-tag">rna-seq</span>
             <span class="project-tag">bioinformatics</span>
             <span class="project-tag">multi-omics</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- DATASETS & BENCHMARKS -->
+    <div class="cat-group" data-cat="data">
+      <div class="cat-head">
+        <h2>📚 Datasets &amp; Benchmarks</h2>
+        <span class="count">4 datasets</span>
+      </div>
+      <div class="projects">
+
+        <a class="project" href="https://huggingface.co/datasets/EliasHossain/nanobubbleeval" target="_blank" rel="noopener" data-cat="data" data-search="nanobubble eval benchmark extraction schema scientific literature">
+          <div class="project-head">
+            <div class="icon">🫧</div>
+            <h3>nanobubbleeval</h3>
+          </div>
+          <div class="project-desc">Benchmark for schema-constrained extraction from nanobubble and nanocarrier literature. 51,566 deduplicated records with 40 gold-annotated examples across 18 fields (size, zeta potential, stability, loading efficiency, release profile).</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #FFD21E">Dataset</span>
+            <span>Hugging Face</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">extraction</span>
+            <span class="project-tag">nanocarriers</span>
+            <span class="project-tag">benchmark</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://huggingface.co/datasets/EliasHossain/CancerAbstracts" target="_blank" rel="noopener" data-cat="data" data-search="cancer abstracts oncology classification biomedical text">
+          <div class="project-head">
+            <div class="icon">🎗️</div>
+            <h3>CancerAbstracts</h3>
+          </div>
+          <div class="project-desc">1,874 biomedical research abstracts labeled by cancer type (Lung, Thyroid, Colon, Generic). For text classification and biomedical NLP research.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #FFD21E">Dataset</span>
+            <span>Hugging Face</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">oncology</span>
+            <span class="project-tag">classification</span>
+            <span class="project-tag">biomedical</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://huggingface.co/datasets/EliasHossain/BioDivergence-Silver-v1.0" target="_blank" rel="noopener" data-cat="data" data-search="biodivergence silver claims contradiction nli biomedical verification">
+          <div class="project-head">
+            <div class="icon">🧬</div>
+            <h3>BioDivergence-Silver-v1.0</h3>
+          </div>
+          <div class="project-desc">11.9k biomedical claim pairs from scientific articles for NLI, claim verification, and contradiction detection. Includes labeled contradictions, evidence spans, and publication metadata with train/val/test splits.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #FFD21E">Dataset</span>
+            <span>Hugging Face</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">contradiction</span>
+            <span class="project-tag">claims</span>
+            <span class="project-tag">biomedical</span>
+          </div>
+        </a>
+
+        <a class="project" href="https://huggingface.co/datasets/EliasHossain/ptc-benchmark" target="_blank" rel="noopener" data-cat="data" data-search="ptc benchmark temporal reasoning knowledge conflicts factuality wikidata">
+          <div class="project-head">
+            <div class="icon">⏳</div>
+            <h3>ptc-benchmark</h3>
+          </div>
+          <div class="project-desc">Temporal QA benchmark with 9,250 examples testing how LLMs handle knowledge conflicts and reasoning over time-varying facts. Wikidata-sourced with old/new entity values and their time periods.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #FFD21E">Dataset</span>
+            <span>Hugging Face</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">temporal</span>
+            <span class="project-tag">factuality</span>
+            <span class="project-tag">knowledge-conflicts</span>
           </div>
         </a>
 

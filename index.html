@@ -416,7 +416,13 @@
     font-size: 13.5px;
     font-weight: 600;
     color: var(--ink);
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+  }
+  .exp-card .loc {
+    font-size: 11px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    flex: 0 0 auto;
   }
   .exp-card .date {
     font-family: 'JetBrains Mono', monospace;
@@ -426,10 +432,15 @@
     flex: 0 0 auto;
   }
   .exp-card .role-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 8px;
     font-size: 12.5px;
     color: var(--ink-soft);
     margin-bottom: 2px;
   }
+  .exp-card .role-line .role { flex: 1 1 auto; }
   .exp-card .mentor {
     font-size: 11.5px;
     color: var(--ink-muted);
@@ -1284,52 +1295,31 @@
         <div class="exp-card">
           <div class="where-line">
             <span class="where"><a href="https://complexity.cecs.ucf.edu/" target="_blank" rel="noopener" style="color: inherit; border: none;">UCF · CASL Lab</a></span>
+            <span class="loc">&#128205; Orlando, FL</span>
+          </div>
+          <div class="role-line">
+            <span class="role">PhD Researcher</span>
             <span class="date">Aug 2025 — Now</span>
           </div>
-          <div class="role-line">PhD Researcher</div>
           <div class="mentor">
             Focus: Trustworthy LLMs &middot; Scalable Oversight<br/>
-            Director: <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a><br/>
-            Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>
+            Primary Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a><br/>
+            Lab Director: <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a>
           </div>
         </div>
 
         <div class="exp-card">
           <div class="where-line">
             <span class="where"><a href="https://patent.cse.msstate.edu/" target="_blank" rel="noopener" style="color: inherit; border: none;">MS State · PATENT Lab</a></span>
+            <span class="loc">&#128205; Starkville, MS</span>
+          </div>
+          <div class="role-line">
+            <span class="role">Graduate Research Assistant</span>
             <span class="date">Jan 2024 — Jul 2025</span>
           </div>
-          <div class="role-line">Graduate Research Assistant</div>
           <div class="mentor">
             Focus: Conversational AI for Education<br/>
-            Primary Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a><br/>
-            Thesis Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a>
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="where-line">
-            <span class="where">REVE Systems</span>
-            <span class="date">Dec 2022 — Nov 2023</span>
-          </div>
-          <div class="role-line">Software Engineer</div>
-          <div class="mentor">
-            Focus: Speech AI<br/>
-            Dhaka, Bangladesh
-          </div>
-        </div>
-
-        <div class="exp-card">
-          <div class="where-line">
-            <span class="where">Time Research &amp; Innovation</span>
-            <span class="date">Oct 2020 — Nov 2022</span>
-          </div>
-          <div class="role-line">AI/ML Researcher (Remote)</div>
-          <div class="mentor">
-            Focus: AI in Healthcare<br/>
-            Manager: <a href="https://timerni.com/team-member-details/dr-shah-siddiqui" target="_blank" rel="noopener">Dr. Shah Siddiqui</a><br/>
-            Mentor: <a href="https://www.port.ac.uk/about-us/structure-and-governance/our-people/our-staff/shamsul-masum" target="_blank" rel="noopener">Dr. Shamsul Masum</a><br/>
-            Portsmouth, United Kingdom
+            Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a>
           </div>
         </div>
 
@@ -1351,6 +1341,9 @@
             <div class="edu-row">
               <span>Co-Advisor: <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a></span>
             </div>
+            <div class="edu-row">
+              <span>Research Mentor: <a href="https://scholar.google.com/citations?user=Nuo0T1YAAAAJ&amp;hl=en" target="_blank" rel="noopener">Dr. Rajib Rana</a></span>
+            </div>
             <div class="edu-foot edu-foot-nowrap">Focus: Trustworthy LLMs &middot; Scalable Oversight</div>
           </div>
 
@@ -1362,6 +1355,12 @@
             </div>
             <div class="edu-row">
               <span>Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a></span>
+            </div>
+            <div class="edu-row">
+              <span>Co-Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a></span>
+            </div>
+            <div class="edu-row">
+              <span>Research Mentor: <a href="https://www.cse.msstate.edu/people/faculty/charan-gudla/" target="_blank" rel="noopener">Dr. Charan Gudla</a></span>
             </div>
             <div class="edu-foot">Focus: Generative AI &middot; Topic Modeling</div>
             <div class="edu-foot">Degree awarded: Aug 7, 2025</div>
@@ -1465,7 +1464,7 @@
 
         <div class="callout">
           <span class="ico">📢</span>
-          <div>Graduating <strong>Spring 2028</strong>. Open to a <strong>Research Scientist internship</strong> or <strong>PostDoc position</strong> in LLM training, reinforcement learning, LLM safety, and AI for drug discovery. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
+          <div>Graduating <strong>Spring 2028</strong>. Seeking a <strong>Research Scientist role</strong> or <strong>Postdoctoral position</strong> in LLM training, reinforcement learning, and LLM safety. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
         </div>
       </section>
 

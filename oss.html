@@ -316,12 +316,14 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
   }
-  .cat-group[data-cat="data"] .projects {
+  .cat-group[data-cat="data"] .projects,
+  .cat-group[data-cat="llm"] .projects {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   @media (max-width: 760px) {
     .projects { grid-template-columns: 1fr; }
-    .cat-group[data-cat="data"] .projects { grid-template-columns: 1fr; }
+    .cat-group[data-cat="data"] .projects,
+    .cat-group[data-cat="llm"] .projects { grid-template-columns: 1fr; }
   }
   .project {
     background: var(--bg-elev);
@@ -518,8 +520,8 @@
       <label for="catSelect" class="filter-bar-label">Filter by category</label>
       <div class="select-wrap">
         <select id="catSelect" class="cat-select">
-          <option value="all">All open source (15)</option>
-          <option value="llm">LLM Training &amp; Fine-tuning (3)</option>
+          <option value="all">All open source (16)</option>
+          <option value="llm">LLM Training &amp; Fine-tuning (4)</option>
           <option value="agentic">Agentic AI &amp; RAG (3)</option>
           <option value="health">Healthcare &amp; Bio AI (3)</option>
           <option value="data">Datasets &amp; Benchmarks (4)</option>
@@ -533,7 +535,7 @@
     <div class="cat-group" data-cat="llm">
       <div class="cat-head">
         <h2>🧠 LLM Training &amp; Fine-tuning</h2>
-        <span class="count">3 projects</span>
+        <span class="count">4 projects</span>
       </div>
       <div class="projects">
 
@@ -582,6 +584,23 @@
             <span class="project-tag">finetune</span>
             <span class="project-tag">lora</span>
             <span class="project-tag">gemma</span>
+          </div>
+        </a>
+
+        <a class="project" href="/tas/" rel="noopener" data-cat="llm" data-search="tas temporal attractor steering parametric temporal conflict ptc inference time intervention activation patching open weight arxiv paper">
+          <div class="project-head">
+            <div class="icon">⤳</div>
+            <h3>TAS</h3>
+          </div>
+          <div class="project-desc">Temporal Attractor Steering: a retrieval-free, training-free inference-time framework that detects, localizes, and steers parametric temporal conflicts in open-weight LMs. Project page with the verified PTC benchmark and code.</div>
+          <div class="project-meta">
+            <span class="lang" style="--lang-color: #c25a1f">Paper</span>
+            <span>Preprint</span>
+          </div>
+          <div class="project-tags">
+            <span class="project-tag">interpretability</span>
+            <span class="project-tag">activation-steering</span>
+            <span class="project-tag">temporal-knowledge</span>
           </div>
         </a>
 

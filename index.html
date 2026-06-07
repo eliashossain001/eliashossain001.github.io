@@ -1286,7 +1286,7 @@
       <div class="stat-row">
         <div class="stat"><span class="num" data-target="890" data-suffix="+" data-metric="cites">0</span><span class="label">Cites</span></div>
         <div class="stat"><span class="num" data-target="12" data-suffix="" data-metric="hindex">0</span><span class="label">h-index</span></div>
-        <div class="stat"><span class="num" data-target="25" data-suffix="+" data-metric="pubs">0</span><span class="label">Pubs</span></div>
+        <div class="stat"><span class="num" data-target="22" data-suffix="" data-metric="pubs">0</span><span class="label">Pubs</span></div>
       </div>
 
       <div class="side-section">
@@ -1776,8 +1776,10 @@
       if (!data) return;
       var map = {
         cites:  { val: data.citations,    suffix: '+' },
-        hindex: { val: data.h_index,      suffix: ''  },
-        pubs:   { val: data.publications, suffix: '+' }
+        hindex: { val: data.h_index,      suffix: ''  }
+        // pubs intentionally omitted: the Scholar count includes preprints and
+        // under-review items, so the "Pubs" stat is a fixed count of actually
+        // published peer-reviewed work (see data-target on the pubs stat).
       };
       stats.forEach(function (el) {
         var entry = map[el.dataset.metric];

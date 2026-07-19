@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TAS · Temporal Attractor Steering for Open-Weight LMs</title>
-<meta name="description" content="TAS is a retrieval-free, training-free inference-time framework that detects, localizes, and steers parametric temporal conflicts in open-weight language models." />
+<meta name="description" content="Parametric Temporal Conflict: open-weight LMs prefer outdated facts even when the newer answer is stored and recoverable. TAS characterizes this as a localized representational preference and resolves it at inference time by steering residual-stream activations — retrieval-free and training-free." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -163,6 +163,20 @@
   .hero h1 .brand-text {
     color: var(--accent-ink);
     font-style: italic;
+  }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 800px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 0.4rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .equal-contrib {
+    font-size: 0.78rem; color: var(--ink-muted);
+    margin: 0 auto 1.6rem;
   }
   .hero .subtitle {
     font-family: 'Fraunces', serif;
@@ -553,13 +567,20 @@
   </div>
   <div class="venue-badge fade-in">Preprint · arXiv 2026</div>
   <h1 class="fade-in"><span class="brand-text">TAS</span>: Temporal Attractor Steering<br>for Open-Weight Language Models</h1>
-  <p class="subtitle fade-in">A retrieval-free, training-free inference-time framework that detects, localizes, and steers parametric temporal conflicts &mdash; resolving "right knowledge, wrong answer" failures by acting directly on residual-stream activations.</p>
+  <p class="authors fade-in">
+    Elias Hossain<sup>1,&lowast;</sup>, Sourav Saha<sup>1,&lowast;</sup>, Tasfia Nuzhat Ornee<sup>1</sup>, Sanjeda Sara Jennifer<sup>1</sup>, Umesh Chandra Biswas<sup>2</sup>, Shubhashis Roy Dipta<sup>3</sup>, Rajib Rana<sup>4</sup>, Niloofar Yousefi<sup>1</sup>
+  </p>
+  <p class="affils fade-in">
+    <sup>1</sup>University of Central Florida &nbsp;&middot;&nbsp; <sup>2</sup>Mississippi State University &nbsp;&middot;&nbsp; <sup>3</sup>University of Maryland, Baltimore County &nbsp;&middot;&nbsp; <sup>4</sup>University of Southern Queensland
+  </p>
+  <p class="equal-contrib fade-in"><sup>&lowast;</sup>Equal contribution</p>
+  <p class="subtitle fade-in">Open-weight LMs often return an outdated fact even when the newer one is stored and recoverable. We characterize this <em>Parametric Temporal Conflict</em> as a localized representational preference &mdash; not missing knowledge &mdash; and resolve it at inference time by steering residual-stream activations, retrieval-free and training-free.</p>
   <div class="cta-row fade-in">
     <a href="https://github.com/eliashossain001/temporal-attractor-steering" class="btn btn-primary" target="_blank">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> Code
     </a>
     <a href="https://huggingface.co/datasets/EliasHossain/ptc-benchmark" class="btn btn-outline" target="_blank">🤗 Dataset</a>
-    <a href="#citation" class="btn btn-outline">📄 Paper</a>
+    <a href="https://arxiv.org/abs/2606.20959" class="btn btn-outline" target="_blank">📄 arXiv</a>
   </div>
   <div class="stats-bar fade-in">
     <div class="stat"><div class="stat-value">29&ndash;57%</div><div class="stat-label">PTC Recovery</div></div>
@@ -786,20 +807,25 @@ huggingface-cli download \
   <h2 class="section-title fade-in">Cite TAS</h2>
   <p class="section-desc fade-in">If you find TAS or the PTC benchmark useful in your research, please consider citing the paper.</p>
   <div class="citation-block fade-in" id="bibtex">
-<button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@unpublished{hossain2026tas,
-  title  = {Right Knowledge, Wrong Answer: Test-Time Steering for Temporal
-            Fact Conflicts in Open-Weight Language Models},
-  author = {Hossain, Elias and Saha, Sourav and Biswas, Umesh Chandra
-            and Jennifer, Sanjeda Sara and Yousefi, Niloofar},
-  year   = {2026},
-  note   = {Preprint. Code: \url{https://github.com/eliashossain001/temporal-attractor-steering}
-            Dataset: \url{https://huggingface.co/datasets/EliasHossain/ptc-benchmark}},
+<button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@article{hossain2026tas,
+  title         = {Right Knowledge, Wrong Answer: Characterizing Parametric
+                   Temporal Conflict in Open-Weight Language Models},
+  author        = {Hossain, Elias and Saha, Sourav and Ornee, Tasfia Nuzhat
+                   and Jennifer, Sanjeda Sara and Biswas, Umesh Chandra
+                   and Dipta, Shubhashis Roy and Rana, Rajib and Yousefi, Niloofar},
+  year          = {2026},
+  journal       = {arXiv preprint arXiv:2606.20959},
+  eprint        = {2606.20959},
+  archivePrefix = {arXiv},
+  note          = {Code: \url{https://github.com/eliashossain001/temporal-attractor-steering}
+                   Dataset: \url{https://huggingface.co/datasets/EliasHossain/ptc-benchmark}},
 }</div>
 </section>
 
 <footer class="site-footer">
   <p>
     <strong>TAS</strong> &mdash; Temporal Attractor Steering for Open-Weight LMs &nbsp;·&nbsp;
+    <a href="https://arxiv.org/abs/2606.20959" target="_blank">arXiv</a> ·
     <a href="https://github.com/eliashossain001/temporal-attractor-steering" target="_blank">GitHub</a> ·
     <a href="https://huggingface.co/datasets/EliasHossain/ptc-benchmark" target="_blank">HuggingFace</a>
   </p>

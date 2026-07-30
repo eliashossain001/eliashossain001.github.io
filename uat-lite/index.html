@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UAT-LITE · Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</title>
+<meta name="description" content="Post-hoc calibration rescales output probabilities but leaves internal computation unchanged. UAT-LITE estimates token-level epistemic uncertainty with Monte Carlo dropout and uses it to modulate self-attention at inference time, with no weight updates and no change to the training objective." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #6d4c9f;
+    --accent-soft: #efe8f7;
+    --accent-ink: #513a78;
+    --accent-glow: rgba(109, 76, 159, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #121114;
+    --bg-elev: #1a181d;
+    --bg-code: #0c0b0d;
+    --ink: #eceaef;
+    --ink-soft: #b7b4bd;
+    --ink-muted: #82808a;
+    --line: #29262e;
+    --accent: #b79ce0;
+    --accent-soft: #251b33;
+    --accent-ink: #cdb8ec;
+    --accent-glow: rgba(183, 156, 224, 0.25);
+    --pill-bg: #211e26;
+    --pill-ink: #c3c0c9;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .uat-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 860px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 800px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 800px; margin: 0 auto 1.6rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .code-pending {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.4rem;
+  }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.2rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 780px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* EQUATION */
+  .equation {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    margin: 0 0 2.4rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.02rem;
+    color: var(--accent-ink);
+    overflow-x: auto;
+  }
+  .equation .eq-note {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 0.7rem;
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: #ffffff;
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .method-figure { background: #f2f0ea; }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* TABLES */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  table.results tr.baseline td { color: var(--ink-soft); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(109, 76, 159, 0.24);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .equation { font-size: 0.88rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="../oss.html">Open Source</a>
+      <a href="#problem">Problem</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="uat-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- attention ring -->
+      <circle cx="0" cy="0" r="1.45" fill="none" stroke="#6d4c9f" stroke-width="0.10"/>
+      <!-- query token, centre -->
+      <circle cx="0" cy="0" r="0.26" fill="#6d4c9f" stroke="#513a78" stroke-width="0.05"/>
+      <!-- three key tokens with descending certainty -->
+      <circle cx="-0.98" cy="-0.62" r="0.22" fill="#513a78" stroke="#513a78" stroke-width="0.04"/>
+      <circle cx="1.00" cy="-0.55" r="0.22" fill="#a98fd0" stroke="#513a78" stroke-width="0.04"/>
+      <circle cx="0.10" cy="1.05" r="0.22" fill="#dcd2ec" stroke="#513a78" stroke-width="0.04"/>
+      <!-- attention edges: thickness scaled by exp(-lambda * uncertainty) -->
+      <line x1="-0.24" y1="-0.11" x2="-0.78" y2="-0.50" stroke="#513a78" stroke-width="0.15" stroke-linecap="round"/>
+      <line x1="0.24" y1="-0.10" x2="0.80" y2="-0.45" stroke="#a98fd0" stroke-width="0.09" stroke-linecap="round"/>
+      <line x1="0.04" y1="0.26" x2="0.09" y2="0.82" stroke="#c9bade" stroke-width="0.04" stroke-dasharray="0.10 0.09" stroke-linecap="round"/>
+      <!-- MC sampling marker -->
+      <circle cx="-1.05" cy="0.72" r="0.30" fill="#efe8f7" stroke="#513a78" stroke-width="0.07"/>
+      <text x="-1.05" y="0.86" text-anchor="middle" font-family="Fraunces, serif" font-size="0.36" font-weight="700" fill="#513a78">U</text>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">Preprint · arXiv 2026</div>
+  <h1 class="fade-in"><span class="brand-text">UAT-LITE</span>: Inference-Time Uncertainty-Aware<br>Attention for Pretrained Transformers</h1>
+  <p class="authors fade-in">
+    Elias Hossain<sup>1</sup>, Shubhashis Roy Dipta<sup>2</sup>, Subash Neupane<sup>3</sup>, Rajib Rana<sup>4</sup>, Ravid Shwartz-Ziv<sup>5</sup>, Ivan Garibay<sup>1</sup>, Niloofar Yousefi<sup>1</sup>
+  </p>
+  <p class="affils fade-in">
+    <sup>1</sup>University of Central Florida &nbsp;&middot;&nbsp; <sup>2</sup>University of Maryland, Baltimore County &nbsp;&middot;&nbsp; <sup>3</sup>Meharry Medical College &nbsp;&middot;&nbsp; <sup>4</sup>University of Southern Queensland &nbsp;&middot;&nbsp; <sup>5</sup>New York University
+  </p>
+  <p class="subtitle fade-in">Post-hoc calibration adjusts output probabilities but leaves internal computation untouched; ensembles and Bayesian methods fix that at real training or storage cost. UAT-LITE injects epistemic uncertainty <em>into attention itself</em> at inference time &mdash; no weight updates, no change to the training objective.</p>
+  <div class="cta-row fade-in">
+    <a href="https://arxiv.org/abs/2602.02952" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> arXiv
+    </a>
+    <a href="https://arxiv.org/pdf/2602.02952" class="btn btn-outline" target="_blank" rel="noopener">📄 PDF</a>
+    <a href="assets/uat_lite_architecture.png" class="btn btn-outline" target="_blank" rel="noopener">🖼 Figure</a>
+  </div>
+  <p class="code-pending fade-in">Code release pending</p>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">0</div><div class="stat-label">Weights Updated</div></div>
+    <div class="stat"><div class="stat-value">M=10</div><div class="stat-label">MC Passes</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Datasets</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Seeds</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section id="problem" class="content">
+  <div class="section-label fade-in">The Problem</div>
+  <h2 class="section-title fade-in">Confident, and wrong</h2>
+  <p class="section-desc fade-in">Neural NLP models are routinely miscalibrated and overconfident, assigning high confidence to incorrect predictions and expressing no uncertainty at all during internal evidence aggregation. That combination undermines selective prediction and makes high-stakes deployment hard to justify. The existing remedies each give something up.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">≈</div>
+      <h3>Post-hoc calibration is skin-deep</h3>
+      <p>Temperature scaling rescales output probabilities globally and does it well, but the internal computation that produced the logits is unchanged. There is no per-token signal and no uncertainty-aware routing &mdash; only a sharper or flatter final distribution.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">$</div>
+      <h3>Bayesian and ensemble methods cost</h3>
+      <p>Deep ensembles, variational inference, and SNGP improve uncertainty but demand substantial extra training or storage. For an already fine-tuned production checkpoint, retraining to get calibrated confidence is often not on the table.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">?</div>
+      <h3>Uncertainty is not localized</h3>
+      <p>A single scalar confidence per prediction says nothing about <em>which</em> tokens were unstable, or where in depth the uncertainty accumulated. That is exactly the diagnostic a practitioner needs when a model fails.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">How UAT-LITE works</h2>
+  <p class="section-desc fade-in">UAT-LITE estimates token-level epistemic uncertainty from stochastic forward passes with Monte Carlo dropout at the embedding layer, then uses it to modulate self-attention during contextualization. Tokens the model is unsure about are attenuated as sources of evidence rather than trusted equally. Nothing about the pretrained weights or the training objective changes.</p>
+  <div class="equation fade-in">
+    &alpha;&prime;<sub>ij</sub> = &alpha;<sub>ij</sub> · exp( &minus;&lambda; · U(x<sub>j</sub>) )
+    <span class="eq-note">Attention from token <em>i</em> to token <em>j</em> is down-weighted in proportion to the epistemic uncertainty of the key token <em>j</em>, with &lambda; controlling modulation strength.</span>
+  </div>
+  <div class="method-figure fade-in"><img src="assets/uat_lite_architecture.png" alt="UAT-LITE architecture: Bayesian embedding calibration with Monte Carlo sampling produces token-level epistemic uncertainty, which modulates attention inside a pretrained transformer encoder; layer-wise variance decomposition and a confidence-guided decision module follow"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> Overview of UAT-LITE. Token-level epistemic uncertainty is estimated by Monte Carlo sampling at the embedding layer and used to modulate self-attention in a pretrained transformer encoder. A layer-wise variance decomposition attributes predictive uncertainty across depth, and a confidence-guided decision module converts sequence-level uncertainty into a predict-or-abstain choice.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">1</div>
+      <h3>Estimate</h3>
+      <p>MC dropout at the embedding layer gives <em>M</em> stochastic representations per token. Token-level epistemic uncertainty is the variance across those samples, computed without touching the pretrained parameters.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">2</div>
+      <h3>Modulate</h3>
+      <p>Uncertainty scales attention multiplicatively during contextualization, so unstable tokens contribute less evidence. A Q/K/V ablation isolates where the modulation should be applied.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">3</div>
+      <h3>Decompose</h3>
+      <p>A layer-wise variance decomposition diagnoses how predictive uncertainty accumulates across transformer depth. It is purely diagnostic and does not alter the forward pass.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">4</div>
+      <h3>Decide</h3>
+      <p>Aggregated stochastic logits drive a confidence-guided decision: predict when confident, abstain when not. Temperature scaling can be applied to the MC-mean logits when calibrated probabilities are required.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Calibration without retraining</h2>
+  <p class="section-desc fade-in">Evaluated on SQuAD 2.0 answerability, MNLI, and SST-2 over five seeds with a fine-tuned BERT-base backbone, plus MedQA and PubMedQA as a clinical domain-transfer stress test. Expected Calibration Error uses 15 fixed-width confidence bins.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Method</th><th>SQuAD</th><th>MNLI</th><th>SST-2</th><th>Avg ECE ↓</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>BERT-base</td><td class="num">0.1868</td><td class="num">0.0816</td><td class="num">0.0531</td><td class="num">0.1072</td></tr>
+        <tr class="baseline"><td>MC Dropout (uniform)</td><td class="num">0.173</td><td class="num">0.090</td><td class="num">0.039</td><td class="num">0.101</td></tr>
+        <tr class="baseline"><td>Deep Ensemble (5)</td><td class="num">0.168</td><td class="num">0.060</td><td class="num">0.037</td><td class="num">0.089</td></tr>
+        <tr class="baseline"><td>Global MC Dropout</td><td class="num">0.1600</td><td class="num">0.0565</td><td class="num">0.0501</td><td class="num">0.0889</td></tr>
+        <tr><td>UAT-LITE</td><td class="num">0.1647</td><td class="num">0.0638</td><td class="num">0.0608</td><td class="num">0.0964</td></tr>
+        <tr class="baseline"><td>Base + TS</td><td class="num">0.0788</td><td class="num">0.0148</td><td class="num">0.0163</td><td class="num">0.0366</td></tr>
+        <tr class="highlight"><td>UAT-LITE + TS</td><td class="num">0.0760</td><td class="num">0.0201</td><td class="num">0.0191</td><td class="num">0.0384</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> In-domain ECE (lower is better), mean over five seeds, <em>M</em>&nbsp;=&nbsp;10. UAT-LITE improves on the fine-tuned baseline (0.1072&nbsp;&rarr;&nbsp;0.0964) while preserving accuracy, and UAT-LITE&nbsp;+&nbsp;TS reaches the best SQuAD ECE of any method here. Temperature scaling remains the strongest single lever for <em>marginal</em> ECE, and the paper says so plainly &mdash; UAT-LITE's contribution is uncertainty-aware internal routing and token-level diagnostics, which TS cannot provide at all.</p>
+  </div>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Method</th><th>ID ECE ↓</th><th>OOD ECE ↓</th><th>Avg ECE ↓</th><th>ID Acc ↑</th><th>OOD Acc ↑</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>Base</td><td class="num">0.0809</td><td class="num">0.0555</td><td class="num">0.0682</td><td class="num">0.7162</td><td class="num">0.7459</td></tr>
+        <tr class="baseline"><td>Base + TS</td><td class="num">0.0147</td><td class="num">0.0208</td><td class="num">0.0177</td><td class="num">0.7162</td><td class="num">0.7459</td></tr>
+        <tr class="baseline"><td>Global MC Dropout</td><td class="num">0.0586</td><td class="num">0.0334</td><td class="num">0.0460</td><td class="num">0.7090</td><td class="num">0.7398</td></tr>
+        <tr><td>UAT-LITE</td><td class="num">0.0650</td><td class="num">0.0402</td><td class="num">0.0526</td><td class="num">0.7099</td><td class="num">0.7395</td></tr>
+        <tr class="highlight"><td>UAT-LITE + TS</td><td class="num">0.0163</td><td class="num">0.0199</td><td class="num">0.0181</td><td class="num">0.7105</td><td class="num">0.7394</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 2.</strong> Distribution-shift robustness on MNLI (matched&nbsp;&rarr;&nbsp;mismatched), mean over five seeds. UAT-LITE cuts average ECE from 0.0682 to 0.0526, roughly a 23% relative reduction, at accuracy within 0.6 points of the base model. UAT-LITE&nbsp;+&nbsp;TS gives the smallest ID-to-OOD calibration gap of any configuration (0.0035), which is the property that matters when the deployment distribution is not the training one.</p>
+  </div>
+
+  <div class="feature-grid fade-in" style="margin-top: 2rem;">
+    <div class="feature-card">
+      <div class="feature-icon">Q</div>
+      <h3>Where to modulate</h3>
+      <p>A Q/K/V ablation at <em>&lambda;</em>&nbsp;=&nbsp;0.5 finds K-only lowest in ECE on SST-2 and MNLI but sharply damaging to SQuAD accuracy; Q-only gives the most consistent trade-off across tasks; V-only best preserves accuracy; and modulating all three can over-regularize.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⇕</div>
+      <h3>Depth-wise attribution</h3>
+      <p>The layer-wise variance decomposition separates aleatoric from epistemic contributions across depth, identifying which layers drive predictive uncertainty. This is a diagnostic no output-level calibration method can produce.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚕</div>
+      <h3>Clinical transfer</h3>
+      <p>MedQA and PubMedQA serve as a domain-transfer stress test beyond the general NLP suites, reported with ECE and accuracy side by side rather than calibration alone.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITATIONS -->
+<section id="limitations" class="content">
+  <div class="section-label fade-in">Limitations</div>
+  <h2 class="section-title fade-in">What this does not claim</h2>
+  <p class="section-desc fade-in">The paper is deliberate about not overselling the method against a very strong and very cheap baseline.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">T</div>
+      <h3>Temperature scaling wins on marginal ECE</h3>
+      <p>For the single goal of minimizing marginal calibration error in-domain, temperature scaling is stronger and far cheaper than modulating attention. UAT-LITE is not positioned as a replacement; the most reliable configuration in these evaluations is UAT-LITE&nbsp;+&nbsp;TS, which combines them.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">λ</div>
+      <h3>Sensitivity is modest but real</h3>
+      <p>ECE varies within a narrow band (range under 0.007) across the settings swept, with negligible accuracy change, and the Q/K/V choice matters more than it might appear &mdash; K-only trades SQuAD accuracy for calibration gains elsewhere.</p>
+    </div>
+  </div>
+  <div class="license-notice fade-in">
+    <div class="license-icon">⚠</div>
+    <div class="license-text">
+      <strong>Reading the tables honestly.</strong> SNGP records a lower in-domain average ECE than UAT-LITE, and temperature scaling is close behind at a fraction of the cost. The case for UAT-LITE is not that it wins the ECE column outright: it is that it delivers uncertainty-aware internal routing, token-level signals, and depth-wise attribution on a frozen checkpoint, none of which output-level rescaling can offer, and that it composes with TS rather than competing with it.
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite UAT-LITE</h2>
+  <p class="section-desc fade-in">If you find UAT-LITE or the layer-wise variance decomposition useful in your research, please consider citing the paper.</p>
+  <div class="citation-block fade-in" id="bibtex"><button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@article{hossain2026uatlite,
+  title         = {UAT-LITE: Inference-Time Uncertainty-Aware Attention
+                   for Pretrained Transformers},
+  author        = {Hossain, Elias and Dipta, Shubhashis Roy
+                   and Neupane, Subash and Rana, Rajib
+                   and Shwartz-Ziv, Ravid and Garibay, Ivan
+                   and Yousefi, Niloofar},
+  year          = {2026},
+  journal       = {arXiv preprint arXiv:2602.02952},
+  eprint        = {2602.02952},
+  archivePrefix = {arXiv},
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>UAT-LITE</strong> &mdash; Inference-time uncertainty-aware attention &nbsp;·&nbsp;
+    <a href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">arXiv</a> ·
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../channelguard/">ChannelGuard</a> ·
+    <a href="../nexus/">NEXUS</a> ·
+    <a href="../tas/">TAS</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

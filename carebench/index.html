@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CareBench · When Correct Diagnoses Come from Unsafe Reasoning</title>
+<meta name="description" content="A process-aware evaluation benchmark for clinical LLM agents. Outcome-only leaderboards hide lucky correctness: across 1,000 trajectories from five frontier models, nearly four in five correct diagnoses were reached with no safety check invoked." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #3f51b5;
+    --accent-soft: #e8eaf6;
+    --accent-ink: #2c3a8c;
+    --accent-glow: rgba(63, 81, 181, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111218;
+    --bg-elev: #191b23;
+    --bg-code: #0b0c10;
+    --ink: #eaebf0;
+    --ink-soft: #b4b7c2;
+    --ink-muted: #80838f;
+    --line: #262932;
+    --accent: #9aa6f0;
+    --accent-soft: #1a1f3d;
+    --accent-ink: #c3cbf7;
+    --accent-glow: rgba(154, 166, 240, 0.25);
+    --pill-bg: #1e2029;
+    --pill-ink: #c2c4cd;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500; letter-spacing: -0.01em; line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    background: var(--pill-bg);
+    color: var(--pill-ink);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none; background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero { max-width: 980px; margin: 0 auto; padding: 76px 28px 56px; text-align: center; }
+  .cb-logo {
+    width: 132px; height: 132px; margin: 0 auto 26px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block; padding: 5px 14px;
+    background: var(--accent-soft); border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600; color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem; font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+    font-weight: 600; line-height: 1.08; letter-spacing: -0.02em;
+    max-width: 860px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text { color: var(--accent-ink); font-style: italic; }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 820px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 780px; margin: 0 auto 1.5rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 2.1rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg-elev); box-shadow: 0 4px 16px var(--accent-glow); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); color: var(--bg-elev); }
+  .btn-outline { background: var(--bg-elev); color: var(--ink); border: 1px solid var(--line); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .btn svg { width: 16px; height: 16px; }
+  .stats-bar { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; padding: 1.2rem 0 0; }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif; font-size: 1.85rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em; line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--ink-muted); text-transform: uppercase;
+    letter-spacing: 0.1em; margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content { max-width: 1080px; margin: 0 auto; padding: 68px 28px; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600; color: var(--accent-ink);
+    text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before { content: ''; width: 22px; height: 2px; background: var(--accent); border-radius: 2px; }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em; margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc { font-size: 1.04rem; color: var(--ink-soft); max-width: 780px; margin-bottom: 2.4rem; line-height: 1.65; }
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+
+  /* PULL QUOTE */
+  .pull {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    border-radius: 0 12px 12px 0;
+    padding: 1.3rem 1.6rem;
+    margin: 0 0 2.4rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem; font-style: italic;
+    color: var(--accent-ink); line-height: 1.55;
+  }
+  .pull strong { font-weight: 700; font-style: normal; }
+
+  /* FEATURE CARDS */
+  .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .feature-card {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 1.6rem;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px; display: grid; place-items: center;
+    background: var(--accent-soft); color: var(--accent-ink);
+    border-radius: 10px; margin-bottom: 0.9rem;
+    font-size: 1.15rem; font-family: 'Fraunces', serif; font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600; margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif; letter-spacing: -0.005em;
+  }
+  .feature-card p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+
+  /* 2x2 PARTITION */
+  .quad {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    max-width: 640px; margin-bottom: 1rem;
+  }
+  @media (max-width: 560px) { .quad { grid-template-columns: 1fr; } }
+  .quad-cell {
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 1rem 1.1rem; background: var(--bg-elev);
+  }
+  .quad-cell.good { border-color: var(--accent); background: var(--accent-soft); }
+  .quad-cell.bad { border-color: var(--warn-border); background: var(--warn-bg); }
+  .quad-name {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 5px; font-weight: 600;
+  }
+  .quad-cell.good .quad-name { color: var(--accent-ink); }
+  .quad-cell.bad .quad-name { color: var(--warn-ink); }
+  .quad-cell:not(.good):not(.bad) .quad-name { color: var(--ink-muted); }
+  .quad-desc { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5; }
+  .quad-cell.bad .quad-desc { color: var(--warn-ink); }
+
+  /* TABLES */
+  .result-table-wrap {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 1.4rem;
+    margin-bottom: 1rem; overflow-x: auto; box-shadow: var(--shadow);
+  }
+  table.results { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  table.results th, table.results td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-muted); border-bottom: 1px solid var(--accent);
+  }
+  table.results tr:last-child td { border-bottom: none; }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results td.metric { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent-ink); font-size: 0.84rem; }
+  table.results tr.highlight td { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  table.results tr.flag td { background: var(--warn-bg); color: var(--warn-ink); font-weight: 600; }
+  table.results tr.flag td:first-child { border-left: 3px solid var(--warn-border); }
+  .table-caption {
+    font-family: 'Fraunces', serif; font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem; line-height: 1.5;
+  }
+
+  /* CODE */
+  .code-block {
+    background: var(--bg-code); border: 1px solid var(--line);
+    border-radius: 12px; overflow: hidden; margin-bottom: 1.4rem;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px; background: rgba(63, 81, 181, 0.12);
+    border-bottom: 1px solid var(--line);
+  }
+  .code-header .code-title { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; font-weight: 600; color: #9aa6f0; }
+  .code-header .code-lang {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+    color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .code-block pre {
+    padding: 18px 20px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7; color: #d4d4d4;
+  }
+  .cm { color: #7a8a78; } .kw { color: #9aa6f0; } .st { color: #a5d6ff; } .hl { color: #ffc28a; font-weight: 600; }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code); border: 1px solid var(--line);
+    border-radius: 12px; padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75; color: #d4d4d4;
+    white-space: pre-wrap; overflow-x: auto; position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px; padding: 5px 12px;
+    background: rgba(63, 81, 181, 0.24); border: 1px solid var(--accent);
+    border-radius: 8px; color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    cursor: pointer; transition: all 0.18s;
+  }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* NOTICE */
+  .license-notice {
+    margin-top: 1.6rem; padding: 1.1rem 1.4rem;
+    background: var(--warn-bg); border: 1px solid var(--warn-border);
+    border-radius: 12px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text { font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6; }
+  .license-notice .license-text strong { font-weight: 700; }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center; padding: 50px 28px 70px;
+    color: var(--ink-muted); font-size: 0.86rem;
+    border-top: 1px solid var(--line); margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.45rem; }
+    section.content { padding: 50px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="#problem">Problem</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#results">Results</a>
+      <a href="#quickstart">Quick Start</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="cb-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- the trajectory: a path to a correct answer -->
+      <circle cx="0" cy="0" r="1.44" fill="none" stroke="#3f51b5" stroke-width="0.07" stroke-dasharray="0.06 0.11"/>
+      <!-- the safe pathway: gathers evidence, then commits -->
+      <path d="M -1.15 0.80 L -0.45 0.20 L 0.25 0.55 L 1.05 -0.35"
+            fill="none" stroke="#3f51b5" stroke-width="0.115" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="-1.15" cy="0.80"  r="0.135" fill="#3f51b5"/>
+      <circle cx="-0.45" cy="0.20"  r="0.135" fill="#3f51b5"/>
+      <circle cx="0.25"  cy="0.55"  r="0.135" fill="#3f51b5"/>
+      <!-- the lucky shortcut: commits early, skips the checks -->
+      <path d="M -1.15 0.80 C -0.30 -0.30, 0.35 -1.00, 1.05 -0.35"
+            fill="none" stroke="#e85a4f" stroke-width="0.105" stroke-linecap="round" stroke-dasharray="0.16 0.13"/>
+      <!-- both arrive at the same correct outcome -->
+      <circle cx="1.05" cy="-0.35" r="0.30" fill="#e8eaf6" stroke="#2c3a8c" stroke-width="0.08"/>
+      <path d="M 0.92 -0.35 L 1.02 -0.24 L 1.19 -0.47"
+            fill="none" stroke="#2c3a8c" stroke-width="0.10" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">Benchmark · Open Source · 2026</div>
+  <h1 class="fade-in"><span class="brand-text">CareBench</span>: When Correct Diagnoses<br>Come from Unsafe Reasoning</h1>
+  <p class="authors fade-in">
+    Elias Hossain<sup>1</sup>, Tasfia Nuzhat Ornee<sup>1</sup>, Shubhashis Roy Dipta<sup>2</sup>, Andrea Rivera-Sepulveda<sup>3</sup>, Pegah Khosravi<sup>1</sup>, Niloofar Yousefi<sup>1</sup>
+  </p>
+  <p class="affils fade-in">
+    <sup>1</sup>University of Central Florida &nbsp;&middot;&nbsp; <sup>2</sup>University of Maryland, Baltimore County &nbsp;&middot;&nbsp; <sup>3</sup>Nemours Children&rsquo;s Health
+  </p>
+  <p class="subtitle fade-in">Medical-agent leaderboards score one thing: did the agent reach the right diagnosis. That hides a measurable failure mode &mdash; an agent can be right by way of a process no clinician would endorse. CareBench measures the process, not just the answer.</p>
+  <div class="cta-row fade-in">
+    <a href="https://github.com/eliashossain001/carebench" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> Code
+    </a>
+    <a href="https://huggingface.co/datasets/EliasHossain/carebench" class="btn btn-outline" target="_blank" rel="noopener">🤗 Dataset</a>
+  </div>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">1,000</div><div class="stat-label">Trajectories</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Frontier Models</div></div>
+    <div class="stat"><div class="stat-value">50</div><div class="stat-label">Clinical Cases</div></div>
+    <div class="stat"><div class="stat-value">0.788</div><div class="stat-label">Pooled B-LCR</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section id="problem" class="content">
+  <div class="section-label fade-in">The Problem</div>
+  <h2 class="section-title fade-in">Lucky correctness</h2>
+  <p class="pull fade-in">Across 1,000 trajectories from five frontier models, nearly four in five correct diagnoses were reached <strong>without any invoked safety check</strong> (pooled B-LCR = 0.788), replicating an earlier preliminary study at 0.795.</p>
+  <p class="section-desc fade-in">An agent that commits to a diagnosis before gathering the necessary evidence, or that skips a red-flag check, can still land on the right answer. On an outcome-only leaderboard that trajectory is indistinguishable from careful clinical reasoning. We call the gap <strong>lucky correctness</strong>, and it is invisible to any metric that reads only the final answer.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">◔</div>
+      <h3>Outcome hides process</h3>
+      <p>Diagnostic accuracy is one bit per case. It cannot distinguish an agent that ordered the right workup from one that guessed early and got lucky, even though only one of those is safe to deploy.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⇅</div>
+      <h3>Rankings invert</h3>
+      <p>The model that ranks first on diagnostic accuracy in our evaluation ranks near the bottom on process safety. Choosing a model by outcome alone can select the least safe reasoner in the pool.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⌾</div>
+      <h3>Policy stays hidden</h3>
+      <p>Each case ships a JSON clinical policy &mdash; necessary evidence, red flags, accepted diagnoses and treatments, closure threshold &mdash; visible only to the scoring layer, never to the agent or the patient simulator.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METRICS -->
+<section id="metrics" class="content">
+  <div class="section-label fade-in">What It Measures</div>
+  <h2 class="section-title fade-in">Outcome and process, measured separately</h2>
+  <p class="section-desc fade-in">Every trajectory is scored on both what the agent concluded and how it got there. CareBench ships as a third clinical domain of the <a href="https://github.com/sierra-research/tau-bench" target="_blank" rel="noopener">tau-bench</a> tool-agent-user framework, alongside <code>retail</code> and <code>airline</code>, reusing its agent loop, tool-calling interface, user simulator, and <code>pass^k</code> pipeline.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead><tr><th>Metric</th><th>What it captures</th></tr></thead>
+      <tbody>
+        <tr><td class="metric">DxAcc</td><td>Diagnostic accuracy, via a conservative layered diagnosis matcher</td></tr>
+        <tr><td class="metric">ENR</td><td>Evidence Necessity Recall: fraction of case-required evidence actually gathered</td></tr>
+        <tr><td class="metric">PE</td><td>Pathway Efficiency: fraction of gathered evidence that was necessary</td></tr>
+        <tr><td class="metric">PCR</td><td>Premature Closure Rate: committed before sufficient evidence</td></tr>
+        <tr><td class="metric">RFCR</td><td>Red-Flag Capture Rate: clinically relevant red flags acknowledged</td></tr>
+        <tr class="highlight"><td class="metric">NOSAFETY</td><td>Reference-free action-log signal: detects commitment without a required safety check</td></tr>
+        <tr class="highlight"><td class="metric">LCR</td><td>Lucky Correctness Rate: correct diagnosis reached through an unsafe process</td></tr>
+        <tr class="highlight"><td class="metric">B-LCR</td><td>Behavioral variant, policy-independent, read only from the action log</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption">The two primary trajectory-level signals are <strong>ENR</strong> (evidence coverage) and <strong>NOSAFETY</strong> (the reference-free action-log signal); the remaining pathway metrics are reported as supporting diagnostics. <strong>B-LCR</strong> is the correctness-conditioned summary of NOSAFETY, and it is the headline number precisely because it is policy-independent: computed from what the agent <em>did</em>, it cannot be gamed by disagreement over what a case policy should have required.</p>
+  </div>
+
+  <h3 style="font-family:'Inter',sans-serif;font-size:1.05rem;font-weight:600;margin:2.2rem 0 0.9rem;">The outcome-process partition</h3>
+  <div class="quad fade-in">
+    <div class="quad-cell good">
+      <div class="quad-name">Safe · correct</div>
+      <div class="quad-desc">Right diagnosis, defensible pathway. The only quadrant an outcome-only metric and a clinician would both accept.</div>
+    </div>
+    <div class="quad-cell bad">
+      <div class="quad-name">Lucky · correct</div>
+      <div class="quad-desc">Right diagnosis, unsafe pathway. Scored as a win by every outcome-only leaderboard.</div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-name">Safe · wrong</div>
+      <div class="quad-desc">Wrong diagnosis, sound process. Penalised identically to reckless failure by outcome-only scoring.</div>
+    </div>
+    <div class="quad-cell">
+      <div class="quad-name">Unsafe · wrong</div>
+      <div class="quad-desc">Wrong on both counts.</div>
+    </div>
+  </div>
+  <p class="section-desc fade-in" style="margin-bottom:0;">A composite <code>pass^k</code> requires both a correct outcome <em>and</em> a safe process, so a model cannot buy the score with lucky correctness.</p>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Outcome-only and process-aware selection disagree</h2>
+  <p class="section-desc fade-in">Five frontier models, 200 trajectories each. Read the first two numeric columns together: the ordering by diagnostic accuracy is close to the reverse of the ordering by process safety.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Model</th><th>DxAcc ↑</th><th>B-LCR ↓</th><th>PE ↑</th><th>ENR ↑</th><th>Safe-correct</th><th>Lucky-correct</th></tr>
+      </thead>
+      <tbody>
+        <tr class="flag"><td>gpt-4o-mini</td><td class="num">0.120</td><td class="num">1.000</td><td class="num">0.725</td><td class="num">0.225</td><td class="num">0</td><td class="num">24</td></tr>
+        <tr><td>llama-70b</td><td class="num">0.075</td><td class="num">0.733</td><td class="num">0.812</td><td class="num">0.238</td><td class="num">1</td><td class="num">14</td></tr>
+        <tr class="highlight"><td>deepseek-chat</td><td class="num">0.065</td><td class="num">0.385</td><td class="num">0.850</td><td class="num">0.263</td><td class="num">3</td><td class="num">10</td></tr>
+        <tr><td>gpt-4o</td><td class="num">0.055</td><td class="num">0.818</td><td class="num">0.855</td><td class="num">0.269</td><td class="num">2</td><td class="num">9</td></tr>
+        <tr><td>claude-sonnet</td><td class="num">0.015</td><td class="num">1.000</td><td class="num">0.455</td><td class="num">0.141</td><td class="num">0</td><td class="num">3</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Outcome-only vs process-aware model selection.</strong> <em>n</em> = 200 trajectories per model. <span style="color:var(--warn-ink);font-weight:600;">gpt-4o-mini</span> ranks <strong>first</strong> on diagnostic accuracy while scoring B-LCR = 1.000 &mdash; every one of its 24 correct diagnoses came from an unsafe pathway, and it produced zero safe-correct trajectories. <span style="color:var(--accent-ink);font-weight:600;">deepseek-chat</span> ranks third on accuracy but <strong>first</strong> on process safety, with the most safe-correct trajectories in the pool. Pick by accuracy and you ship the least safe reasoner.</p>
+  </div>
+
+  <div class="feature-grid fade-in" style="margin-top:2rem;">
+    <div class="feature-card">
+      <div class="feature-icon">↺</div>
+      <h3>Replicated</h3>
+      <p>The pooled B-LCR of 0.788 reproduces an earlier preliminary study at 0.795, on independently generated trajectories. The effect is not an artifact of one run or one scoring pass.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⊟</div>
+      <h3>Evidence is thin everywhere</h3>
+      <p>ENR sits between 0.141 and 0.269 across all five models: even the best of them gathers barely a quarter of the evidence its cases require before concluding.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">↻</div>
+      <h3>Regenerable offline</h3>
+      <p>Every table and figure rebuilds from saved trajectories with no further model calls, so the analysis is reproducible without paying for inference twice.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- QUICKSTART -->
+<section id="quickstart" class="content">
+  <div class="section-label fade-in">Quick Start</div>
+  <h2 class="section-title fade-in">Run the benchmark</h2>
+  <p class="section-desc fade-in">The case pool is 50 clinical cases: 19 translated from <a href="https://arxiv.org/abs/2412.01605" target="_blank" rel="noopener">MedChain</a> and 31 from <a href="https://arxiv.org/abs/2202.13876" target="_blank" rel="noopener">PMC-Patients</a>. The harness routes through LiteLLM, so any provider it supports can be evaluated.</p>
+  <div class="code-block fade-in">
+    <div class="code-header"><span class="code-title">install.sh</span><span class="code-lang">Bash</span></div>
+<pre><span class="cm"># Clone and install</span>
+git clone https://github.com/eliashossain001/carebench.git
+<span class="kw">cd</span> carebench
+pip install -e .
+
+<span class="cm"># Pull the case pool and trajectories</span>
+huggingface-cli download <span class="hl">EliasHossain/carebench</span> \
+  --repo-type dataset \
+  --local-dir data/carebench/</pre>
+  </div>
+  <div class="code-block fade-in">
+    <div class="code-header"><span class="code-title">run.sh</span><span class="code-lang">Bash</span></div>
+<pre><span class="cm"># Evaluate an agent on the clinical domain</span>
+python run.py \
+  --env <span class="hl">carebench</span> \
+  --model gpt-4o \
+  --model-provider openai \
+  --user-model gpt-4o-mini \
+  --user-model-provider openai \
+  --agent-strategy tool-calling \
+  --num-trials <span class="st">4</span> \
+  --max-concurrency <span class="st">8</span></pre>
+  </div>
+  <p class="section-desc fade-in" style="margin-bottom:0;"><code>--num-trials</code> sets <em>k</em> for <code>pass^k</code>; <code>--agent-strategy</code> is one of <code>tool-calling</code>, <code>act</code>, <code>react</code>, or <code>few-shot</code>.</p>
+  <div class="license-notice fade-in">
+    <div class="license-icon">⚠</div>
+    <div class="license-text">
+      <strong>Research use only.</strong> CareBench is an evaluation benchmark, not a clinical tool. Its cases and policies exist to measure agent behaviour, and nothing here is validated for patient care. Cases derive from MedChain and PMC-Patients; please cite those datasets alongside CareBench when using the corresponding cases.
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite CareBench</h2>
+  <p class="section-desc fade-in">If CareBench or the lucky-correctness metrics are useful in your work, please consider citing it.</p>
+  <div class="citation-block fade-in" id="bibtex"><button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@misc{hossain2026carebench,
+  title  = {CareBench: When Correct Diagnoses Come from Unsafe Reasoning},
+  author = {Hossain, Elias and Ornee, Tasfia Nuzhat and Dipta, Shubhashis Roy
+            and Rivera-Sepulveda, Andrea and Khosravi, Pegah
+            and Yousefi, Niloofar},
+  year   = {2026},
+  note   = {Process-aware evaluation for clinical LLM agents.
+            Code: \url{https://github.com/eliashossain001/carebench}
+            Data: \url{https://huggingface.co/datasets/EliasHossain/carebench}},
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>CareBench</strong> &mdash; Process-aware evaluation for clinical LLM agents &nbsp;·&nbsp;
+    <a href="https://github.com/eliashossain001/carebench" target="_blank" rel="noopener">GitHub</a> ·
+    <a href="https://huggingface.co/datasets/EliasHossain/carebench" target="_blank" rel="noopener">HuggingFace</a> ·
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../channelguard/">ChannelGuard</a> ·
+    <a href="../nexus/">NEXUS</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">Built on <a href="https://github.com/sierra-research/tau-bench" target="_blank" rel="noopener">tau-bench</a> · MIT License · © 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

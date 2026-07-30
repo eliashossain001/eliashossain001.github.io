@@ -24,6 +24,7 @@
     --hot-bg: #fde4d6;
     --hot-border: #e85a4f;
     --hot-ink: #9a2f25;
+    --hot-glow: 232, 90, 79;
     --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.04);
     --radius: 14px;
   }
@@ -42,6 +43,7 @@
     --hot-bg: #2e1a16;
     --hot-border: #ff7a6b;
     --hot-ink: #ffb8a8;
+    --hot-glow: 255, 122, 107;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
   }
 
@@ -207,6 +209,10 @@
   }
   .nav-toggle:hover { border-color: var(--accent); color: var(--accent-ink); }
   .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 1040px) and (min-width: 761px) {
+    .nav-links { gap: 14px; }
+    .nav-icons a { width: 34px; height: 34px; }
+  }
   @media (max-width: 760px) {
     .nav-inner { padding: 12px 18px; position: relative; }
     .nav-toggle { display: grid; }
@@ -799,6 +805,294 @@
   }
   .callout a:hover { background: var(--hot-border); color: #fff; border-bottom-color: var(--hot-border); padding: 0 4px; border-radius: 4px; }
 
+  /* ABOVE-THE-FOLD COLLABORATION BAND */
+  .collab-band {
+    display: flex;
+    align-items: center;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    padding: 11px 15px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    margin: 18px 0 6px;
+  }
+  .cb-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
+    font-weight: 500;
+    flex: 0 0 auto;
+  }
+  .cb-people {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    align-items: baseline;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .cb-person { font-size: 13px; color: var(--ink); white-space: nowrap; }
+  /* The headline collaborator: warm pill with a slow halo so the eye lands here first. */
+  .cb-person.cb-star {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--hot-bg);
+    border: 1px solid var(--hot-border);
+    animation: cbHalo 2.9s ease-in-out infinite;
+  }
+  .cb-person.cb-star a,
+  .cb-person.cb-star .cb-where { color: var(--hot-ink); }
+  .cb-person.cb-star a:hover { border-bottom-color: var(--hot-border); }
+  .cb-person.cb-star .cb-where { font-weight: 600; opacity: 0.95; }
+  @keyframes cbHalo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--hot-glow), 0.45); }
+    55%      { box-shadow: 0 0 0 7px rgba(var(--hot-glow), 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cb-person.cb-star { animation: none; box-shadow: 0 0 0 2px rgba(var(--hot-glow), 0.28); }
+  }
+  .cb-person strong { font-weight: 600; }
+  .cb-person a { color: var(--ink); border: none; font-weight: 600; }
+  .cb-person a:hover { color: var(--accent-ink); border-bottom: 1px solid var(--accent); }
+  .cb-person .cb-where { color: var(--accent-ink); font-size: 11.5px; }
+  .cb-person.cb-star .cb-proj {
+    color: var(--hot-ink);
+    font-size: 11.5px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--hot-border);
+    white-space: nowrap;
+  }
+  .cb-person.cb-star .cb-proj:hover {
+    background: var(--hot-border);
+    color: #fff;
+    border-bottom-color: transparent;
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+  a.collab-pill:hover { background: var(--accent); color: var(--bg-elev); border-color: var(--accent); }
+  a.collab-pill.hot:hover { background: var(--hot-border); color: #fff; border-color: var(--hot-border); }
+
+  .cb-more {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    border-bottom: 1px solid var(--accent);
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  @media (max-width: 600px) {
+    .cb-person { white-space: normal; }
+  }
+
+  /* COLLABORATORS */
+  .collab-lead {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+    line-height: 1.6;
+  }
+  .collab-lead strong { color: var(--ink); font-weight: 600; }
+  .collab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(178px, 1fr));
+    gap: 12px;
+  }
+  .collab-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+  }
+  .collab-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .collab-card.feature {
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg-elev) 78%);
+    border-color: var(--accent);
+    border-left-width: 4px;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 18px;
+  }
+  .collab-monogram {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--accent);
+    color: var(--bg-elev);
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow);
+  }
+  .collab-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .collab-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--bg-elev);
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .collab-pill.solid { background: var(--accent); color: var(--bg-elev); border-color: var(--accent); }
+  .collab-pill.hot {
+    background: var(--hot-bg);
+    border-color: var(--hot-border);
+    color: var(--hot-ink);
+    font-weight: 600;
+  }
+
+  /* Collaboration reach stats */
+  .collab-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 14px 0 18px;
+    margin-bottom: 4px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .collab-stat .cs-num {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    line-height: 1;
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+  .collab-stat .cs-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    margin-top: 6px;
+    display: block;
+  }
+  .collab-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 14px;
+  }
+  .collab-chip {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.01em;
+  }
+  @media (max-width: 600px) {
+    .collab-stats { gap: 20px; }
+    .collab-stat .cs-num { font-size: 21px; }
+    .collab-card.feature { grid-template-columns: 1fr; }
+    .collab-monogram { width: 44px; height: 44px; font-size: 16px; }
+  }
+  .collab-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+  .collab-name a { color: var(--ink); border: none; }
+  .collab-name a:hover { color: var(--accent-ink); border-bottom: 1px solid var(--accent); }
+  .collab-role { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+  .collab-prior {
+    font-size: 12px;
+    color: var(--accent-ink);
+    margin-top: 4px;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+  .collab-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--accent);
+    color: var(--bg-elev);
+    vertical-align: 2px;
+    margin-left: 7px;
+    font-weight: 500;
+  }
+  .collab-foot {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    line-height: 1.55;
+  }
+
+  /* WORK IN PROGRESS */
+  .wip-list { display: flex; flex-direction: column; gap: 12px; }
+  .wip-item {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 18px;
+    align-items: start;
+    padding: 14px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color 0.18s;
+  }
+  .wip-item:hover { border-color: var(--accent); }
+  @media (max-width: 600px) {
+    .wip-item { grid-template-columns: 1fr; gap: 6px; }
+  }
+  .wip-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .wip-status {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-ink);
+    margin-top: 5px;
+  }
+  .wip-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin: 0; }
+  .wip-note {
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
   .news-list { display: flex; flex-direction: column; gap: 10px; }
   .news-item {
     display: grid;
@@ -890,7 +1184,7 @@
   .pubs-cards { display: flex; flex-direction: column; gap: 16px; }
   .pub-card {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 264px 1fr;
     gap: 18px;
     padding: 12px 14px;
     background: var(--bg-elev);
@@ -904,6 +1198,7 @@
   @media (max-width: 720px) {
     .pub-card { grid-template-columns: 1fr; }
     .pub-thumb { height: 110px; }
+    .pub-thumb.has-fig { height: auto; min-height: 0; }
   }
 
   .pub-thumb {
@@ -929,6 +1224,70 @@
   .pub-thumb.t-trust { background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%); }
   .pub-thumb.t-nlp   { background: linear-gradient(135deg, #EF6C00 0%, #E65100 100%); }
   .pub-thumb.t-bio2  { background: linear-gradient(135deg, #00838F 0%, #006064 100%); }
+
+  /* Architecture-figure thumbnails. The diagrams are page-width figures, so the
+     panel stays light in both themes and the figure links out at full size. */
+  /* The panel fills the full height of its card so no card background shows
+     beside it, while the figure inside is capped to one shared size (246x150)
+     so every diagram renders at the same scale. */
+  .pub-thumb.has-fig {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    padding: 12px;
+    min-height: 174px;
+    height: 100%;
+    align-self: stretch;
+  }
+  [data-theme="dark"] .pub-thumb.has-fig {
+    background: #f2f0ea;
+    border-color: #33382f;
+  }
+  .pub-fig-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: none;
+    line-height: 0;
+  }
+  .pub-fig-link:hover { border: none; }
+  .pub-thumb.has-fig img {
+    width: 100%;
+    height: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  .pub-card:hover .pub-thumb.has-fig img { transform: scale(1.04); }
+  .pub-fig-zoom {
+    position: absolute;
+    bottom: 7px; right: 7px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--line);
+    color: #4a4d47;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .pub-card:hover .pub-fig-zoom { opacity: 1; }
+  @media (hover: none) {
+    .pub-fig-zoom { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pub-thumb.has-fig img { transition: none; }
+    .pub-card:hover .pub-thumb.has-fig img { transform: none; }
+  }
 
   .pub-status {
     position: absolute;
@@ -1187,6 +1546,7 @@
     .filter-btn { padding: 5px 10px; font-size: 12px; }
     .pub-card { grid-template-columns: 1fr !important; }
     .pub-thumb { min-height: 90px; padding: 18px 14px; }
+    .pub-thumb.has-fig { padding: 8px; }
     .pub-links { gap: 4px; }
     .pub-pill { font-size: 11px; padding: 3px 8px; }
     .research-list { padding-left: 18px; }
@@ -1236,6 +1596,7 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#about">About</a>
+      <a href="#collaborators">Collaborators</a>
       <a href="/cv/Elias_CV.pdf" target="_blank">CV</a>
       <a href="#publications">Publications</a>
       <a href="/notes.html">Notes</a>
@@ -1247,6 +1608,7 @@
           <span class="nav-more-arrow">&#9662;</span>
         </button>
         <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
+          <a href="#inreview" role="menuitem">Work in Progress</a>
           <a href="#certificates" role="menuitem">Certificate</a>
           <a href="#projects" role="menuitem">Projects</a>
           <a href="#awards" role="menuitem">Awards / Recognition</a>
@@ -1298,7 +1660,7 @@
             <span class="loc">&#128205; Orlando, FL</span>
           </div>
           <div class="role-line">
-            <span class="role">PhD Researcher</span>
+            <span class="role">Graduate Research Assistant</span>
             <span class="date">Aug 2025 — Now</span>
           </div>
           <div class="mentor">
@@ -1318,7 +1680,7 @@
           </div>
           <div class="mentor">
             Focus: Conversational AI for Education<br/>
-            Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a>
+            Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a>
           </div>
         </div>
 
@@ -1354,9 +1716,6 @@
             </div>
             <div class="edu-row">
               <span>Advisor: <a href="https://www.cse.msstate.edu/people/faculty/andy-perkins/" target="_blank" rel="noopener">Dr. Andy D. Perkins</a></span>
-            </div>
-            <div class="edu-row">
-              <span>Co-Advisor: <a href="https://scholar.google.com/citations?user=cRqh6lwAAAAJ" target="_blank" rel="noopener">Dr. Shahram Rahimi</a></span>
             </div>
             <div class="edu-row">
               <span>Research Mentor: <a href="https://www.cse.msstate.edu/people/faculty/charan-gudla/" target="_blank" rel="noopener">Dr. Charan Gudla</a></span>
@@ -1426,14 +1785,22 @@
 
       <section class="first-section bio" id="about">
         <p class="lead">
-          I am a <strong>Ph.D. researcher in IEMS</strong> at the University of Central Florida's <strong>Complex Adaptive Systems Lab</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Four concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? <strong>(4)</strong> Can we steer a model away from outdated parametric memory at test time, without retraining or retrieval? My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
+          I am a <strong>Ph.D. researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Four concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? <strong>(4)</strong> Can we steer a model away from outdated parametric memory at test time, without retraining or retrieval? My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
         </p>
+
+        <div class="collab-band">
+          <span class="cb-label">Collaborating with</span>
+          <span class="cb-people">
+            <span class="cb-person cb-star"><a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a> <span class="cb-where">UCF &middot; formerly led AI research at Meta</span> <a class="cb-proj" href="/corrfilter/">on CorrFilter &rarr;</a></span>
+          </span>
+          <a class="cb-more" href="#collaborators">All collaborators &rarr;</a>
+        </div>
 
         <ol class="research-list">
           <li>
             <strong>Test-Time Uncertainty in Pretrained Transformers</strong>
             <ul>
-              <li>Inference-time uncertainty-aware attention for pretrained transformers <a class="tag" href="https://arxiv.org/abs/2602.02952" target="_blank">UAT-LITE</a></li>
+              <li>Inference-time uncertainty-aware attention for pretrained transformers <a class="tag" href="/uat-lite/">UAT-LITE</a></li>
               <li>Bayesian uncertainty quantification for safe clinical decision support <a class="tag" href="https://arxiv.org/abs/2511.16625" target="_blank">MedBayes-Lite</a></li>
             </ul>
           </li>
@@ -1441,20 +1808,21 @@
             <strong>Reliable AI Supervision</strong>
             <ul>
               <li>Fault-tolerant preference alignment via multi-agent verification <a class="tag" href="#" target="_blank">MAV</a></li>
-              <li>Reliability-aware filtering when LLM judges share blind spots <a class="tag" href="#" target="_blank">CorrFilter</a></li>
+              <li>Reliability-aware filtering when LLM judges share blind spots <a class="tag" href="/corrfilter/">CorrFilter</a></li>
             </ul>
           </li>
           <li>
             <strong>Runtime Safety and Evaluation for LLM Agents</strong>
             <ul>
               <li>Structured-plan intervention policies for tool-using agents <a class="tag" href="/nexus/">NEXUS</a></li>
-              <li>Process-level evaluation of clinical LLM agents under uncertainty <a class="tag" href="#" target="_blank">CareBench</a></li>
+              <li>Information-bottleneck gates for the inter-agent surface <a class="tag" href="/channelguard/">ChannelGuard</a></li>
+              <li>Process-level evaluation of clinical LLM agents under uncertainty <a class="tag" href="/carebench/">CareBench</a></li>
             </ul>
           </li>
           <li>
             <strong>Test-Time Steering Without Retraining</strong>
             <ul>
-              <li>Activation steering for parametric temporal conflict in LLMs <a class="tag" href="#" target="_blank">TAS</a></li>
+              <li>Activation steering for parametric temporal conflict in LLMs <a class="tag" href="https://arxiv.org/abs/2606.20959" target="_blank">TAS</a></li>
               <li>Closed-form post-training steering when policies cannot be retrained <a class="tag" href="https://arxiv.org/abs/2604.22873" target="_blank">PoE-Steer</a></li>
             </ul>
           </li>
@@ -1464,6 +1832,92 @@
           <span class="ico">📢</span>
           <div>Graduating <strong>Spring/Fall 2028</strong>. Seeking a <strong>Research Scientist role</strong> or <strong>Postdoctoral position</strong> in LLM training, reinforcement learning, and LLM safety. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
         </div>
+      </section>
+
+      <section id="collaborators" class="reveal">
+        <div class="section-label">Collaborators</div>
+        <h2>Who I work with</h2>
+        <div class="collab-stats">
+          <div class="collab-stat"><span class="cs-num">13</span><span class="cs-lbl">Institutions</span></div>
+          <div class="collab-stat"><span class="cs-num">5</span><span class="cs-lbl">Countries</span></div>
+          <div class="collab-stat"><span class="cs-num">4</span><span class="cs-lbl">Continents</span></div>
+          <div class="collab-stat"><span class="cs-num">6</span><span class="cs-lbl">Industry Labs</span></div>
+        </div>
+        <p class="collab-lead">I work with researchers who have led or built AI at <strong>Meta</strong>, <strong>Google&nbsp;AI</strong>, <strong>Intel</strong>, <strong>Amazon</strong>, <strong>GE Research</strong>, and <strong>audEERING</strong> &mdash; alongside academic and clinical groups on four continents.</p>
+        <div class="collab-grid">
+          <div class="collab-card feature">
+            <div class="collab-monogram">SL</div>
+            <div>
+              <div class="collab-name"><a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Ser-Nam Lim</a><span class="collab-tag">Current</span></div>
+              <div class="collab-role">Tenured Associate Professor, Computer Science &middot; University of Central Florida</div>
+              <div class="collab-pills">
+                <span class="collab-pill hot">Senior Research Scientist Manager, Facebook&nbsp;AI / Meta &middot; 2018&ndash;2023</span>
+                <span class="collab-pill">Director, GE Research</span>
+                <span class="collab-pill">h-index 58</span>
+                <span class="collab-pill">19,000+ citations</span>
+                <a class="collab-pill hot" href="/corrfilter/">Joint project: CorrFilter &rarr;</a>
+              </div>
+            </div>
+          </div>
+          <div class="collab-card feature">
+            <div class="collab-monogram">BS</div>
+            <div>
+              <div class="collab-name"><a href="https://scholar.google.com/citations?user=TxKNCSoAAAAJ&amp;hl=en" target="_blank" rel="noopener">Bj&ouml;rn Schuller</a></div>
+              <div class="collab-role">Professor, TU M&uuml;nchen and Imperial College London &middot; CSO, audEERING</div>
+              <div class="collab-pills">
+                <span class="collab-pill hot">h-index 129 &middot; 87,000+ citations</span>
+                <span class="collab-pill">Affective computing</span>
+                <span class="collab-pill">Computer audition</span>
+              </div>
+            </div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name"><a href="https://www.ravid-shwartz-ziv.com/" target="_blank" rel="noopener">Ravid Shwartz-Ziv</a></div>
+            <div class="collab-role">Assistant Professor and Faculty Fellow, Center for Data Science &middot; New York University</div>
+            <div class="collab-prior">Formerly Google&nbsp;AI and Intel &middot; information-theoretic deep learning</div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name"><a href="https://scholar.google.com/citations?user=Nuo0T1YAAAAJ&amp;hl=en" target="_blank" rel="noopener">Rajib Rana</a></div>
+            <div class="collab-role">Professor, University of Southern Queensland, Australia</div>
+            <div class="collab-prior">Speech and affective computing</div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name"><a href="https://scholar.google.com/citations?user=lHM6ZCwAAAAJ&amp;hl=en" target="_blank" rel="noopener">Pegah Khosravi</a></div>
+            <div class="collab-role">Associate Professor, Institute for Artificial Intelligence &middot; University of Central Florida</div>
+            <div class="collab-prior">Foundation models and healthcare AI</div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name"><a href="https://orcid.org/0000-0002-8423-3981" target="_blank" rel="noopener">Andrea Rivera-Sepulveda</a></div>
+            <div class="collab-role">Associate Professor, Pediatrics &middot; Nemours Children&rsquo;s Health</div>
+            <div class="collab-prior">Pediatric emergency and clinical research</div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name"><a href="https://scholar.google.com/citations?user=CIkLL0sAAAAJ&amp;hl=en" target="_blank" rel="noopener">Niall Higgins</a></div>
+            <div class="collab-role">Queensland University of Technology, Australia</div>
+            <div class="collab-prior">Clinical NLP and remote patient monitoring</div>
+          </div>
+          <div class="collab-card">
+            <div class="collab-name">Shubhashis Roy Dipta</div>
+            <div class="collab-role">University of Maryland, Baltimore County</div>
+            <div class="collab-prior">Applied Scientist Intern, Amazon &middot; NLP and reasoning</div>
+          </div>
+        </div>
+        <div class="collab-chips">
+          <span class="collab-chip">UCF</span>
+          <span class="collab-chip">TU M&uuml;nchen</span>
+          <span class="collab-chip">Imperial College London</span>
+          <span class="collab-chip">New York University</span>
+          <span class="collab-chip">UMBC</span>
+          <span class="collab-chip">Univ. of Southern Queensland</span>
+          <span class="collab-chip">Purdue Fort Wayne</span>
+          <span class="collab-chip">Mississippi State</span>
+          <span class="collab-chip">Meharry Medical College</span>
+          <span class="collab-chip">North South University</span>
+          <span class="collab-chip">Queensland Univ. of Technology</span>
+          <span class="collab-chip">Nemours Children&rsquo;s Health</span>
+          <span class="collab-chip">AUST</span>
+        </div>
+        <p class="collab-foot">Advised at UCF by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a> and <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a>.</p>
       </section>
 
       <section id="news" class="reveal">
@@ -1496,30 +1950,31 @@
 
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="bio">Biomedical AI</button>
-          <button class="filter-btn" data-filter="agentic">Agentic &amp; RL</button>
           <button class="filter-btn" data-filter="trust">Trustworthy LLMs</button>
-          <button class="filter-btn" data-filter="nlp">Applied NLP</button>
+          <button class="filter-btn" data-filter="agentic">Agentic Safety</button>
         </div>
 
         <div class="pubs-cards" id="pubs">
 
           <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb t-trust">
-              <span class="pub-status s-rev">Under Review</span>
-              EMNLP &middot; 2026
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
             </div>
             <div class="pub-info">
               <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay</div>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
               <div class="pub-venue-line live-venue">ACL ARR meta-review: borderline conference accept &middot; committing to EMNLP 2026</div>
               <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
                 <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
   title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
-  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
   journal={arXiv preprint arXiv:2602.02952},
   year={2026}
 }</pre>
@@ -1527,125 +1982,79 @@
             </div>
           </article>
 
-          <article class="pub pub-card" data-tag="bio">
-            <div class="pub-thumb t-bio">
-              <span class="pub-status s-pub">Published</span>
-              BiB &middot; 2026
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
             </div>
             <div class="pub-info">
-              <h3>Computational Paradigms for Antimicrobial Resistance Prediction: Integrating Multi-Omics, Structural Modeling, and Foundation AI Systems</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, N. Yousefi</div>
-              <div class="pub-venue-line">Briefings in Bioinformatics, 2026</div>
-              <p class="pub-desc">Survey unifying multi-omics, structural modeling, and foundation models for AMR prediction; positions where each paradigm shines and where they break.</p>
+              <h3>ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, F. T. J. Faria, T. N. Ornee, M. Sheikh</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-desc">Across 2,100 test cases and eight attack families, the apparent safety of multi-agent LLM pipelines often rests on opaque provider filters rather than the system itself. ChannelGuard places training-free information-bottleneck gates on every inter-agent channel, blocking tool-output poisoning outright and halving prompt-injection success while holding task accuracy at 0.867.</p>
               <div class="pub-links">
-                <a class="pub-pill" href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener">ARTICLE</a>
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/channelguard/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026computational,
-  title={Computational paradigms for antimicrobial resistance prediction: integrating multi-omics, structural modeling, and foundation artificial intelligence systems},
-  author={Hossain, Elias and Yousefi, Niloofar},
-  journal={Briefings in Bioinformatics},
-  volume={27},
-  number={3},
-  pages={bbag219},
-  year={2026},
-  publisher={Oxford University Press}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="bio agentic">
-            <div class="pub-thumb t-bio">
-              <span class="pub-status s-pub">Published</span>
-              Frontiers &middot; 2026
-            </div>
-            <div class="pub-info">
-              <h3>BIOGEN: Evidence-Grounded Multi-Agent Reasoning Framework for Transcriptomic Interpretation in Antimicrobial Resistance</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. Shoeibi, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">Frontiers in Bioinformatics, vol.&nbsp;6, 2026 &middot; Drug Discovery in Bioinformatics</div>
-              <p class="pub-desc">A multi-agent framework that interprets RNA-Seq gene clusters by combining biomedical retrieval with evidence verification; every cluster interpretation cites at least one PMID, DOI, or UniProt accession across five bacterial datasets.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2026.1846404/abstract" target="_blank" rel="noopener">ARTICLE</a>
-                <a class="pub-pill" href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">ARXIV</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026biogen,
-  title={BIOGEN: Evidence-Grounded Multi-Agent Reasoning Framework for Transcriptomic Interpretation in Antimicrobial Resistance},
-  author={Hossain, Elias and Shoeibi, Mehrdad and Garibay, Ivan and Yousefi, Niloofar},
-  journal={Frontiers in Bioinformatics},
-  volume={6},
-  year={2026},
-  publisher={Frontiers Media}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="agentic">
-            <div class="pub-thumb t-rl">
-              <span class="pub-status s-pre">Preprint</span>
-              NeurIPS &middot; 2026
-            </div>
-            <div class="pub-info">
-              <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">Preprint, 2026 &middot; Under review at NeurIPS</div>
-              <p class="pub-desc">A closed-form analysis of post-training policy steering in offline RL, showing when interventions help, hurt, or leave a frozen policy unchanged.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026policies,
-  title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
-  author={Hossain, Elias and Basher, M. J. I. and Garibay, Ivan and Garibay, Ozlem and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2604.22873},
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026channelguard,
+  title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
+  journal={arXiv preprint arXiv:2607.19430},
   year={2026}
 }</pre>
               </div>
             </div>
           </article>
 
-          <article class="pub pub-card" data-tag="bio">
-            <div class="pub-thumb t-nature">
-              <span class="pub-status s-pub">Published</span>
-              Nature SR &middot; 2026
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/ptc-overview.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/ptc-overview-thumb.png" alt="Parametric temporal conflict overview: a frozen LLM baseline returning the outdated fact, conflict localization by comparing standard and date-prefixed prompts, and residual-stream steering that recovers the newer fact" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
             </div>
             <div class="pub-info">
-              <h3>R-GAT: Cancer Document Classification Leveraging Graph-Based Residual Network for Scenarios with Limited Data</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, T. Nuzhat, S. Masum, S. Rahimi, N. A. Golilarz</div>
-              <div class="pub-venue-line">Scientific Reports (Nature), 2026</div>
-              <p class="pub-desc">Residual graph attention network for biomedical document classification under limited data; matches transformer baselines on cancer abstracts at a fraction of the cost.</p>
+              <h3>Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. Saha, T. N. Ornee, S. S. Jennifer, U. C. Biswas, S. R. Dipta, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-desc">Introduces Parametric Temporal Conflict, where a model holds the newer fact but its default forward pass still prefers the outdated one. On a verified benchmark of 8,746 Wikidata transitions, a date-prefix prompt recovers the newer fact in 61&ndash;81% of cases and activation patching flips 72&ndash;85%, localizing the preference to model-specific upper layers rather than missing knowledge.</p>
               <div class="pub-links">
-                <a class="pub-pill" href="https://www.nature.com/articles/s41598-026-39894-6" target="_blank" rel="noopener">ARTICLE</a>
+                <a class="pub-pill" href="https://arxiv.org/abs/2606.20959" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/tas/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026rgat,
-  title={R-GAT: cancer document classification leveraging graph-based residual network for scenarios with limited data},
-  author={Hossain, Elias and Nuzhat, Tasfia and Masum, Shamsul and Rahimi, Shahram and Golilarz, Noorbakhsh Amiri},
-  journal={Scientific Reports},
-  year={2026},
-  publisher={Nature Publishing Group}
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026rightknowledge,
+  title={Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models},
+  author={Hossain, Elias and Saha, Sourav and Ornee, Tasfia Nuzhat and Jennifer, Sanjeda Sara and Biswas, Umesh Chandra and Dipta, Shubhashis Roy and Rana, Rajib and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2606.20959},
+  year={2026}
 }</pre>
               </div>
             </div>
           </article>
 
-          <article class="pub pub-card" data-tag="nlp">
-            <div class="pub-thumb t-nlp">
-              <span class="pub-status s-pub">Published</span>
-              IEEE FIE &middot; 2024
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
             </div>
             <div class="pub-info">
-              <h3>From Questions to Insightful Answers: Building an Informed Chatbot for University Resources</h3>
-              <div class="pub-authors">S. Neupane, <strong>E. Hossain</strong>, J. Keith, H. Tripathi, F. Ghiasi, N. A. Golilarz, A. Amirlatifi, S. Mittal, S. Rahimi</div>
-              <div class="pub-venue-line">IEEE Frontiers in Education Conference (FIE), 2024</div>
-              <p class="pub-desc">Retrieval-augmented, domain-informed chatbot framework for university support; demonstrates effective conversational agents on grounded institutional knowledge.</p>
+              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
               <div class="pub-links">
-                <a class="pub-pill" href="https://ieeexplore.ieee.org/abstract/document/10892994" target="_blank" rel="noopener">IEEE</a>
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/nexus/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@inproceedings{neupane2024questions,
-  title={From Questions to Insightful Answers: Building an Informed Chatbot for University Resources},
-  author={Neupane, Subash and Hossain, Elias and Keith, Jason and Tripathi, Himanshu and Ghiasi, Farbod and Golilarz, Noorbakhsh Amiri and Amirlatifi, Amin and Mittal, Sudip and Rahimi, Shahram},
-  booktitle={2024 IEEE Frontiers in Education Conference (FIE)},
-  year={2024},
-  organization={IEEE}
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026nexus,
+  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2607.19356},
+  year={2026}
 }</pre>
               </div>
             </div>
@@ -1658,6 +2067,36 @@
   </div>
 </div>
 
+
+<section class="full-section reveal" id="inreview">
+  <div class="section-label">In the Pipeline</div>
+  <h2>Work in progress</h2>
+  <p class="pubs-sub">Projects currently under review. Happy to discuss any of these in detail &mdash; <a href="mailto:mdelias.hossain@ucf.edu">get in touch</a>.</p>
+  <div class="wip-list">
+    <div class="wip-item">
+      <div>
+        <div class="wip-name"><a href="/corrfilter/" style="color:inherit;border:none;">CorrFilter &rarr;</a></div>
+        <span class="wip-status">Under review</span>
+      </div>
+      <p class="wip-desc">A large-scale empirical study of how reliable LLM-judge consensus really is when judge banks are used to filter alignment data. Covers multiple public preference datasets, judge banks spanning several model families and scales, and both base and preference-optimized judges, alongside a mitigation that outperforms standard consensus rules at matched retention.</p>
+    </div>
+    <div class="wip-item">
+      <div>
+        <div class="wip-name"><a href="/carebench/" style="color:inherit;border:none;">CareBench &rarr;</a></div>
+        <span class="wip-status">In preparation</span>
+      </div>
+      <p class="wip-desc">Process-level evaluation of clinical LLM agents, scoring the trajectory a system takes rather than only the answer it lands on. Code and the case pool are public; across 1,000 trajectories from five frontier models, nearly four in five correct diagnoses came from a pathway with no safety check invoked.</p>
+    </div>
+    <div class="wip-item">
+      <div>
+        <div class="wip-name">SAVe</div>
+        <span class="wip-status">Poster presented</span>
+      </div>
+      <p class="wip-desc">Multi-agent safe alignment verification for preference-based LLM optimization, filtering corrupted supervision before it reaches RLHF or DPO. Presented at the Amazon Trusted AI Symposium.</p>
+    </div>
+  </div>
+  <p class="wip-note">Methods and results for work under review are shared on request rather than posted publicly.</p>
+</section>
 
 <section class="full-section reveal" id="certificates">
   <div class="section-label">Professional Development</div>

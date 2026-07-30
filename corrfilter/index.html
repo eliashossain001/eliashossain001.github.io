@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CorrFilter · Auditing the Reliability of LLM-Judge Consensus</title>
+<meta name="description" content="A large-scale audit of the reliability assumptions behind LLM-judge consensus in alignment-data filtering. Under double-blind review: scope and scale are public, findings are shared on request." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #b1354f;
+    --accent-soft: #fce9ed;
+    --accent-ink: #7f1f36;
+    --accent-glow: rgba(177, 53, 79, 0.18);
+    --redact: 127, 31, 54;
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #141112;
+    --bg-elev: #1d1819;
+    --bg-code: #0d0b0c;
+    --ink: #efeaeb;
+    --ink-soft: #bab3b5;
+    --ink-muted: #857e80;
+    --line: #2c2426;
+    --accent: #f08ca3;
+    --accent-soft: #33161d;
+    --accent-ink: #f7b4c3;
+    --accent-glow: rgba(240, 140, 163, 0.25);
+    --redact: 247, 180, 195;
+    --pill-bg: #241e20;
+    --pill-ink: #c6c0c2;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 56px;
+    text-align: center;
+  }
+  .cf-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 26px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .venue-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    animation: dotPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes dotPulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 600; line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0 auto 0.5rem;
+  }
+  .hero h1 .brand-text { color: var(--accent-ink); font-style: italic; }
+  .hero .tagline {
+    font-family: 'Fraunces', serif;
+    font-size: 1.24rem; color: var(--ink-soft);
+    max-width: 720px; margin: 0.9rem auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 1rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); color: var(--bg-elev); }
+  .btn-outline { background: var(--bg-elev); color: var(--ink); border: 1px solid var(--line); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .btn svg { width: 16px; height: 16px; }
+  .supervision {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 9px;
+    padding: 7px 16px;
+    margin: 0 auto 1.9rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .supervision .sup-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .supervision a { font-weight: 600; color: var(--accent-ink); }
+  .supervision .sup-where { font-size: 0.8rem; color: var(--ink-soft); }
+  @media (max-width: 560px) {
+    .supervision { border-radius: 14px; }
+  }
+
+  .hero-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.6rem;
+  }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.6rem;
+    flex-wrap: wrap; padding: 1.2rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.9rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content { max-width: 1080px; margin: 0 auto; padding: 68px 28px; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 780px; margin-bottom: 2.4rem; line-height: 1.65;
+  }
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.15rem;
+    font-family: 'Fraunces', serif; font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600; margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif; letter-spacing: -0.005em;
+  }
+  .feature-card p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+
+  /* SCALE TABLE */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  table.results th, table.results td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--line); }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results tr:last-child td { border-bottom: none; }
+  table.results td.dim { color: var(--ink); font-weight: 500; }
+  table.results td.cov {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.86rem;
+    color: var(--accent-ink);
+  }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.7rem; line-height: 1.5;
+  }
+
+  /* REDACTED FINDINGS */
+  .redact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .redact-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .redact-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 55%, var(--accent-soft) 100%);
+    opacity: 0.55; pointer-events: none;
+  }
+  .redact-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px; margin-bottom: 1rem;
+    position: relative; z-index: 1;
+  }
+  .redact-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem; font-weight: 600;
+    color: var(--accent-ink); line-height: 1;
+  }
+  .redact-lock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent-ink);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    padding: 3px 9px;
+    white-space: nowrap;
+  }
+  .redact-bars { position: relative; z-index: 1; }
+  .redact-bar {
+    height: 9px;
+    border-radius: 3px;
+    margin-bottom: 9px;
+    background-image: linear-gradient(90deg,
+      rgba(var(--redact), 0.16) 0%,
+      rgba(var(--redact), 0.16) 40%,
+      rgba(var(--redact), 0.30) 50%,
+      rgba(var(--redact), 0.16) 60%,
+      rgba(var(--redact), 0.16) 100%);
+    background-size: 240% 100%;
+    animation: redactShimmer 6.5s linear infinite;
+  }
+  .redact-bar:last-child { margin-bottom: 0; }
+  @keyframes redactShimmer {
+    0%   { background-position: 240% 0; }
+    100% { background-position: -140% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .redact-bar { animation: none; }
+    .venue-badge .dot { animation: none; opacity: 1; }
+  }
+  .redact-foot {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--accent-ink);
+    line-height: 1.6;
+  }
+  .redact-foot strong { font-weight: 700; }
+
+  /* ACCESS */
+  .access-box {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.6rem 1.8rem;
+    box-shadow: var(--shadow);
+  }
+  .access-box h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.05rem; font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .access-box p { font-size: 0.94rem; color: var(--ink-soft); line-height: 1.65; margin-bottom: 1rem; }
+  .access-list { list-style: none; margin: 0 0 1.2rem; padding: 0; }
+  .access-list li {
+    font-size: 0.9rem; color: var(--ink-soft);
+    padding: 6px 0 6px 22px; position: relative; line-height: 1.55;
+  }
+  .access-list li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.45rem; }
+    section.content { padding: 50px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="#question">Question</a>
+      <a href="#scale">Scale</a>
+      <a href="#findings">Findings</a>
+      <a href="#access">Access</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="cf-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- the judge bank: a ring of voters -->
+      <circle cx="0" cy="0" r="1.42" fill="none" stroke="#b1354f" stroke-width="0.07" stroke-dasharray="0.05 0.10"/>
+      <!-- independent judges (muted) -->
+      <circle cx="0.00"  cy="-1.42" r="0.15" fill="#c9c2b4"/>
+      <circle cx="1.00"  cy="-1.00" r="0.15" fill="#c9c2b4"/>
+      <circle cx="1.42"  cy="0.00"  r="0.15" fill="#c9c2b4"/>
+      <circle cx="0.00"  cy="1.42"  r="0.15" fill="#c9c2b4"/>
+      <circle cx="-1.00" cy="1.00"  r="0.15" fill="#c9c2b4"/>
+      <!-- the correlated cluster (accent), chorded together -->
+      <path d="M -1.42 0 L -1.00 -1.00 L 1.00 1.00 L -1.42 0 Z"
+            fill="rgba(177,53,79,0.13)" stroke="#b1354f" stroke-width="0.055" stroke-linejoin="round"/>
+      <circle cx="-1.42" cy="0.00"  r="0.19" fill="#b1354f"/>
+      <circle cx="-1.00" cy="-1.00" r="0.19" fill="#b1354f"/>
+      <circle cx="1.00"  cy="1.00"  r="0.19" fill="#b1354f"/>
+      <!-- the pooled verdict at the centre -->
+      <circle cx="0" cy="0" r="0.30" fill="#fce9ed" stroke="#7f1f36" stroke-width="0.075"/>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in"><span class="dot"></span> Under double-blind review</div>
+  <h1 class="fade-in"><span class="brand-text">CorrFilter</span></h1>
+  <p class="tagline fade-in">A large-scale audit of the reliability assumptions behind LLM-judge consensus in alignment-data filtering.</p>
+  <div class="fade-in"><p class="supervision">
+    <span class="sup-label">Supervised by</span>
+    <a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a>
+    <span class="sup-where">University of Central Florida &middot; formerly led AI research at Meta</span>
+  </p></div>
+
+  <div class="cta-row fade-in">
+    <a href="mailto:mdelias.hossain@ucf.edu?subject=CorrFilter%20%E2%80%94%20manuscript%20request" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Request the manuscript
+    </a>
+    <a href="../index.html#publications" class="btn btn-outline">Other work</a>
+  </div>
+  <p class="hero-note fade-in">Manuscript and results held privately during review</p>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">16</div><div class="stat-label">Judges per Bank</div></div>
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Model Families</div></div>
+    <div class="stat"><div class="stat-value">3</div><div class="stat-label">Preference Datasets</div></div>
+    <div class="stat"><div class="stat-value">4</div><div class="stat-label">Frontier Providers</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- QUESTION -->
+<section id="question" class="content">
+  <div class="section-label fade-in">The Question</div>
+  <h2 class="section-title fade-in">What does agreement actually buy you?</h2>
+  <p class="section-desc fade-in">Alignment pipelines increasingly delegate data curation to panels of LLM judges: a preference pair is kept when enough judges agree. Every such rule rests on an assumption about <em>how</em> those judges fail. This project tests that assumption directly, in the filtering setting where it has consequences, rather than inferring it from headline judge accuracy. The work is supervised by <a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a>, who led AI research teams at Meta from 2018 to 2023.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">◉</div>
+      <h3>Where it bites</h3>
+      <p>Consensus rules decide which preference pairs survive to train a policy. Whatever they let through becomes the reward signal, so a filtering assumption that quietly fails does not stay contained at the filtering stage.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⇄</div>
+      <h3>Measured, not assumed</h3>
+      <p>Judges are run over fixed item sets so that banks of different sizes, families, and prompt conditions are directly comparable, and every panel-level claim is checked against a matched statistical test rather than a pooled vote count.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">≡</div>
+      <h3>On real data</h3>
+      <p>The behaviour is characterised on public preference data as it is, including a human-labelled safety set. No synthetic corruption is required to make the effect appear, and label-noise sensitivity is swept rather than assumed away.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- SCALE -->
+<section id="scale" class="content">
+  <div class="section-label fade-in">Scale of the Evidence</div>
+  <h2 class="section-title fade-in">How far the study reaches</h2>
+  <p class="section-desc fade-in">The experimental grid is the part of this work that can be described in full without pre-empting the results. It spans bank size, model family, parameter scale, prompt condition, dataset, judge training regime, and capability tier.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead><tr><th>Dimension</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="dim">Judge bank sizes</td><td class="cov">4 → 16 judges</td></tr>
+        <tr><td class="dim">Open-weight model families</td><td class="cov">5</td></tr>
+        <tr><td class="dim">Parameter range</td><td class="cov">1.5B – 14B</td></tr>
+        <tr><td class="dim">Prompt conditions per model</td><td class="cov">2 styles</td></tr>
+        <tr><td class="dim">Preference datasets</td><td class="cov">3 public, incl. human safety labels</td></tr>
+        <tr><td class="dim">Judge training regimes</td><td class="cov">base · DPO · GRPO, matched bank</td></tr>
+        <tr><td class="dim">Frontier capability tier</td><td class="cov">4 commercial providers</td></tr>
+        <tr><td class="dim">Label-noise robustness</td><td class="cov">40-seed sweep</td></tr>
+        <tr><td class="dim">Pipeline</td><td class="cov">32 staged drivers, SLURM cluster runs</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption">The grid is deliberately wider than one bank on one dataset: several of the claims only become checkable when bank size, family, training regime, and capability tier can each be varied while the others are held fixed.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- FINDINGS -->
+<section id="findings" class="content">
+  <div class="section-label fade-in">Findings</div>
+  <h2 class="section-title fade-in">Held until publication</h2>
+  <p class="section-desc fade-in">The manuscript reports three principal findings, a diagnostic that separates the regimes they imply, and a mitigation for each. Those are the contribution, so they stay off this page while the paper is in review. Collaborators and hiring committees are welcome to the full draft on request.</p>
+  <div class="redact-grid">
+    <div class="redact-card fade-in">
+      <div class="redact-head"><span class="redact-num">01</span><span class="redact-lock">Withheld</span></div>
+      <div class="redact-bars">
+        <div class="redact-bar" style="width: 96%"></div>
+        <div class="redact-bar" style="width: 88%"></div>
+        <div class="redact-bar" style="width: 71%"></div>
+      </div>
+    </div>
+    <div class="redact-card fade-in">
+      <div class="redact-head"><span class="redact-num">02</span><span class="redact-lock">Withheld</span></div>
+      <div class="redact-bars">
+        <div class="redact-bar" style="width: 92%"></div>
+        <div class="redact-bar" style="width: 79%"></div>
+        <div class="redact-bar" style="width: 58%"></div>
+      </div>
+    </div>
+    <div class="redact-card fade-in">
+      <div class="redact-head"><span class="redact-num">03</span><span class="redact-lock">Withheld</span></div>
+      <div class="redact-bars">
+        <div class="redact-bar" style="width: 94%"></div>
+        <div class="redact-bar" style="width: 83%"></div>
+        <div class="redact-bar" style="width: 66%"></div>
+      </div>
+    </div>
+  </div>
+  <div class="redact-foot fade-in">
+    <strong>What is not withheld:</strong> the manuscript also documents three places where the proposed mitigations do <em>not</em> yet win, including one where no downstream claim is made at all. Those negative results are reported in the paper with the same prominence as the positive ones, and they are the first thing shared with anyone who asks about the work.
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- ACCESS -->
+<section id="access" class="content">
+  <div class="section-label fade-in">Access</div>
+  <h2 class="section-title fade-in">Requesting the work</h2>
+  <div class="access-box fade-in">
+    <h3>Available on request</h3>
+    <p>The paper is under double-blind review, so the manuscript stays private for now. I am glad to share it directly with people who have a reason to read it.</p>
+    <ul class="access-list">
+      <li>Full manuscript, including the negative results and limitations</li>
+      <li>Experimental grid, judge-bank configurations, and evaluation protocol</li>
+    </ul>
+    <a href="mailto:mdelias.hossain@ucf.edu?subject=CorrFilter%20%E2%80%94%20manuscript%20request" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Email me about CorrFilter
+    </a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>CorrFilter</strong> &mdash; Auditing the reliability of LLM-judge consensus &nbsp;·&nbsp;
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../channelguard/">ChannelGuard</a> ·
+    <a href="../uat-lite/">UAT-LITE</a> ·
+    <a href="../nexus/">NEXUS</a> ·
+    <a href="../tas/">TAS</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+</script>
+
+</body>
+</html>

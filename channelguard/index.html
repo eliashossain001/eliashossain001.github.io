@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ChannelGuard · Safe Models Do Not Compose into Safe Multi-Agent Systems</title>
+<meta name="description" content="Multi-agent LLM pipelines leave every inter-agent hop unmonitored. ChannelGuard places training-free information-bottleneck gates on all six channels, and per-trace attribution shows how much of an undefended pipeline's apparent safety is really borrowed from the cloud provider's filter." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #2c6a9e;
+    --accent-soft: #e4eef7;
+    --accent-ink: #1d4d78;
+    --accent-glow: rgba(44, 106, 158, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111314;
+    --bg-elev: #181b1e;
+    --bg-code: #0b0c0d;
+    --ink: #e9ebee;
+    --ink-soft: #b3b7bd;
+    --ink-muted: #7e838a;
+    --line: #262a2f;
+    --accent: #7cb6e8;
+    --accent-soft: #12283a;
+    --accent-ink: #a8d1f2;
+    --accent-glow: rgba(124, 182, 232, 0.25);
+    --pill-bg: #1e2226;
+    --pill-ink: #c1c5ca;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .cg-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 860px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 800px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 780px; margin: 0 auto 1.6rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .code-pending {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.4rem;
+  }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.2rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 780px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: #ffffff;
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .method-figure { background: #f2f0ea; }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* TABLES */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  table.results tr.group-head td {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    background: var(--pill-bg);
+  }
+  table.results .gate {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(44, 106, 158, 0.22);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* LIMITATION NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="../oss.html">Open Source</a>
+      <a href="#problem">Problem</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="cg-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- inter-agent channel ring -->
+      <circle cx="0" cy="0" r="1.45" fill="none" stroke="#2c6a9e" stroke-width="0.10"/>
+      <!-- upstream agent -->
+      <circle cx="-0.92" cy="0" r="0.28" fill="#9aa8b4" stroke="#1d4d78" stroke-width="0.05"/>
+      <!-- downstream agent -->
+      <circle cx="0.92" cy="0" r="0.28" fill="#2c6a9e" stroke="#1d4d78" stroke-width="0.05"/>
+      <!-- channel segments -->
+      <line x1="-0.62" y1="0" x2="-0.34" y2="0" stroke="#1d4d78" stroke-width="0.08" stroke-linecap="round"/>
+      <line x1="0.34" y1="0" x2="0.62" y2="0" stroke="#1d4d78" stroke-width="0.08" stroke-linecap="round"/>
+      <!-- information-bottleneck gate -->
+      <path d="M -0.32 -0.44 L 0.32 -0.44 L 0.09 0 L 0.32 0.44 L -0.32 0.44 L -0.09 0 Z"
+            fill="#e4eef7" stroke="#1d4d78" stroke-width="0.07" stroke-linejoin="round"/>
+      <!-- smuggled instruction, blocked at the gate -->
+      <path d="M 0 -1.28 L 0 -0.66" stroke="#e85a4f" stroke-width="0.09" stroke-dasharray="0.13 0.10" stroke-linecap="round"/>
+      <path d="M -0.15 -0.70 L 0.15 -0.48 M 0.15 -0.70 L -0.15 -0.48"
+            stroke="#e85a4f" stroke-width="0.11" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">Preprint · arXiv 2026</div>
+  <h1 class="fade-in"><span class="brand-text">ChannelGuard</span>: Safe Models Do Not<br>Compose into Safe Multi-Agent Systems</h1>
+  <p class="authors fade-in">
+    Elias Hossain<sup>1</sup>, Md Mehedi Hasan Nipu<sup>2</sup>, Fatema Tuj Johora Faria<sup>3</sup>, Tasfia Nuzhat Ornee<sup>1</sup>, Maleeha Sheikh<sup>4</sup>
+  </p>
+  <p class="affils fade-in">
+    <sup>1</sup>University of Central Florida &nbsp;&middot;&nbsp; <sup>2</sup>North South University &nbsp;&middot;&nbsp; <sup>3</sup>Ahsanullah University of Science and Technology &nbsp;&middot;&nbsp; <sup>4</sup>Purdue University Fort Wayne
+  </p>
+  <p class="subtitle fade-in">A multi-agent LLM pipeline chains a planner, workers, a verifier, and a synthesizer, and every hop between them is an unmonitored channel. We show that an undefended pipeline reporting perfect safety is often borrowing that safety from the cloud provider's filter &mdash; then replace it with deterministic, application-owned gates on all six channels.</p>
+  <div class="cta-row fade-in">
+    <a href="https://arxiv.org/abs/2607.19430" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> arXiv
+    </a>
+    <a href="https://arxiv.org/pdf/2607.19430" class="btn btn-outline" target="_blank" rel="noopener">📄 PDF</a>
+    <a href="assets/channelguard_architecture.png" class="btn btn-outline" target="_blank" rel="noopener">🖼 Figure</a>
+  </div>
+  <p class="code-pending fade-in">Code release pending &mdash; the review copy ships an anonymized artifact</p>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">2,100</div><div class="stat-label">Traces Evaluated</div></div>
+    <div class="stat"><div class="stat-value">8</div><div class="stat-label">Attack Families</div></div>
+    <div class="stat"><div class="stat-value">6</div><div class="stat-label">IB Gates</div></div>
+    <div class="stat"><div class="stat-value">3</div><div class="stat-label">Model Backends</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section id="problem" class="content">
+  <div class="section-label fade-in">The Problem</div>
+  <h2 class="section-title fade-in">Whose safety is it, anyway?</h2>
+  <p class="section-desc fade-in">Existing defenses guard only the <em>input</em> boundary &mdash; IBProtector, Llama&nbsp;Guard, perplexity filters, SmoothLLM &mdash; or run <em>outside</em> the application as opaque, stochastic provider-side content filters. Everything downstream of the first hop is unguarded. That gap carries a consequence practitioners rarely measure: a pipeline can report attack success of <strong>0.000</strong> on tool- and memory-poisoning and look fully safe, while almost none of that safety is actually its own.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⊘</div>
+      <h3>Every hop is a channel</h3>
+      <p>Planner to worker, tool to worker, worker to memory, worker to verifier, workers to synthesizer. An adversary who reaches any one of them can smuggle instructions into an agent that never sees the user's input boundary.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">↺</div>
+      <h3>Borrowed safety</h3>
+      <p>Pooled over tool- and memory-poisoning on Azure GPT-5, the undefended pipeline owes <strong>54 of 60</strong> of its blocks (90%) to the provider's server-side filter. Its own architecture contributes nothing at the tool boundary, because it has no gate there.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⇄</div>
+      <h3>Silent re-sourcing</h3>
+      <p>Move the same pipeline to a backend with no provider filter and the identical 0.000 outcome is instead produced entirely by the agent model's own alignment. The number never moves; the mechanism changes completely. Outcome-only reporting cannot see this.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">How ChannelGuard works</h2>
+  <p class="section-desc fade-in">ChannelGuard is a training-free, defense-in-depth framework that places an information-bottleneck gate on <em>every</em> inter-agent channel. Each gate splits channel text into sentences, embeds them, scores maximum cosine similarity against an adversarial phrase bank, and deterministically <strong>passes</strong>, <strong>compresses</strong>, or <strong>blocks</strong>. No LLM call is added. Alongside it, a per-trace attribution method records which layer first stopped each attack, so safety can be sourced rather than merely counted.</p>
+  <div class="method-figure fade-in"><img src="assets/channelguard_architecture.png" alt="ChannelGuard system diagram: the threat surface of six attack families, a multi-agent pipeline with six information-bottleneck gates, the per-gate decision mechanism, and per-sample execution traces feeding attack attribution analysis"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> The ChannelGuard system. <em>Top:</em> the threat surface, with attack families entering at different channels. <em>Middle:</em> the multi-agent pipeline instrumented with six information-bottleneck gates. <em>Bottom left:</em> the decision process at each gate &mdash; sentence embedding, maximum cosine similarity against the phrase bank, then a threshold decision routing to pass, compress, or block. <em>Bottom right:</em> per-sample execution traces feed the attribution analysis that identifies the first defensive layer to stop each attack.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">1</div>
+      <h3>Score</h3>
+      <p>Channel text is split into sentences and embedded; the gate takes the maximum cosine similarity against a 20-phrase adversarial bank. MiniLM scoring runs in roughly 5&nbsp;ms on CPU, three orders of magnitude below any LLM call.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">2</div>
+      <h3>Decide</h3>
+      <p>A threshold decision maps risk to one of three deterministic actions: low risk passes forward unchanged, medium risk is compressed to retain only the benign prefix, high risk is blocked and the content discarded.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">3</div>
+      <h3>Attribute</h3>
+      <p>Every trace records the first layer to stop the attack: an IB gate, the provider filter, the verifier, the synthesizer's hard refusal, or nothing at all. This is what makes borrowed safety visible.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">∎</div>
+      <h3>Application-owned</h3>
+      <p>Because a gate scores the poisoned string directly, it never depends on the agent that will read it, or on a vendor's filter. That is why its block rate is identical across all three backends.</p>
+    </div>
+  </div>
+
+  <div class="result-table-wrap fade-in" style="margin-top: 2.4rem;">
+    <table class="results">
+      <thead>
+        <tr><th>Gate</th><th>Channel</th><th>Guarded by prior defenses</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="gate">IB<sub>0</sub></td><td>User &rarr; Planner</td><td class="num">yes</td></tr>
+        <tr><td class="gate">IB<sub>1</sub></td><td>Planner &rarr; each Worker</td><td class="num">&mdash;</td></tr>
+        <tr><td class="gate">IB<sub>2</sub></td><td>Worker &rarr; Memory / Verifier</td><td class="num">&mdash;</td></tr>
+        <tr class="highlight"><td class="gate">IB<sub>3</sub></td><td>Tool &rarr; Worker</td><td class="num">&mdash;</td></tr>
+        <tr><td class="gate">IB<sub>3</sub>-mem</td><td>Memory &rarr; Worker (on read)</td><td class="num">&mdash;</td></tr>
+        <tr><td class="gate">IB<sub>4</sub></td><td>Worker &rarr; Verifier</td><td class="num">&mdash;</td></tr>
+        <tr><td class="gate">IB<sub>5</sub></td><td>All Workers &rarr; Synthesizer</td><td class="num">&mdash;</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> Gate placements. Only IB<sub>0</sub> coincides with the input boundary that prior defenses guard; the other five cover the inter-agent surface. IB<sub>3</sub> is highlighted because it is the gate that takes over tool-output poisoning from the provider filter.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Same outcome, different provenance</h2>
+  <p class="section-desc fade-in">Across 2,100 traces, eight attack families, five defenses, and three model backends. Aggregate attack success is tied at 0.000 on five of eight families, which is exactly why outcome-only reporting is insufficient &mdash; the interesting question is <em>how</em> each system reaches zero.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Attack</th><th>Undefended</th><th>ChannelGuard</th></tr>
+      </thead>
+      <tbody>
+        <tr class="highlight"><td>Prompt Injection</td><td class="num">0.333</td><td class="num">0.167</td></tr>
+        <tr><td>Tool Poisoning</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+        <tr><td>Memory Poisoning</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+        <tr><td>Slow-Drift Memory</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+        <tr><td>Consent-Escalation Memory</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+        <tr><td>Role-Confusion Memory</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+        <tr><td>Adaptive Paraphrase <em>(white-box)</em></td><td class="num">0.667</td><td class="num">0.667</td></tr>
+        <tr><td>Benign</td><td class="num">0.000</td><td class="num">0.000</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 2.</strong> Attack success rate, <em>n</em>&nbsp;=&nbsp;30 per cell, Azure GPT-5, paired on identical sample IDs. ChannelGuard halves prompt-injection success (0.333&nbsp;&rarr;&nbsp;0.167). Five rows are tied at zero; Table 3 shows the blocking mechanism differs sharply on three of them.</p>
+  </div>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>System</th><th>Attack</th><th>leak</th><th>ib</th><th>prov</th><th>ver</th><th>syn</th><th>safe</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Undefended</td><td>Prompt Injection</td><td class="num">10</td><td class="num">0</td><td class="num"><strong>6</strong></td><td class="num">4</td><td class="num">0</td><td class="num">10</td></tr>
+        <tr><td>ChannelGuard</td><td>Prompt Injection</td><td class="num">5</td><td class="num"><strong>21</strong></td><td class="num">0</td><td class="num">1</td><td class="num">0</td><td class="num">3</td></tr>
+        <tr><td>Undefended</td><td>Tool Poisoning</td><td class="num">0</td><td class="num">0</td><td class="num"><strong>24</strong></td><td class="num">0</td><td class="num">0</td><td class="num">6</td></tr>
+        <tr class="highlight"><td>ChannelGuard</td><td>Tool Poisoning</td><td class="num">0</td><td class="num"><strong>30</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td>Undefended</td><td>Memory Poisoning</td><td class="num">0</td><td class="num">0</td><td class="num"><strong>30</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+        <tr><td>ChannelGuard</td><td>Memory Poisoning</td><td class="num">0</td><td class="num">2</td><td class="num"><strong>22</strong></td><td class="num">0</td><td class="num">0</td><td class="num">6</td></tr>
+        <tr><td>Undefended</td><td>Consent-Escalation</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">3</td><td class="num">3</td><td class="num"><strong>24</strong></td></tr>
+        <tr><td>ChannelGuard</td><td>Consent-Escalation</td><td class="num">0</td><td class="num"><strong>20</strong></td><td class="num">0</td><td class="num">2</td><td class="num">0</td><td class="num">8</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 3.</strong> Per-trace attribution, <em>n</em>&nbsp;=&nbsp;30 each row. <em>leak</em> = attack succeeded; <em>ib</em> = blocked by an IB gate; <em>prov</em> = Azure provider filter; <em>ver</em> = verifier flagged unsafe; <em>syn</em> = synthesizer hard refusal; <em>safe</em> = answered without leaking, no external help attributed. Bold marks the dominant mechanism. On tool poisoning the undefended pipeline's zero rests on the provider for 24/30; ChannelGuard blocks 30/30 at its own IB<sub>3</sub> gate.</p>
+  </div>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Backend</th><th>System</th><th>IB</th><th>prov</th><th>model-handled</th><th>ASR</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Azure GPT-5</td><td>Undefended</td><td class="num">0</td><td class="num"><strong>24</strong></td><td class="num">6</td><td class="num">0.000</td></tr>
+        <tr class="highlight"><td>Azure GPT-5</td><td>ChannelGuard</td><td class="num"><strong>30</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0.000</td></tr>
+        <tr><td>Anthropic Sonnet 4.5</td><td>Undefended</td><td class="num">0</td><td class="num">0</td><td class="num"><strong>30</strong></td><td class="num">0.000</td></tr>
+        <tr class="highlight"><td>Anthropic Sonnet 4.5</td><td>ChannelGuard</td><td class="num"><strong>30</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0.000</td></tr>
+        <tr><td>Anthropic Haiku 4.5</td><td>Undefended</td><td class="num">0</td><td class="num">0</td><td class="num"><strong>30</strong></td><td class="num">0.000</td></tr>
+        <tr class="highlight"><td>Anthropic Haiku 4.5</td><td>ChannelGuard</td><td class="num"><strong>30</strong></td><td class="num">0</td><td class="num">0</td><td class="num">0.000</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 4.</strong> Tool poisoning only, <em>n</em>&nbsp;=&nbsp;30 per row. This is the cleanest view of mechanism substitution: the undefended pipeline is 100% provider-filter on Azure and 100% model-handled on both Anthropic backends, a complete re-sourcing of the same zero. ChannelGuard's IB<sub>3</sub> block is 30/30 on all three, unchanged. Both Anthropic entries are the same vendor at two sizes, so the contrast that matters is Azure (with a strong external filter) versus Anthropic (with none).</p>
+  </div>
+
+  <div class="feature-grid fade-in" style="margin-top: 2rem;">
+    <div class="feature-card">
+      <div class="feature-icon">≡</div>
+      <h3>Utility exactly preserved</h3>
+      <p>GSM8K accuracy is 0.867 with and without the gates &mdash; identical, not merely close. Benign-preservation rate is 0.533 against the undefended pipeline's 0.567, at a lower false-positive rate (0.033 vs 0.067).</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Faster, not slower</h3>
+      <p>Gates add no LLM call, and early blocking short-circuits work: 3.30&times; wall-clock speedup on prompt injection and 1.19&times; pooled across all 210 attack traces. Planner latency is unchanged to within 10&nbsp;ms.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✓</div>
+      <h3>Audited, and cheap</h3>
+      <p>A cross-family judge audit reaches &kappa;&nbsp;=&nbsp;0.900, and a sentinel-randomization test checks the block counts are not an artifact of the success criterion. Total measured cost of the full evaluation: $47.36.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITATIONS -->
+<section id="limitations" class="content">
+  <div class="section-label fade-in">Limitations</div>
+  <h2 class="section-title fade-in">Where this approach fails</h2>
+  <p class="section-desc fade-in">Two results run against the phrase-bank approach, and the paper states both directly rather than burying them. Reporting a defense's failure modes is the point of the attribution machinery, not an exception to it.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">✕</div>
+      <h3>White-box paraphrase evades every gate</h3>
+      <p>An adaptive attacker who rewrites an injection to be semantically equivalent but lexically distant from the bank defeats all embedding-based gates, ChannelGuard's included, at 0.667 attack success. SmoothLLM's perturb-and-vote strategy does substantially better here, at 0.200.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">+</div>
+      <h3>Complementary, not a replacement</h3>
+      <p>Gates and provider filters catch overlapping but non-identical subsets, and on memory poisoning the provider filter still does most of the work even with ChannelGuard active. Treat them as defense-in-depth. A Claude classifier at IB<sub>0</sub> also beats the phrase bank as a single input gate, 30/30 against 21/30.</p>
+    </div>
+  </div>
+  <div class="license-notice fade-in">
+    <div class="license-icon">⚠</div>
+    <div class="license-text">
+      <strong>On reading zeros.</strong> A perplexity-filter baseline records 0.000 attack success across the board, which looks perfect until you check the benign traces: it blocks 100% of inputs, giving a benign-preservation rate of 0.000 and a false-positive rate of 1.000. An attack-success number is uninterpretable without the utility column beside it.
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite ChannelGuard</h2>
+  <p class="section-desc fade-in">If you find ChannelGuard or the per-trace attribution methodology useful in your research, please consider citing the paper.</p>
+  <div class="citation-block fade-in" id="bibtex"><button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@article{hossain2026channelguard,
+  title         = {ChannelGuard: Safe Models Do Not Compose into Safe
+                   Multi-Agent Systems},
+  author        = {Hossain, Elias and Nipu, Md Mehedi Hasan
+                   and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat
+                   and Sheikh, Maleeha},
+  year          = {2026},
+  journal       = {arXiv preprint arXiv:2607.19430},
+  eprint        = {2607.19430},
+  archivePrefix = {arXiv},
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>ChannelGuard</strong> &mdash; Information-bottleneck gates for the inter-agent surface &nbsp;·&nbsp;
+    <a href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">arXiv</a> ·
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../nexus/">NEXUS</a> ·
+    <a href="../tas/">TAS</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

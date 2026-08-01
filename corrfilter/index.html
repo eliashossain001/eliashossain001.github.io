@@ -138,6 +138,41 @@
     display: grid; place-items: center;
     filter: drop-shadow(0 8px 28px var(--accent-glow));
   }
+  .cf-logo svg { overflow: visible; }
+  /* Correlated judges feeding a filter. Same mark as the home-page spotlight,
+     recoloured to this page's palette. */
+  .sp-chord  { stroke: var(--accent); }
+  .sp-judge  { fill: var(--accent); opacity: 0.92; }
+  .sp-judge.j3 { fill: var(--accent-ink); }
+  .sp-funnel { stroke: var(--ink-soft); opacity: 0.55; }
+  .sp-drop   { fill: var(--accent-ink); }
+  .sp-chord { animation: spChord 5.2s ease-in-out infinite; transform-origin: center; }
+  .sp-chord.c2 { animation-delay: -1.7s; }
+  .sp-chord.c3 { animation-delay: -3.4s; }
+  @keyframes spChord {
+    0%, 100% { opacity: 0.16; }
+    50%      { opacity: 0.92; }
+  }
+  .sp-judge { animation: spPulse 4.4s ease-in-out infinite; transform-origin: center; }
+  .sp-judge.j2 { animation-delay: -1.4s; }
+  .sp-judge.j3 { animation-delay: -2.9s; }
+  @keyframes spPulse {
+    0%, 100% { r: 12; opacity: 0.92; }
+    50%      { r: 14.5; opacity: 1; }
+  }
+  .sp-drop { animation: spDrop 3.6s linear infinite; }
+  .sp-drop.d2 { animation-delay: -1.2s; }
+  .sp-drop.d3 { animation-delay: -2.4s; }
+  @keyframes spDrop {
+    0%   { transform: translateY(0);    opacity: 0; }
+    18%  { opacity: 1; }
+    78%  { opacity: 1; }
+    100% { transform: translateY(46px); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-chord, .sp-judge, .sp-drop { animation: none; }
+    .sp-chord { opacity: 0.55; }
+  }
   .venue-badge {
     display: inline-flex; align-items: center; gap: 7px;
     padding: 5px 14px;
@@ -475,6 +510,7 @@
     <div class="nav-links" id="navLinks">
       <a href="../index.html">About</a>
       <a href="../index.html#publications">Publications</a>
+      <a href="/live/">See It Work</a>
       <a href="#question">Question</a>
       <a href="#scale">Scale</a>
       <a href="#findings">Findings</a>
@@ -490,23 +526,24 @@
 <!-- HERO -->
 <section class="hero">
   <div class="cf-logo fade-in">
-    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
-      <!-- the judge bank: a ring of voters -->
-      <circle cx="0" cy="0" r="1.42" fill="none" stroke="#b1354f" stroke-width="0.07" stroke-dasharray="0.05 0.10"/>
-      <!-- independent judges (muted) -->
-      <circle cx="0.00"  cy="-1.42" r="0.15" fill="#c9c2b4"/>
-      <circle cx="1.00"  cy="-1.00" r="0.15" fill="#c9c2b4"/>
-      <circle cx="1.42"  cy="0.00"  r="0.15" fill="#c9c2b4"/>
-      <circle cx="0.00"  cy="1.42"  r="0.15" fill="#c9c2b4"/>
-      <circle cx="-1.00" cy="1.00"  r="0.15" fill="#c9c2b4"/>
-      <!-- the correlated cluster (accent), chorded together -->
-      <path d="M -1.42 0 L -1.00 -1.00 L 1.00 1.00 L -1.42 0 Z"
-            fill="rgba(177,53,79,0.13)" stroke="#b1354f" stroke-width="0.055" stroke-linejoin="round"/>
-      <circle cx="-1.42" cy="0.00"  r="0.19" fill="#b1354f"/>
-      <circle cx="-1.00" cy="-1.00" r="0.19" fill="#b1354f"/>
-      <circle cx="1.00"  cy="1.00"  r="0.19" fill="#b1354f"/>
-      <!-- the pooled verdict at the centre -->
-      <circle cx="0" cy="0" r="0.30" fill="#fce9ed" stroke="#7f1f36" stroke-width="0.075"/>
+    <svg viewBox="0 0 190 190" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <!-- chords between judges: the correlation that consensus assumes away -->
+      <g fill="none" stroke-width="1.6" stroke-linecap="round">
+        <path class="sp-chord"    d="M52 46 Q95 24 138 46"/>
+        <path class="sp-chord c2" d="M138 46 Q152 78 116 96"/>
+        <path class="sp-chord c3" d="M52 46 Q38 78 74 96"/>
+      </g>
+      <!-- three judges -->
+      <circle class="sp-judge"    cx="52"  cy="46" r="12"/>
+      <circle class="sp-judge j2" cx="138" cy="46" r="12"/>
+      <circle class="sp-judge j3" cx="95"  cy="86" r="12"/>
+      <!-- the filter -->
+      <path class="sp-funnel" d="M40 112 L150 112 L112 146 L112 168 L78 168 L78 146 Z"
+            fill="none" stroke-width="2" stroke-linejoin="round"/>
+      <!-- samples passing through -->
+      <circle class="sp-drop"    cx="72"  cy="118" r="3.4"/>
+      <circle class="sp-drop d2" cx="95"  cy="118" r="3.4"/>
+      <circle class="sp-drop d3" cx="118" cy="118" r="3.4"/>
     </svg>
   </div>
   <div class="venue-badge fade-in"><span class="dot"></span> Under double-blind review</div>

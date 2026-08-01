@@ -826,6 +826,45 @@
     font-weight: 500;
     flex: 0 0 auto;
   }
+  /* Animated collaboration mark: two nodes, a live link, and a signal in flight.
+     Same visual language as the CorrFilter spotlight further down the page. */
+  .cb-icon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    margin-right: -4px;
+    overflow: visible;
+  }
+  .cbi-link {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-dasharray: 4 4;
+    animation: cbiFlow 1.9s linear infinite;
+  }
+  @keyframes cbiFlow { to { stroke-dashoffset: -16; } }
+  .cbi-node { fill: var(--accent-ink); animation: cbiBeat 3.2s ease-in-out infinite; }
+  .cbi-node.n2 { fill: var(--accent); animation-delay: -1.6s; }
+  @keyframes cbiBeat {
+    0%, 100% { r: 4.4; opacity: 0.85; }
+    50%      { r: 5.6; opacity: 1; }
+  }
+  .cbi-ring {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.4;
+    animation: cbiRing 2.9s ease-out infinite;
+  }
+  @keyframes cbiRing {
+    0%   { r: 5;  opacity: 0.5; }
+    70%  { r: 12; opacity: 0; }
+    100% { r: 12; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cbi-link, .cbi-node, .cbi-ring { animation: none; }
+    .cbi-ring { opacity: 0.32; }
+  }
   .cb-people {
     display: flex;
     flex-wrap: wrap;
@@ -1052,40 +1091,152 @@
     line-height: 1.55;
   }
 
-  /* WORK IN PROGRESS */
-  .wip-list { display: flex; flex-direction: column; gap: 12px; }
-  .wip-item {
+  /* WORK IN PROGRESS — single spotlight card */
+  .spotlight {
+    position: relative;
     display: grid;
-    grid-template-columns: 150px 1fr;
-    gap: 18px;
-    align-items: start;
-    padding: 14px 16px;
-    background: var(--bg-elev);
+    grid-template-columns: 210px 1fr;
+    gap: 30px;
+    align-items: center;
+    padding: 30px 32px;
+    border-radius: 18px;
     border: 1px solid var(--line);
-    border-radius: 12px;
-    transition: border-color 0.18s;
+    background:
+      radial-gradient(120% 150% at 0% 0%, var(--accent-soft) 0%, transparent 58%),
+      var(--bg-elev);
+    overflow: hidden;
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
   }
-  .wip-item:hover { border-color: var(--accent); }
-  @media (max-width: 600px) {
-    .wip-item { grid-template-columns: 1fr; gap: 6px; }
+  .spotlight::before {
+    /* slow sheen that sweeps the card */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.42) 50%, transparent 62%);
+    background-size: 260% 100%;
+    animation: spotSheen 7s ease-in-out infinite;
+    pointer-events: none;
   }
-  .wip-name {
-    font-family: 'Fraunces', serif;
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.2;
+  [data-theme="dark"] .spotlight::before {
+    background: linear-gradient(105deg, transparent 38%, rgba(126,224,197,0.10) 50%, transparent 62%);
+    background-size: 260% 100%;
   }
-  .wip-status {
-    display: block;
+  @keyframes spotSheen {
+    0%, 100% { background-position: 170% 0; }
+    55%      { background-position: -70% 0; }
+  }
+  .spotlight:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  @media (max-width: 700px) {
+    .spotlight { grid-template-columns: 1fr; gap: 18px; padding: 24px 20px; }
+    .spotlight-art { margin: 0 auto; }
+  }
+
+  .spotlight-art {
+    position: relative;
+    width: 190px;
+    height: 190px;
+    display: grid;
+    place-items: center;
+  }
+  .spotlight-art svg { width: 100%; height: 100%; overflow: visible; }
+  .sp-chord  { stroke: var(--accent); }
+  .sp-judge  { fill: var(--accent); opacity: 0.92; }
+  .sp-judge.j3 { fill: var(--accent-ink); }
+  .sp-funnel { stroke: var(--ink-soft); opacity: 0.55; }
+  .sp-drop   { fill: var(--accent-ink); }
+  /* judges drift in and out of agreement */
+  .sp-chord { animation: spChord 5.2s ease-in-out infinite; transform-origin: center; }
+  .sp-chord.c2 { animation-delay: -1.7s; }
+  .sp-chord.c3 { animation-delay: -3.4s; }
+  @keyframes spChord {
+    0%, 100% { opacity: 0.16; }
+    50%      { opacity: 0.92; }
+  }
+  .sp-judge { animation: spPulse 4.4s ease-in-out infinite; transform-origin: center; }
+  .sp-judge.j2 { animation-delay: -1.4s; }
+  .sp-judge.j3 { animation-delay: -2.9s; }
+  @keyframes spPulse {
+    0%, 100% { r: 12; opacity: 0.92; }
+    50%      { r: 14.5; opacity: 1; }
+  }
+  /* samples falling through the filter */
+  .sp-drop { animation: spDrop 3.6s linear infinite; }
+  .sp-drop.d2 { animation-delay: -1.2s; }
+  .sp-drop.d3 { animation-delay: -2.4s; }
+  @keyframes spDrop {
+    0%   { transform: translateY(0);    opacity: 0; }
+    18%  { opacity: 1; }
+    78%  { opacity: 1; }
+    100% { transform: translateY(46px); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spotlight::before,
+    .sp-chord, .sp-judge, .sp-drop { animation: none; }
+    .sp-chord { opacity: 0.55; }
+  }
+
+  .spotlight-body { min-width: 0; }
+  .spotlight-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 9.5px;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--accent-ink);
-    margin-top: 5px;
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 4px 11px;
+    margin-bottom: 12px;
   }
-  .wip-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin: 0; }
+  .spotlight-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: spBlink 2.2s ease-in-out infinite;
+  }
+  @keyframes spBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  @media (prefers-reduced-motion: reduce) {
+    .spotlight-eyebrow::before { animation: none; }
+  }
+  .spotlight-title {
+    font-family: 'Fraunces', serif;
+    font-size: 27px;
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0 0 10px;
+  }
+  .spotlight-title a { color: var(--ink); border: none; }
+  .spotlight-title a:hover { color: var(--accent-ink); }
+  .spotlight-title .sp-arrow {
+    display: inline-block;
+    transition: transform 0.22s ease;
+    color: var(--accent);
+  }
+  .spotlight:hover .spotlight-title .sp-arrow { transform: translateX(5px); }
+  .spotlight-lede {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.62;
+    margin: 0 0 16px;
+    max-width: 60ch;
+  }
+  .spotlight-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .spotlight-tags span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--pill-ink);
+    background: var(--pill-bg);
+    border-radius: 6px;
+    padding: 4px 9px;
+  }
   .wip-note {
     margin-top: 16px;
     font-size: 12.5px;
@@ -1599,6 +1750,7 @@
       <a href="#collaborators">Collaborators</a>
       <a href="/cv/Elias_CV.pdf" target="_blank">CV</a>
       <a href="#publications">Publications</a>
+      <a href="/live/">See It Work</a>
       <a href="/notes.html">Notes</a>
       <a href="/oss.html">Open Source</a>
       <a href="#news">News</a>
@@ -1789,6 +1941,12 @@
         </p>
 
         <div class="collab-band">
+          <svg class="cb-icon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path class="cbi-link" d="M9 18 Q18 6 27 18"/>
+            <circle class="cbi-ring" cx="27" cy="18" r="5"/>
+            <circle class="cbi-node"    cx="9"  cy="18" r="4.4"/>
+            <circle class="cbi-node n2" cx="27" cy="18" r="4.4"/>
+          </svg>
           <span class="cb-label">Collaborating with</span>
           <span class="cb-people">
             <span class="cb-person cb-star"><a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a> <span class="cb-where">UCF &middot; formerly led AI research at Meta</span> <a class="cb-proj" href="/corrfilter/">on CorrFilter &rarr;</a></span>
@@ -2122,28 +2280,38 @@
 <section class="full-section reveal" id="inreview">
   <div class="section-label">In the Pipeline</div>
   <h2>Work in progress</h2>
-  <p class="pubs-sub">Projects currently under review. Happy to discuss any of these in detail &mdash; <a href="mailto:mdelias.hossain@ucf.edu">get in touch</a>.</p>
-  <div class="wip-list">
-    <div class="wip-item">
-      <div>
-        <div class="wip-name"><a href="/corrfilter/" style="color:inherit;border:none;">CorrFilter &rarr;</a></div>
-        <span class="wip-status">Under review</span>
-      </div>
-      <p class="wip-desc">A large-scale empirical study of how reliable LLM-judge consensus really is when judge banks are used to filter alignment data. Covers multiple public preference datasets, judge banks spanning several model families and scales, and both base and preference-optimized judges, alongside a mitigation that outperforms standard consensus rules at matched retention.</p>
+  <p class="pubs-sub">Current work under review. Happy to discuss it in detail &mdash; <a href="mailto:mdelias.hossain@ucf.edu">get in touch</a>.</p>
+  <div class="spotlight">
+    <div class="spotlight-art" aria-hidden="true">
+      <svg viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
+        <!-- chords between judges: the correlation that consensus assumes away -->
+        <g fill="none" stroke-width="1.6" stroke-linecap="round">
+          <path class="sp-chord"    d="M52 46 Q95 24 138 46"/>
+          <path class="sp-chord c2" d="M138 46 Q152 78 116 96"/>
+          <path class="sp-chord c3" d="M52 46 Q38 78 74 96"/>
+        </g>
+        <!-- three judges -->
+        <circle class="sp-judge"    cx="52"  cy="46" r="12"/>
+        <circle class="sp-judge j2" cx="138" cy="46" r="12"/>
+        <circle class="sp-judge j3" cx="95"  cy="86" r="12"/>
+        <!-- the filter -->
+        <path class="sp-funnel" d="M40 112 L150 112 L112 146 L112 168 L78 168 L78 146 Z"
+              fill="none" stroke-width="2" stroke-linejoin="round"/>
+        <!-- samples passing through -->
+        <circle class="sp-drop"    cx="72"  cy="118" r="3.4"/>
+        <circle class="sp-drop d2" cx="95"  cy="118" r="3.4"/>
+        <circle class="sp-drop d3" cx="118" cy="118" r="3.4"/>
+      </svg>
     </div>
-    <div class="wip-item">
-      <div>
-        <div class="wip-name"><a href="/carebench/" style="color:inherit;border:none;">CareBench &rarr;</a></div>
-        <span class="wip-status">In preparation</span>
+    <div class="spotlight-body">
+      <span class="spotlight-eyebrow">Under review</span>
+      <h3 class="spotlight-title"><a href="/corrfilter/">CorrFilter <span class="sp-arrow">&rarr;</span></a></h3>
+      <p class="spotlight-lede">Alignment pipelines increasingly hand quality control to a panel of LLM judges and keep whatever the panel agrees on. That move quietly assumes the judges are independent. This work asks what happens when they are not, at scale, and what it costs the data you keep.</p>
+      <div class="spotlight-tags">
+        <span>llm-as-judge</span>
+        <span>preference-data</span>
+        <span>alignment</span>
       </div>
-      <p class="wip-desc">Process-level evaluation of clinical LLM agents, scoring the trajectory a system takes rather than only the answer it lands on. Code and the case pool are public; across 1,000 trajectories from five frontier models, nearly four in five correct diagnoses came from a pathway with no safety check invoked.</p>
-    </div>
-    <div class="wip-item">
-      <div>
-        <div class="wip-name">SAVe</div>
-        <span class="wip-status">Poster presented</span>
-      </div>
-      <p class="wip-desc">Multi-agent safe alignment verification for preference-based LLM optimization, filtering corrupted supervision before it reaches RLHF or DPO. Presented at the Amazon Trusted AI Symposium.</p>
     </div>
   </div>
   <p class="wip-note">Methods and results for work under review are shared on request rather than posted publicly.</p>

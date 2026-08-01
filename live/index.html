@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>See It Work · Elias Hossain</title>
+<meta name="description" content="Animated walkthroughs of my research on LLM safety: runtime intervention for tool-using agents, information-bottleneck gates between agents, process-level clinical evaluation, and judge-correlation in alignment data filtering." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb; --bg-elev: #fdfaf3; --ink: #1b1d1a; --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76; --line: #e3dccd; --accent: #0e7c66; --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c; --hot: #c0392b; --hot-soft: #fde4d6; --hot-ink: #9a2f25;
+    --warn: #e08e3a; --pill-bg: #efe9da; --pill-ink: #3a3d36;
+    --shadow: 0 1px 2px rgba(20,24,18,0.04), 0 8px 24px rgba(20,24,18,0.05);
+  }
+  [data-theme="dark"] {
+    --bg: #111311; --bg-elev: #181b18; --ink: #ecebe4; --ink-soft: #b8b7ad;
+    --ink-muted: #80807a; --line: #262a25; --accent: #4ed1b3; --accent-soft: #14302a;
+    --accent-ink: #7ee0c5; --hot: #ff7a6b; --hot-soft: #2e1a16; --hot-ink: #ffb8a8;
+    --warn: #ffc46b; --pill-bg: #1f2320; --pill-ink: #c4c3bb;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  .nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid var(--line); }
+  .nav-inner { max-width: 1000px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .nav-home { font-family: 'Fraunces', serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+  .nav-links { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle { background: var(--bg-elev); border: 1px solid var(--line); width: 34px; height: 34px;
+    border-radius: 50%; cursor: pointer; display: grid; place-items: center; color: var(--ink-soft); padding: 0; }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 52px 28px 90px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent-ink); margin-bottom: 12px; }
+  h1 { font-size: 38px; margin-bottom: 14px; }
+  .lede { font-size: 16.5px; color: var(--ink-soft); max-width: 68ch; margin-bottom: 12px; }
+  .note { font-size: 13px; color: var(--ink-muted); font-style: italic; margin-bottom: 40px; }
+
+  .fig { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 16px;
+    overflow: hidden; margin-bottom: 34px; transition: border-color 0.2s, box-shadow 0.2s; }
+  .fig:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .fig-head { padding: 16px 22px 14px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .fig-head h2 { font-size: 21px; }
+  .fig-head .kicker { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent-ink); }
+  .fig-head .go { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 11px; white-space: nowrap; }
+  .stage { display: block; width: 100%; height: auto; padding: 10px 8px; }
+  .fig-cap { padding: 14px 22px 18px; font-size: 13.5px; color: var(--ink-muted); line-height: 1.6; border-top: 1px solid var(--line); }
+  .fig-cap strong { color: var(--ink-soft); font-weight: 600; }
+
+  .lbl { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; fill: var(--ink-muted); text-transform: uppercase; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--ink); }
+  .ttl { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); }
+  .box { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+
+  /* ================= NEXUS ================= */
+  #nexus .agent-body { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+  #nexus .eye { fill: var(--accent-ink); animation: blink 4.2s steps(1) infinite; }
+  @keyframes blink { 0%,96%,100% { opacity: 1; } 97%,99% { opacity: 0.15; } }
+  #nexus .plan { animation: 14s linear infinite; }
+  #nexus .p1 { animation-name: p1move; }
+  #nexus .p2 { animation-name: p2move; }
+  @keyframes p1move {
+    0% { transform: translateX(0); opacity: 0; } 4% { transform: translateX(0); opacity: 1; }
+    18% { transform: translateX(150px); opacity: 1; } 26% { transform: translateX(150px); opacity: 1; }
+    38% { transform: translateX(330px); opacity: 1; } 46%,100% { transform: translateX(330px); opacity: 0; }
+  }
+  @keyframes p2move {
+    0%,50% { transform: translateX(0); opacity: 0; } 54% { transform: translateX(0); opacity: 1; }
+    68% { transform: translateX(150px); opacity: 1; } 76% { transform: translateX(150px); opacity: 1; }
+    79% { transform: translateX(128px); opacity: 1; } 82% { transform: translateX(140px); opacity: 1; }
+    96%,100% { transform: translateX(140px); opacity: 0; }
+  }
+  #nexus .lamp { animation: 14s steps(1) infinite; }
+  #nexus .lampA { animation-name: lampA; } #nexus .lampB { animation-name: lampB; } #nexus .lampC { animation-name: lampC; }
+  @keyframes lampA { 0%,19% { fill: var(--line); } 20%,45% { fill: var(--accent); } 46%,69% { fill: var(--line); } 70%,95% { fill: var(--hot); } 96%,100% { fill: var(--line); } }
+  @keyframes lampB { 0%,22% { fill: var(--line); } 23%,45% { fill: var(--accent); } 46%,72% { fill: var(--line); } 73%,95% { fill: var(--hot); } 96%,100% { fill: var(--line); } }
+  @keyframes lampC { 0%,25% { fill: var(--line); } 26%,45% { fill: var(--accent); } 46%,75% { fill: var(--line); } 76%,95% { fill: var(--warn); } 96%,100% { fill: var(--line); } }
+  #nexus .risk-fill { animation: riskFill 14s ease-in-out infinite; transform-origin: left center; }
+  @keyframes riskFill {
+    0%,18% { transform: scaleX(0.02); fill: var(--accent); } 28%,45% { transform: scaleX(0.18); fill: var(--accent); }
+    46%,68% { transform: scaleX(0.02); fill: var(--accent); } 80%,95% { transform: scaleX(0.94); fill: var(--hot); }
+    100% { transform: scaleX(0.02); fill: var(--accent); }
+  }
+  #nexus .stamp { animation: 14s ease-out infinite; transform-origin: center; }
+  #nexus .allow { animation-name: allowPop; } #nexus .block { animation-name: blockPop; }
+  @keyframes allowPop { 0%,29% { opacity: 0; transform: scale(0.7); } 33% { opacity: 1; transform: scale(1.12); } 36%,44% { opacity: 1; transform: scale(1); } 48%,100% { opacity: 0; } }
+  @keyframes blockPop { 0%,77% { opacity: 0; transform: scale(0.7); } 81% { opacity: 1; transform: scale(1.14); } 84% { opacity: 1; transform: scale(0.98) rotate(-2deg); } 87%,94% { opacity: 1; transform: scale(1) rotate(0deg); } 97%,100% { opacity: 0; } }
+
+  /* ============== CHANNELGUARD ============== */
+  #cg .node { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+  #cg .msg { animation: msgFlow 10s ease-in-out infinite; }
+  @keyframes msgFlow {
+    0% { transform: translateX(0); opacity: 0; } 6% { transform: translateX(0); opacity: 1; }
+    34% { transform: translateX(118px); opacity: 1; } 50% { transform: translateX(118px); opacity: 1; }
+    78% { transform: translateX(250px); opacity: 1; } 92%,100% { transform: translateX(250px); opacity: 0; }
+  }
+  #cg .poison { animation: poisonStrip 10s ease-in-out infinite; }
+  @keyframes poisonStrip {
+    0% { transform: translateX(0); opacity: 0; } 6% { transform: translateX(0); opacity: 1; }
+    34% { transform: translateX(118px); opacity: 1; } 42% { transform: translateX(118px) scale(1.25); opacity: 1; }
+    50% { transform: translateX(118px) scale(0); opacity: 0; } 100% { transform: translateX(118px) scale(0); opacity: 0; }
+  }
+  #cg .gate-glow { animation: gateGlow 10s ease-in-out infinite; }
+  @keyframes gateGlow { 0%,32% { opacity: 0; } 40% { opacity: 0.85; } 52%,100% { opacity: 0; } }
+
+  /* ============== CAREBENCH ============== */
+  #cb .track { stroke: var(--line); stroke-width: 2; fill: none; }
+  #cb .step { fill: var(--bg); stroke: var(--line); stroke-width: 2; }
+  #cb .stepA { animation: stepLite 13s steps(1) infinite; }
+  #cb .a2 { animation-delay: -0.9s; } #cb .a3 { animation-delay: -1.8s; } #cb .a4 { animation-delay: -2.7s; }
+  #cb .stepB { animation: stepLite 13s steps(1) infinite; }
+  #cb .b2 { animation-delay: -0.9s; } #cb .b3 { animation-delay: -1.8s; }
+  @keyframes stepLite {
+    0%,7% { fill: var(--bg); stroke: var(--line); }
+    8%,72% { fill: var(--accent-soft); stroke: var(--accent); }
+    73%,100% { fill: var(--bg); stroke: var(--line); }
+  }
+  #cb .runner { animation: runA 13s ease-in-out infinite; }
+  @keyframes runA {
+    0% { transform: translateX(0); opacity: 0; } 6% { transform: translateX(0); opacity: 1; }
+    52% { transform: translateX(300px); opacity: 1; } 72% { transform: translateX(300px); opacity: 1; }
+    80%,100% { transform: translateX(300px); opacity: 0; }
+  }
+  #cb .gap { animation: gapFlash 13s ease-in-out infinite; }
+  @keyframes gapFlash { 0%,30% { opacity: 0; } 40%,72% { opacity: 1; } 80%,100% { opacity: 0; } }
+  #cb .verdict { animation: verdictPop 13s ease-out infinite; transform-origin: center; }
+  @keyframes verdictPop {
+    0%,56% { opacity: 0; transform: scale(0.75); } 61% { opacity: 1; transform: scale(1.1); }
+    64%,74% { opacity: 1; transform: scale(1); } 80%,100% { opacity: 0; transform: scale(1); }
+  }
+
+  /* ============== CORRFILTER ============== */
+  #cf .judge { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+  #cf .vote { animation: voteIn 15s ease-out infinite; transform-origin: center; }
+  #cf .v2 { animation-delay: -0.4s; } #cf .v3 { animation-delay: -0.8s; }
+  #cf .v4 { animation-delay: -1.2s; } #cf .v5 { animation-delay: -1.6s; }
+  @keyframes voteIn {
+    0%,10% { opacity: 0; transform: scale(0.5); } 16% { opacity: 1; transform: scale(1.2); }
+    20%,84% { opacity: 1; transform: scale(1); } 92%,100% { opacity: 0; transform: scale(1); }
+  }
+  #cf .keep-badge { animation: keepPop 15s ease-out infinite; transform-origin: center; }
+  @keyframes keepPop {
+    0%,26% { opacity: 0; transform: scale(0.7); } 31% { opacity: 1; transform: scale(1.12); }
+    34%,84% { opacity: 1; transform: scale(1); } 92%,100% { opacity: 0; }
+  }
+  #cf .chord { stroke: var(--hot); stroke-width: 2; fill: none; stroke-dasharray: 5 4;
+    animation: chordIn 15s ease-in-out infinite; }
+  @keyframes chordIn { 0%,44% { opacity: 0; } 52%,84% { opacity: 0.95; } 92%,100% { opacity: 0; } }
+  #cf .reveal { animation: revealIn 15s ease-out infinite; transform-origin: center; }
+  @keyframes revealIn {
+    0%,62% { opacity: 0; transform: scale(0.8); } 68% { opacity: 1; transform: scale(1.1); }
+    71%,86% { opacity: 1; transform: scale(1); } 93%,100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage * { animation: none !important; }
+    #nexus .p1, #nexus .allow, #cf .chord, #cf .reveal { opacity: 0; }
+  }
+  @media (max-width: 620px) {
+    h1 { font-size: 30px; }
+    .wrap { padding: 36px 18px 70px; }
+    .nav-inner { padding: 12px 16px; }
+    .nav-links { gap: 13px; }
+    .nav-links a { font-size: 13px; }
+    .fig-head .go { margin-left: 0; }
+  }
+
+  .foot { border-top: 1px solid var(--line); padding: 26px 28px 40px; text-align: center;
+    color: var(--ink-muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-home" href="/">Elias Hossain</a>
+    <div class="nav-links">
+      <a href="/#about">About</a>
+      <a href="/#publications">Publications</a>
+      <a href="/oss.html">Open Source</a>
+      <a href="/live/" class="active">See It Work</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">Research, in motion</div>
+  <h1>See it work</h1>
+  <p class="lede">Every paper below defends a different layer of the LLM agent stack. Rather than describe the mechanisms, each one runs here as a short loop: the attack arrives, the defense reacts, and you can see what it catches.</p>
+  <p class="note">Each animation is a faithful illustration of the mechanism, not a live instance of the system. Numbers shown are from the papers.</p>
+
+  <!-- ================= NEXUS ================= -->
+  <div class="fig">
+    <div class="fig-head">
+      <h2>NEXUS</h2><span class="kicker">tool calls and actions</span>
+      <a class="go" href="/nexus/">project page &rarr;</a>
+    </div>
+    <svg id="nexus" class="stage" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <rect class="agent-body" x="24" y="86" width="58" height="52" rx="12"/>
+        <circle class="eye" cx="42" cy="108" r="4"/><circle class="eye" cx="64" cy="108" r="4"/>
+        <path d="M44 122 Q53 128 62 122" fill="none" stroke="var(--accent-ink)" stroke-width="2" stroke-linecap="round"/>
+        <text class="lbl" x="53" y="158" text-anchor="middle">agent</text>
+      </g>
+      <rect class="box" x="238" y="62" width="136" height="102" rx="12"/>
+      <text class="ttl" x="306" y="84" text-anchor="middle">NEXUS monitor</text>
+      <circle class="lamp lampA" cx="266" cy="102" r="5" fill="var(--line)"/>
+      <circle class="lamp lampB" cx="286" cy="102" r="5" fill="var(--line)"/>
+      <circle class="lamp lampC" cx="306" cy="102" r="5" fill="var(--line)"/>
+      <text class="lbl" x="330" y="106">rules</text>
+      <rect x="258" y="124" width="96" height="7" rx="3.5" fill="var(--line)"/>
+      <rect class="risk-fill" x="258" y="124" width="96" height="7" rx="3.5" fill="var(--accent)"/>
+      <text class="lbl" x="258" y="148">risk score &#961;(P)</text>
+      <g class="plan p1">
+        <rect x="96" y="92" width="120" height="40" rx="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="mono" x="106" y="108">calendar.read</text>
+        <text class="lbl" x="106" y="122">read &#183; reversible</text>
+      </g>
+      <g class="plan p2">
+        <rect x="96" y="92" width="120" height="40" rx="8" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="1.5"/>
+        <text class="mono" x="106" y="108">file.write</text>
+        <text class="lbl" x="106" y="122">/etc/passwd</text>
+      </g>
+      <g class="stamp allow">
+        <rect x="446" y="86" width="112" height="40" rx="20" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+        <path d="M470 106 l7 8 l14 -16" fill="none" stroke="var(--accent-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text class="ttl" x="518" y="110" text-anchor="middle">ALLOW</text>
+      </g>
+      <g class="stamp block">
+        <rect x="446" y="86" width="112" height="40" rx="20" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="2"/>
+        <path d="M470 99 l14 14 M484 99 l-14 14" fill="none" stroke="var(--hot)" stroke-width="3" stroke-linecap="round"/>
+        <text class="ttl" x="520" y="110" text-anchor="middle" fill="var(--hot)">BLOCK</text>
+      </g>
+    </svg>
+    <p class="fig-cap">Two plans arrive. The benign read clears the rules and passes. The irreversible write to a sensitive path trips two rules, drives the risk score up, and is stopped <strong>before any tool runs</strong>. In the paper this reaches 0.949 F&#8321; at 0.205&nbsp;ms median latency.</p>
+  </div>
+
+  <!-- ============== CHANNELGUARD ============== -->
+  <div class="fig">
+    <div class="fig-head">
+      <h2>ChannelGuard</h2><span class="kicker">inter-agent channel</span>
+      <a class="go" href="/channelguard/">project page &rarr;</a>
+    </div>
+    <svg id="cg" class="stage" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+      <circle class="node" cx="58" cy="100" r="26"/>
+      <text class="lbl" x="58" y="144" text-anchor="middle">agent A</text>
+      <circle class="node" cx="582" cy="100" r="26"/>
+      <text class="lbl" x="582" y="144" text-anchor="middle">agent B</text>
+      <line x1="92" y1="100" x2="548" y2="100" stroke="var(--line)" stroke-width="2" stroke-dasharray="5 5"/>
+      <rect class="gate-glow" x="284" y="52" width="72" height="96" rx="12" fill="var(--accent)" opacity="0"/>
+      <rect class="box" x="292" y="60" width="56" height="80" rx="10"/>
+      <path d="M304 88 h32 M304 100 h32 M304 112 h32" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+      <text class="lbl" x="320" y="158" text-anchor="middle">IB gate</text>
+      <g class="msg">
+        <rect x="120" y="86" width="86" height="28" rx="7" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/>
+        <text class="mono" x="132" y="104">tool output</text>
+      </g>
+      <g class="poison">
+        <rect x="120" y="60" width="86" height="22" rx="6" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="1.5"/>
+        <text class="mono" x="130" y="75" fill="var(--hot)">ignore rules</text>
+      </g>
+    </svg>
+    <p class="fig-cap">A tool result carries an injected instruction to the next agent. The gate keeps what the task needs and drops the rest, so the payload <strong>never reaches agent B</strong>. Tool-output poisoning is blocked outright and prompt-injection success is halved, with task accuracy held at 0.867.</p>
+  </div>
+
+  <!-- ============== CAREBENCH ============== -->
+  <div class="fig">
+    <div class="fig-head">
+      <h2>CareBench</h2><span class="kicker">clinical agent evaluation</span>
+      <a class="go" href="/carebench/">project page &rarr;</a>
+    </div>
+    <svg id="cb" class="stage" viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <!-- the case -->
+      <rect class="box" x="18" y="98" width="76" height="56" rx="10"/>
+      <text class="ttl" x="56" y="122" text-anchor="middle">case</text>
+      <text class="lbl" x="56" y="138" text-anchor="middle">patient</text>
+
+      <!-- PATH A: safety check invoked -->
+      <text class="lbl" x="116" y="52">path A &#183; check invoked</text>
+      <path class="track" d="M112 74 H430"/>
+      <circle class="step stepA a1" cx="150" cy="74" r="11"/>
+      <circle class="step stepA a2" cx="242" cy="74" r="11"/>
+      <circle class="step stepA a3" cx="334" cy="74" r="11"/>
+      <circle class="step stepA a4" cx="418" cy="74" r="11"/>
+      <text class="lbl" x="150" y="98" text-anchor="middle">history</text>
+      <text class="lbl" x="242" y="98" text-anchor="middle">labs</text>
+      <text class="lbl" x="334" y="98" text-anchor="middle">safety check</text>
+      <text class="lbl" x="418" y="98" text-anchor="middle">dx</text>
+      <g class="verdict">
+        <rect x="454" y="54" width="168" height="40" rx="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+        <text class="ttl" x="470" y="70">answer &#10003;</text>
+        <text class="ttl" x="470" y="86" fill="var(--accent-ink)">process &#10003;</text>
+      </g>
+
+      <!-- PATH B: safety check skipped -->
+      <text class="lbl" x="116" y="176">path B &#183; check skipped</text>
+      <path class="track" d="M112 198 H430"/>
+      <circle class="step stepB b1" cx="150" cy="198" r="11"/>
+      <circle class="step stepB b2" cx="242" cy="198" r="11"/>
+      <circle class="step stepB b3" cx="418" cy="198" r="11"/>
+      <text class="lbl" x="150" y="222" text-anchor="middle">history</text>
+      <text class="lbl" x="242" y="222" text-anchor="middle">labs</text>
+      <text class="lbl" x="418" y="222" text-anchor="middle">dx</text>
+      <!-- the missing check -->
+      <g class="gap">
+        <circle cx="334" cy="198" r="12" fill="none" stroke="var(--hot)" stroke-width="2" stroke-dasharray="4 4"/>
+        <path d="M327 191 l14 14 M341 191 l-14 14" stroke="var(--hot)" stroke-width="2" stroke-linecap="round"/>
+        <text class="lbl" x="334" y="170" text-anchor="middle" fill="var(--hot)">no safety check</text>
+      </g>
+      <g class="verdict">
+        <rect x="454" y="178" width="168" height="40" rx="10" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="2"/>
+        <text class="ttl" x="470" y="194">answer &#10003;</text>
+        <text class="ttl" x="470" y="210" fill="var(--hot)">process &#10007;</text>
+      </g>
+
+      <!-- runners -->
+      <circle class="runner" cx="126" cy="74" r="5" fill="var(--accent-ink)"/>
+      <circle class="runner" cx="126" cy="198" r="5" fill="var(--hot)"/>
+    </svg>
+    <p class="fig-cap">Both paths land on the correct diagnosis, so answer-level scoring calls them equal. CareBench scores the <strong>trajectory</strong>, and only path A earns credit. Across 1,000 trajectories from five frontier models, <strong>nearly four in five correct diagnoses</strong> came from a pathway like B, with no safety check invoked.</p>
+  </div>
+
+  <!-- ============== CORRFILTER ============== -->
+  <div class="fig">
+    <div class="fig-head">
+      <h2>CorrFilter</h2><span class="kicker">supervision and judges</span>
+      <a class="go" href="/corrfilter/">project page &rarr;</a>
+    </div>
+    <svg id="cf" class="stage" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg">
+      <!-- sample under review -->
+      <rect class="box" x="20" y="96" width="94" height="52" rx="10"/>
+      <text class="ttl" x="67" y="118" text-anchor="middle">sample</text>
+      <text class="lbl" x="67" y="134" text-anchor="middle">preference pair</text>
+
+      <!-- judge bank -->
+      <text class="lbl" x="160" y="40">judge bank</text>
+      <circle class="judge" cx="190" cy="76" r="17"/>
+      <circle class="judge" cx="258" cy="76" r="17"/>
+      <circle class="judge" cx="326" cy="76" r="17"/>
+      <circle class="judge" cx="394" cy="76" r="17"/>
+      <circle class="judge" cx="462" cy="76" r="17"/>
+
+      <!-- votes -->
+      <text class="ttl vote"    x="190" y="81" text-anchor="middle" fill="var(--accent-ink)">&#10003;</text>
+      <text class="ttl vote v2" x="258" y="81" text-anchor="middle" fill="var(--accent-ink)">&#10003;</text>
+      <text class="ttl vote v3" x="326" y="81" text-anchor="middle" fill="var(--accent-ink)">&#10003;</text>
+      <text class="ttl vote v4" x="394" y="81" text-anchor="middle" fill="var(--accent-ink)">&#10003;</text>
+      <text class="ttl vote v5" x="462" y="81" text-anchor="middle" fill="var(--ink-muted)">&#10007;</text>
+
+      <!-- hidden correlation between three of them -->
+      <path class="chord" d="M190 96 Q224 138 258 96"/>
+      <path class="chord" d="M258 96 Q292 138 326 96"/>
+      <path class="chord" d="M190 96 Q258 158 326 96"/>
+      <text class="lbl chord" x="258" y="176" text-anchor="middle" fill="var(--hot)">same blind spot</text>
+
+      <!-- consensus verdict -->
+      <g class="keep-badge">
+        <rect x="516" y="56" width="104" height="40" rx="10" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
+        <text class="ttl" x="568" y="72" text-anchor="middle">4 / 5 agree</text>
+        <text class="ttl" x="568" y="88" text-anchor="middle" fill="var(--accent-ink)">KEEP</text>
+      </g>
+
+      <!-- the reveal -->
+      <g class="reveal">
+        <rect x="360" y="196" width="260" height="40" rx="10" fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="2"/>
+        <text class="ttl" x="376" y="212" fill="var(--hot)">sample was corrupted</text>
+        <text class="lbl" x="376" y="228" fill="var(--hot)">consensus kept it anyway</text>
+      </g>
+    </svg>
+    <p class="fig-cap">A judge bank votes on a preference pair and four of five agree to keep it. The agreement looks like independent confirmation, but three of those judges share the same blind spot, so the vote counts one opinion more than once. <strong>Consensus certifies the corrupted sample</strong> straight into the training set.</p>
+  </div>
+
+</div>
+
+<div class="foot">
+  &copy; 2026 Elias Hossain &nbsp;&#183;&nbsp; <a href="/">eliashossain001.github.io</a>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const stored = localStorage.getItem('theme');
+  if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    root.setAttribute('data-theme', 'dark');
+  }
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    if (next === 'dark') root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    localStorage.setItem('theme', next);
+  });
+</script>
+</body>
+</html>

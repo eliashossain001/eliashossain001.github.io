@@ -759,63 +759,81 @@
   }
   .research-list .tag:hover { background: var(--accent); color: var(--bg-elev); }
 
-  /* WATCH BAND — closes the column-height gap under the callout and points at /live/ */
-  .watch-band {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 13px 16px;
-    margin: 14px 0 4px;
+  /* MINI LOOPS — three more strands of the work, animated in place */
+  .mini-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 16px 0 4px;
+  }
+  @media (max-width: 640px) { .mini-grid { grid-template-columns: 1fr; } }
+  .mini {
+    display: block;
     background: var(--bg-elev);
     border: 1px solid var(--line);
     border-radius: 10px;
+    padding: 10px 12px 12px;
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
-  .watch-band:hover { border-color: var(--accent); transform: translateY(-1px); }
-  .wb-icon { flex: 0 0 auto; width: 34px; height: 34px; overflow: visible; }
-  .wb-ring {
-    fill: none; stroke: var(--accent); stroke-width: 1.5;
-    animation: wbRing 3.1s ease-out infinite;
-  }
-  @keyframes wbRing {
-    0%   { r: 12; opacity: 0.55; }
-    70%  { r: 20; opacity: 0; }
-    100% { r: 20; opacity: 0; }
-  }
-  .wb-disc { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
-  .wb-play { fill: var(--accent-ink); animation: wbPlay 3.1s ease-in-out infinite; transform-origin: 17px 17px; }
-  @keyframes wbPlay {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.14); }
-  }
-  .wb-text { min-width: 0; flex: 1 1 auto; }
-  .wb-lbl {
+  .mini:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .mini svg { display: block; width: 100%; height: auto; margin-bottom: 8px; }
+  .mini-name {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
+    font-size: 10px;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
     color: var(--accent-ink);
     display: block;
     margin-bottom: 3px;
   }
-  .wb-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
-  .wb-go {
-    flex: 0 0 auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: var(--accent-ink);
-    border-bottom: 1px solid var(--accent);
-    white-space: nowrap;
+  .mini-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.45; display: block; }
+  .mn-lbl { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.06em; fill: var(--ink-muted); }
+
+  /* UAT-LITE: stochastic passes scatter, then a calibrated band settles */
+  .u-ghost { fill: var(--accent); animation: uGhost 3.4s ease-in-out infinite; }
+  .u-ghost.g2 { animation-delay: -1.1s; }
+  .u-ghost.g3 { animation-delay: -2.2s; }
+  @keyframes uGhost {
+    0%, 100% { opacity: 0; transform: translateX(0); }
+    20%      { opacity: 0.55; transform: translateX(-9px); }
+    50%      { opacity: 0.55; transform: translateX(11px); }
+    75%      { opacity: 0.2; transform: translateX(3px); }
   }
-  .watch-band:hover .wb-go { color: var(--accent); }
+  .u-band { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2;
+    animation: uBand 3.4s ease-in-out infinite; transform-origin: 70px 30px; }
+  @keyframes uBand {
+    0%, 15% { opacity: 0; transform: scaleX(0.2); }
+    45%     { opacity: 1; transform: scaleX(1.05); }
+    70%,100%{ opacity: 1; transform: scaleX(1); }
+  }
+  /* TAS: the needle leaves the stale fact and locks onto the newer one */
+  .t-needle { stroke: var(--accent-ink); stroke-width: 2.6; stroke-linecap: round;
+    transform-origin: 70px 46px; animation: tSwing 4.2s ease-in-out infinite; }
+  @keyframes tSwing {
+    0%, 22%   { transform: rotate(-34deg); }
+    46%, 84%  { transform: rotate(34deg); }
+    100%      { transform: rotate(-34deg); }
+  }
+  .t-old { animation: tOld 4.2s ease-in-out infinite; }
+  @keyframes tOld { 0%,22% { opacity: 1; } 46%,100% { opacity: 0.28; } }
+  .t-new { animation: tNew 4.2s ease-in-out infinite; }
+  @keyframes tNew { 0%,22% { opacity: 0.28; } 46%,84% { opacity: 1; } 100% { opacity: 0.28; } }
+  /* BIOGEN: a claim only stands once its identifier attaches */
+  .b-claim { animation: bClaim 4s ease-in-out infinite; }
+  @keyframes bClaim {
+    0%, 30%  { stroke: var(--line); }
+    55%,100% { stroke: var(--accent); }
+  }
+  .b-chip { animation: bChip 4s ease-out infinite; transform-origin: 96px 46px; }
+  @keyframes bChip {
+    0%, 26% { opacity: 0; transform: translateY(-14px) scale(0.7); }
+    46%     { opacity: 1; transform: translateY(0) scale(1.12); }
+    54%,92% { opacity: 1; transform: translateY(0) scale(1); }
+    100%    { opacity: 0; transform: translateY(0) scale(1); }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .wb-ring, .wb-play { animation: none; }
-    .wb-ring { opacity: 0.3; }
-  }
-  @media (max-width: 600px) {
-    .watch-band { flex-wrap: wrap; gap: 10px; }
-    .wb-go { margin-left: 48px; }
+    .u-ghost, .u-band, .t-needle, .t-old, .t-new, .b-claim, .b-chip { animation: none; }
+    .u-ghost { opacity: 0.4; }
   }
 
   .callout {
@@ -2043,18 +2061,55 @@
           <div>Graduating <strong>Spring/Fall 2028</strong>. Seeking a <strong>Research Scientist role</strong> or <strong>Postdoctoral position</strong> in LLM training, reinforcement learning, and LLM safety. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
         </div>
 
-        <a class="watch-band" href="/live/">
-          <svg class="wb-icon" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle class="wb-ring" cx="17" cy="17" r="12"/>
-            <circle class="wb-disc" cx="17" cy="17" r="12"/>
-            <path class="wb-play" d="M14 11.5 L23 17 L14 22.5 Z"/>
-          </svg>
-          <span class="wb-text">
-            <span class="wb-lbl">See it work</span>
-            <span class="wb-desc">Each paper runs as a short animation: an unsafe plan stopped before the tool call, an injected payload stripped mid-channel, a clinical trajectory scored on process rather than answer.</span>
-          </span>
-          <span class="wb-go">Watch &rarr;</span>
-        </a>
+        <div class="mini-grid">
+
+          <a class="mini" href="/uat-lite/">
+            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <text class="mn-lbl" x="8" y="14">MC-DROPOUT PASSES</text>
+              <line x1="14" y1="52" x2="126" y2="52" stroke="var(--line)" stroke-width="1.4"/>
+              <rect class="u-band" x="46" y="24" width="48" height="14" rx="4"/>
+              <circle class="u-ghost" cx="70" cy="31" r="3.2"/>
+              <circle class="u-ghost g2" cx="70" cy="31" r="3.2"/>
+              <circle class="u-ghost g3" cx="70" cy="31" r="3.2"/>
+              <circle cx="70" cy="31" r="3.6" fill="var(--accent-ink)"/>
+              <line x1="70" y1="38" x2="70" y2="52" stroke="var(--line)" stroke-width="1.4"/>
+              <text class="mn-lbl" x="70" y="66" text-anchor="middle">calibrated interval</text>
+            </svg>
+            <span class="mini-name">UAT-LITE</span>
+            <span class="mini-desc">Stochastic passes disagree; the spread becomes an uncertainty estimate the model can report.</span>
+          </a>
+
+          <a class="mini" href="/tas/">
+            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <text class="mn-lbl" x="8" y="14">PARAMETRIC MEMORY</text>
+              <path d="M34 46 A36 36 0 0 1 106 46" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+              <text class="mn-lbl t-old" x="28" y="40" text-anchor="middle" fill="var(--ink-muted)">stale</text>
+              <text class="mn-lbl t-new" x="112" y="40" text-anchor="middle" fill="var(--accent-ink)">current</text>
+              <line class="t-needle" x1="70" y1="46" x2="70" y2="20"/>
+              <circle cx="70" cy="46" r="4" fill="var(--accent-ink)"/>
+              <text class="mn-lbl" x="70" y="66" text-anchor="middle">steered at test time</text>
+            </svg>
+            <span class="mini-name">TAS</span>
+            <span class="mini-desc">The newer fact is already in the weights. Activation steering makes the forward pass prefer it.</span>
+          </a>
+
+          <a class="mini" href="/biogen/">
+            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <text class="mn-lbl" x="8" y="14">GENERATED CLAIM</text>
+              <rect class="b-claim" x="14" y="32" width="112" height="24" rx="6" fill="var(--bg)" stroke="var(--line)" stroke-width="1.6"/>
+              <line x1="24" y1="41" x2="80" y2="41" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+              <line x1="24" y1="48" x2="62" y2="48" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+              <g class="b-chip">
+                <rect x="86" y="36" width="34" height="16" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>
+                <text class="mn-lbl" x="103" y="47" text-anchor="middle" fill="var(--accent-ink)">PMID</text>
+              </g>
+              <text class="mn-lbl" x="70" y="70" text-anchor="middle">or it does not ship</text>
+            </svg>
+            <span class="mini-name">BIOGEN</span>
+            <span class="mini-desc">Every interpretation carries a verifiable identifier. Non-verifiable rate 0.000 across five datasets.</span>
+          </a>
+
+        </div>
       </section>
 
       <section id="collaborators" class="reveal">

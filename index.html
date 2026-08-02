@@ -759,6 +759,65 @@
   }
   .research-list .tag:hover { background: var(--accent); color: var(--bg-elev); }
 
+  /* WATCH BAND — closes the column-height gap under the callout and points at /live/ */
+  .watch-band {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 16px;
+    margin: 14px 0 4px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .watch-band:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .wb-icon { flex: 0 0 auto; width: 34px; height: 34px; overflow: visible; }
+  .wb-ring {
+    fill: none; stroke: var(--accent); stroke-width: 1.5;
+    animation: wbRing 3.1s ease-out infinite;
+  }
+  @keyframes wbRing {
+    0%   { r: 12; opacity: 0.55; }
+    70%  { r: 20; opacity: 0; }
+    100% { r: 20; opacity: 0; }
+  }
+  .wb-disc { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+  .wb-play { fill: var(--accent-ink); animation: wbPlay 3.1s ease-in-out infinite; transform-origin: 17px 17px; }
+  @keyframes wbPlay {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.14); }
+  }
+  .wb-text { min-width: 0; flex: 1 1 auto; }
+  .wb-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .wb-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .wb-go {
+    flex: 0 0 auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    border-bottom: 1px solid var(--accent);
+    white-space: nowrap;
+  }
+  .watch-band:hover .wb-go { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) {
+    .wb-ring, .wb-play { animation: none; }
+    .wb-ring { opacity: 0.3; }
+  }
+  @media (max-width: 600px) {
+    .watch-band { flex-wrap: wrap; gap: 10px; }
+    .wb-go { margin-left: 48px; }
+  }
+
   .callout {
     background: var(--hot-bg);
     border: 1px solid var(--hot-border);
@@ -1983,6 +2042,19 @@
           <span class="ico">📢</span>
           <div>Graduating <strong>Spring/Fall 2028</strong>. Seeking a <strong>Research Scientist role</strong> or <strong>Postdoctoral position</strong> in LLM training, reinforcement learning, and LLM safety. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
         </div>
+
+        <a class="watch-band" href="/live/">
+          <svg class="wb-icon" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle class="wb-ring" cx="17" cy="17" r="12"/>
+            <circle class="wb-disc" cx="17" cy="17" r="12"/>
+            <path class="wb-play" d="M14 11.5 L23 17 L14 22.5 Z"/>
+          </svg>
+          <span class="wb-text">
+            <span class="wb-lbl">See it work</span>
+            <span class="wb-desc">Each paper runs as a short animation: an unsafe plan stopped before the tool call, an injected payload stripped mid-channel, a clinical trajectory scored on process rather than answer.</span>
+          </span>
+          <span class="wb-go">Watch &rarr;</span>
+        </a>
       </section>
 
       <section id="collaborators" class="reveal">

@@ -25,6 +25,9 @@
     --hot-border: #e85a4f;
     --hot-ink: #9a2f25;
     --hot-glow: 232, 90, 79;
+    --news-ink: #8a5512;
+    --news-soft: #f7ead4;
+    --news-dot: #cf8f2c;
     --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.04);
     --radius: 14px;
   }
@@ -44,6 +47,9 @@
     --hot-border: #ff7a6b;
     --hot-ink: #ffb8a8;
     --hot-glow: 255, 122, 107;
+    --news-ink: #e8bb70;
+    --news-soft: #33280f;
+    --news-dot: #e0a94f;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
   }
 
@@ -679,7 +685,11 @@
 
   /* MAIN CONTENT */
   .content section { padding: 0 0 44px; }
-  .content section + section { border-top: 1px solid var(--line); padding-top: 36px; }
+  /* The divider between two sections hangs off the section ABOVE it. Putting it
+     on the section below (border-top) meant it inherited that section's .reveal
+     opacity, so the first divider stayed invisible until you scrolled. */
+  .content section + section { padding-top: 36px; }
+  .content section:not(:last-of-type) { border-bottom: 1px solid var(--line); }
   .content .first-section { padding-top: 0; }
   .section-label {
     font-family: 'JetBrains Mono', monospace;
@@ -744,6 +754,13 @@
     font-size: 14.5px;
   }
   .research-list ul li { margin-bottom: 3px; line-height: 1.5; }
+  /* A bullet that has a paper behind it links from its own sentence, so the
+     list stays prose instead of regrowing tag chips. */
+  .research-list ul li a {
+    color: inherit;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  .research-list ul li a:hover { color: var(--accent-ink); border-bottom-color: var(--accent); }
   .research-list ul li::marker { color: var(--ink-muted); }
   .research-list .tag {
     display: inline-block;
@@ -759,250 +776,370 @@
   }
   .research-list .tag:hover { background: var(--accent); color: var(--bg-elev); }
 
-  /* MINI LOOPS — three more strands of the work, animated in place */
-  .mini-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 16px 0 4px;
-  }
-  @media (max-width: 640px) { .mini-grid { grid-template-columns: 1fr; } }
-  .mini {
-    display: block;
-    background: var(--bg-elev);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 12px 12px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
-  }
-  .mini:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .mini svg { display: block; width: 100%; height: auto; margin-bottom: 8px; }
-  .mini-name {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--accent-ink);
-    display: block;
-    margin-bottom: 3px;
-  }
-  .mini-desc { font-size: 12px; color: var(--ink-muted); line-height: 1.45; display: block; }
-  .mn-lbl { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 0.06em; fill: var(--ink-muted); }
-
-  /* UAT-LITE: stochastic passes scatter, then a calibrated band settles */
-  .u-ghost { fill: var(--accent); animation: uGhost 3.4s ease-in-out infinite; }
-  .u-ghost.g2 { animation-delay: -1.1s; }
-  .u-ghost.g3 { animation-delay: -2.2s; }
-  @keyframes uGhost {
-    0%, 100% { opacity: 0; transform: translateX(0); }
-    20%      { opacity: 0.55; transform: translateX(-9px); }
-    50%      { opacity: 0.55; transform: translateX(11px); }
-    75%      { opacity: 0.2; transform: translateX(3px); }
-  }
-  .u-band { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2;
-    animation: uBand 3.4s ease-in-out infinite; transform-origin: 70px 30px; }
-  @keyframes uBand {
-    0%, 15% { opacity: 0; transform: scaleX(0.2); }
-    45%     { opacity: 1; transform: scaleX(1.05); }
-    70%,100%{ opacity: 1; transform: scaleX(1); }
-  }
-  /* TAS: the needle leaves the stale fact and locks onto the newer one */
-  .t-needle { stroke: var(--accent-ink); stroke-width: 2.6; stroke-linecap: round;
-    transform-origin: 70px 46px; animation: tSwing 4.2s ease-in-out infinite; }
-  @keyframes tSwing {
-    0%, 22%   { transform: rotate(-34deg); }
-    46%, 84%  { transform: rotate(34deg); }
-    100%      { transform: rotate(-34deg); }
-  }
-  .t-old { animation: tOld 4.2s ease-in-out infinite; }
-  @keyframes tOld { 0%,22% { opacity: 1; } 46%,100% { opacity: 0.28; } }
-  .t-new { animation: tNew 4.2s ease-in-out infinite; }
-  @keyframes tNew { 0%,22% { opacity: 0.28; } 46%,84% { opacity: 1; } 100% { opacity: 0.28; } }
-  /* BIOGEN: a claim only stands once its identifier attaches */
-  .b-claim { animation: bClaim 4s ease-in-out infinite; }
-  @keyframes bClaim {
-    0%, 30%  { stroke: var(--line); }
-    55%,100% { stroke: var(--accent); }
-  }
-  .b-chip { animation: bChip 4s ease-out infinite; transform-origin: 96px 46px; }
-  @keyframes bChip {
-    0%, 26% { opacity: 0; transform: translateY(-14px) scale(0.7); }
-    46%     { opacity: 1; transform: translateY(0) scale(1.12); }
-    54%,92% { opacity: 1; transform: translateY(0) scale(1); }
-    100%    { opacity: 0; transform: translateY(0) scale(1); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .u-ghost, .u-band, .t-needle, .t-old, .t-new, .b-claim, .b-chip { animation: none; }
-    .u-ghost { opacity: 0.4; }
-  }
-
-  .callout {
-    background: var(--hot-bg);
+  /* SEEKING — the one line in the sidebar that should stop a recruiter */
+  .seeking {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    margin: 14px 0 2px;
+    padding: 9px 11px;
     border: 1px solid var(--hot-border);
     border-left: 3px solid var(--hot-border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin: 22px 0 8px;
-    font-size: 13.5px;
-    color: var(--hot-ink);
-    line-height: 1.5;
-    box-shadow: 0 4px 12px rgba(232, 90, 79, 0.10);
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    position: relative;
-    overflow: hidden;
+    border-radius: 8px;
+    background: var(--hot-bg);
+    text-align: left;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
-  .callout::before {
+  .seeking:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(var(--hot-glow), 0.22); }
+  .seek-dot {
+    flex: 0 0 auto;
+    width: 7px; height: 7px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--hot-border);
+    animation: seekPulse 2.2s ease-in-out infinite;
+  }
+  @keyframes seekPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--hot-glow), 0.6); opacity: 1; }
+    60%      { box-shadow: 0 0 0 6px rgba(var(--hot-glow), 0); opacity: 0.75; }
+  }
+  .seek-body { min-width: 0; }
+  .seek-lead {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--hot-ink);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .seek-sub {
+    display: block;
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.02em;
+    color: var(--hot-ink);
+    opacity: 0.8;
+    line-height: 1.45;
+    white-space: nowrap;
+  }
+  .seeking:hover .seek-lead { text-decoration: underline; text-underline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .seek-dot { animation: none; box-shadow: 0 0 0 2px rgba(var(--hot-glow), 0.35); }
+  }
+
+  /* COVERAGE RAIL — public posts beside the research description. Third column
+     on wide screens; drops below the content when there is no room for it. */
+  .rail { grid-column: 1 / -1; }
+  @media (min-width: 1240px) {
+    .wrap { max-width: 1400px; }
+    .layout { grid-template-columns: 300px minmax(0, 1fr) 300px; gap: 44px; }
+    .rail { grid-column: 3; grid-row: 1; }
+  }
+  .rail-head {
+    display: flex; align-items: center; gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .rail-ttl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink); font-weight: 600;
+  }
+  .rail-head::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--hot-border);
+    animation: railBlink 2.6s ease-in-out infinite;
+  }
+  @keyframes railBlink {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--hot-glow), 0.55); opacity: 1; }
+    60%      { box-shadow: 0 0 0 6px rgba(var(--hot-glow), 0); opacity: 0.7; }
+  }
+  .rail-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    background: var(--pill-bg);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+  @media (prefers-reduced-motion: reduce) { .rail-head::before { animation: none; } }
+
+  /* two or three posts sit in view; the rest are a scroll away, with the fade
+     at the base signalling that there is more below */
+  .rail-body { position: relative; }
+  .rail-body::after {
     content: '';
-    position: absolute;
-    top: -30px; right: -30px;
-    width: 90px; height: 90px;
-    background: radial-gradient(circle, var(--hot-border) 0%, transparent 70%);
-    opacity: 0.15;
+    position: absolute; left: 0; right: 8px; bottom: 0;
+    height: 46px;
+    background: linear-gradient(to bottom, transparent, var(--bg) 88%);
     pointer-events: none;
   }
-  .callout .ico {
-    font-size: 18px;
-    line-height: 1;
-    flex-shrink: 0;
-    animation: nudge 2.6s ease-in-out infinite;
+  .rail-list {
+    display: flex; flex-direction: column;
+    max-height: 442px;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--ink-muted) 42%, transparent) transparent;
   }
-  @keyframes nudge {
-    0%, 60%, 100% { transform: rotate(0deg); }
-    70% { transform: rotate(-12deg); }
-    80% { transform: rotate(10deg); }
-    90% { transform: rotate(-6deg); }
-  }
-  .callout strong { color: var(--hot-ink); font-weight: 700; }
-  .callout a {
-    color: var(--hot-ink);
-    font-weight: 700;
-    border-bottom: 1.5px solid var(--hot-border);
-  }
-  .callout a:hover { background: var(--hot-border); color: #fff; border-bottom-color: var(--hot-border); padding: 0 4px; border-radius: 4px; }
-
-  /* ABOVE-THE-FOLD COLLABORATION BAND */
-  .collab-band {
-    display: flex;
-    align-items: center;
-    gap: 8px 14px;
-    flex-wrap: wrap;
-    padding: 11px 15px;
-    background: var(--accent-soft);
-    border: 1px solid var(--accent);
-    border-radius: 10px;
-    margin: 18px 0 6px;
-  }
-  .cb-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--accent-ink);
-    font-weight: 500;
-    flex: 0 0 auto;
-  }
-  /* Animated collaboration mark: two nodes, a live link, and a signal in flight.
-     Same visual language as the CorrFilter spotlight further down the page. */
-  .cb-icon {
-    flex: 0 0 auto;
-    width: 30px;
-    height: 30px;
-    margin-right: -4px;
-    overflow: visible;
-  }
-  .cbi-link {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-dasharray: 4 4;
-    animation: cbiFlow 1.9s linear infinite;
-  }
-  @keyframes cbiFlow { to { stroke-dashoffset: -16; } }
-  .cbi-node { fill: var(--accent-ink); animation: cbiBeat 3.2s ease-in-out infinite; }
-  .cbi-node.n2 { fill: var(--accent); animation-delay: -1.6s; }
-  @keyframes cbiBeat {
-    0%, 100% { r: 4.4; opacity: 0.85; }
-    50%      { r: 5.6; opacity: 1; }
-  }
-  .cbi-ring {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 1.4;
-    animation: cbiRing 2.9s ease-out infinite;
-  }
-  @keyframes cbiRing {
-    0%   { r: 5;  opacity: 0.5; }
-    70%  { r: 12; opacity: 0; }
-    100% { r: 12; opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cbi-link, .cbi-node, .cbi-ring { animation: none; }
-    .cbi-ring { opacity: 0.32; }
-  }
-  .cb-people {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 12px;
-    align-items: baseline;
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .cb-person { font-size: 13px; color: var(--ink); white-space: nowrap; }
-  /* The headline collaborator: warm pill with a slow halo so the eye lands here first. */
-  .cb-person.cb-star {
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--hot-bg);
-    border: 1px solid var(--hot-border);
-    animation: cbHalo 2.9s ease-in-out infinite;
-  }
-  .cb-person.cb-star a,
-  .cb-person.cb-star .cb-where { color: var(--hot-ink); }
-  .cb-person.cb-star a:hover { border-bottom-color: var(--hot-border); }
-  .cb-person.cb-star .cb-where { font-weight: 600; opacity: 0.95; }
-  @keyframes cbHalo {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--hot-glow), 0.45); }
-    55%      { box-shadow: 0 0 0 7px rgba(var(--hot-glow), 0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .cb-person.cb-star { animation: none; box-shadow: 0 0 0 2px rgba(var(--hot-glow), 0.28); }
-  }
-  .cb-person strong { font-weight: 600; }
-  .cb-person a { color: var(--ink); border: none; font-weight: 600; }
-  .cb-person a:hover { color: var(--accent-ink); border-bottom: 1px solid var(--accent); }
-  .cb-person .cb-where { color: var(--accent-ink); font-size: 11.5px; }
-  .cb-person.cb-star .cb-proj {
-    color: var(--hot-ink);
-    font-size: 11.5px;
-    font-weight: 600;
-    border-bottom: 1px solid var(--hot-border);
-    white-space: nowrap;
-  }
-  .cb-person.cb-star .cb-proj:hover {
-    background: var(--hot-border);
-    color: #fff;
-    border-bottom-color: transparent;
-    padding: 0 4px;
+  .rail-list::-webkit-scrollbar { width: 5px; }
+  .rail-list::-webkit-scrollbar-track { background: transparent; }
+  .rail-list::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--ink-muted) 38%, transparent);
     border-radius: 3px;
   }
+  .rail-list::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  .rail-item {
+    display: block; position: relative;
+    padding: 12px 10px 12px 12px;
+    border-radius: 9px;
+    border-bottom: 1px solid var(--line);
+    transition: background 0.18s ease;
+  }
+  .rail-item::before {
+    content: '';
+    position: absolute; left: 0; top: 10px; bottom: 10px;
+    width: 2px; border-radius: 2px;
+    background: var(--accent);
+    opacity: 0; transform: scaleY(0.4);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .rail-item:hover { background: var(--bg-elev); }
+  .rail-item:hover::before { opacity: 1; transform: scaleY(1); }
+  .rail-item:last-child { border-bottom: none; margin-bottom: 34px; }
+
+  .rail-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .rail-ico { flex: 0 0 auto; width: 12px; height: 12px; color: var(--ink-muted); }
+  .rail-ico svg { width: 100%; height: 100%; display: block; }
+  .rail-item:hover .rail-ico { color: var(--accent-ink); }
+  .rail-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--pill-ink); background: var(--pill-bg);
+    border-radius: 4px; padding: 2px 6px;
+  }
+  .rail-item:hover .rail-tag { background: var(--accent-soft); color: var(--accent-ink); }
+  .rail-title {
+    display: block; font-size: 13px; font-weight: 600; line-height: 1.42;
+    color: var(--ink); text-wrap: balance;
+  }
+  .rail-item:hover .rail-title { color: var(--accent-ink); }
+  .rail-quote {
+    display: block; margin-top: 6px;
+    font-size: 12px; line-height: 1.5; color: var(--ink-muted);
+    border-left: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    padding-left: 9px;
+  }
+  .rail-src {
+    display: block; margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-muted);
+  }
+  @media (max-width: 1239px) {
+    .rail { margin-top: 8px; }
+    .rail-body::after { display: none; }
+    .rail-list {
+      max-height: none; overflow-y: visible; padding-right: 0;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0 26px;
+    }
+    .rail-item:last-child { margin-bottom: 0; }
+  }
+
+  /* SURVEY MARK — animated thumb for the multiagent review card: a mesh of
+     agents with a sweep passing over it, standing for a survey of the field. */
+  .pub-thumb.t-survey {
+    background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+    padding: 6px;
+  }
+  .pub-thumb.t-survey svg { width: 100%; height: 100%; display: block; }
+  .sv-edge {
+    fill: none; stroke: #ffffff; stroke-width: 1.1; stroke-linecap: round;
+    stroke-dasharray: 3 5; opacity: 0.4;
+    animation: svFlow 3.6s linear infinite;
+  }
+  .sv-edge.e2 { animation-delay: -1.2s; }
+  .sv-edge.e3 { animation-delay: -2.4s; }
+  @keyframes svFlow { to { stroke-dashoffset: -16; } }
+  .sv-node {
+    fill: #ffffff;
+    animation: svBeat 4.2s ease-in-out infinite;
+  }
+  .sv-node.n2 { animation-delay: -0.7s; }
+  .sv-node.n3 { animation-delay: -1.4s; }
+  .sv-node.n4 { animation-delay: -2.1s; }
+  .sv-node.n5 { animation-delay: -2.8s; }
+  .sv-node.n6 { animation-delay: -3.5s; }
+  @keyframes svBeat {
+    0%, 100% { r: 4; opacity: 0.72; }
+    50%      { r: 5.6; opacity: 1; }
+  }
+  /* the survey sweep */
+  .sv-sweep { transform-origin: 100px 75px; animation: svSpin 7s linear infinite; }
+  @keyframes svSpin { to { transform: rotate(360deg); } }
+  .sv-core { fill: #ffffff; opacity: 0.95; }
+  .sv-ring { fill: none; stroke: #ffffff; stroke-width: 0.9; opacity: 0.22; }
+  @media (prefers-reduced-motion: reduce) {
+    .sv-edge, .sv-node, .sv-sweep { animation: none; }
+  }
+
+  /* NEWS block in the rail — same shape as press, different colour so the two
+     streams stay distinguishable at a glance. */
+  .rail-group { margin-top: 26px; }
+  .rail-news .rail-ttl { color: var(--news-ink); }
+  .rail-news .rail-head::before { background: var(--news-dot); animation: none; }
+  .rail-news .rail-count { color: var(--news-ink); background: var(--news-soft); }
+  .rail-list-news { max-height: 330px; }
+  .rail-list-news::-webkit-scrollbar-thumb:hover { background: var(--news-dot); }
+  .rail-note { cursor: default; }
+  .rail-note::before { background: var(--news-dot); opacity: 0.55; transform: scaleY(1); }
+  .rail-note:hover { background: var(--bg-elev); }
+  .rail-news .rail-tag { background: var(--news-soft); color: var(--news-ink); }
+  .rail-text {
+    display: block;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .rail-text strong { color: var(--ink); font-weight: 600; }
+  .rail-text a { color: var(--news-ink); border-bottom: 1px solid color-mix(in srgb, var(--news-dot) 55%, transparent); }
+  .rail-text a:hover { border-bottom-color: var(--news-dot); }
+
+  /* TALK CARD — a recorded talk, sitting under the About block */
+  .talk {
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    gap: 16px;
+    align-items: center;
+    margin-top: 18px;
+    padding: 12px;
+    background: var(--bg-elev);
+    border: 1px solid color-mix(in srgb, var(--ink-muted) 32%, transparent);
+    border-radius: 12px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .talk:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .talk-thumb { position: relative; border-radius: 8px; overflow: hidden; line-height: 0; }
+  .talk-thumb img { width: 100%; height: auto; display: block; }
+  .talk-play {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    background: rgba(0,0,0,0.22);
+    transition: background 0.2s ease;
+  }
+  .talk:hover .talk-play { background: rgba(0,0,0,0.08); }
+  .talk-play span {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #e02f2f;
+    display: grid; place-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+  .talk-play svg { width: 13px; height: 13px; fill: #fff; margin-left: 2px; }
+  .talk-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .talk-title { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.4; display: block; }
+  .talk:hover .talk-title { color: var(--accent-ink); }
+  .talk-meta {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 560px) {
+    .talk { grid-template-columns: 1fr; }
+  }
+
+  /* UAT-LITE: the predictive distribution draws itself, then the interval settles */
+  .u-curve {
+    fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round;
+    stroke-dasharray: 190; animation: uDraw 4.2s ease-in-out infinite;
+  }
+  @keyframes uDraw {
+    0%      { stroke-dashoffset: 190; }
+    45%,88% { stroke-dashoffset: 0; }
+    100%    { stroke-dashoffset: 190; }
+  }
+  .u-fill { fill: var(--accent-soft); animation: uFill 4.2s ease-in-out infinite; }
+  @keyframes uFill { 0%,38% { opacity: 0; } 58%,88% { opacity: 1; } 100% { opacity: 0; } }
+  .u-bar { stroke: var(--accent-ink); stroke-width: 1.6; stroke-linecap: round;
+    transform-origin: 70px 68px; animation: uBar 4.2s ease-out infinite; }
+  @keyframes uBar {
+    0%,46% { opacity: 0; transform: scaleX(0.1); }
+    62%    { opacity: 1; transform: scaleX(1.08); }
+    68%,88%{ opacity: 1; transform: scaleX(1); }
+    100%   { opacity: 0; transform: scaleX(1); }
+  }
+  .u-peak { fill: var(--accent-ink); animation: uPeak 4.2s ease-out infinite; }
+  @keyframes uPeak {
+    0%,42% { opacity: 0; } 56%,88% { opacity: 1; } 100% { opacity: 0; }
+  }
+
+  /* TAS: the needle leaves the stale fact and locks onto the current one */
+  .t-needle { stroke: var(--accent-ink); stroke-width: 2.8; stroke-linecap: round;
+    transform-origin: 70px 60px; animation: tSwing 4.4s cubic-bezier(.6,-0.25,.3,1.3) infinite; }
+  @keyframes tSwing {
+    0%, 20%  { transform: rotate(-46deg); }
+    44%      { transform: rotate(52deg); }
+    50%, 84% { transform: rotate(46deg); }
+    100%     { transform: rotate(-46deg); }
+  }
+  .t-tick { stroke: var(--line); stroke-width: 1.6; stroke-linecap: round; }
+  .t-old { animation: tOld 4.4s ease-in-out infinite; }
+  @keyframes tOld { 0%,20% { opacity: 1; } 44%,100% { opacity: 0.25; } }
+  .t-new { animation: tNew 4.4s ease-in-out infinite; }
+  @keyframes tNew { 0%,20% { opacity: 0.25; } 44%,84% { opacity: 1; } 100% { opacity: 0.25; } }
+  .t-halo { fill: none; stroke: var(--accent); stroke-width: 1.4; animation: tHalo 4.4s ease-out infinite; }
+  @keyframes tHalo {
+    0%,42% { r: 4; opacity: 0; }
+    50%    { r: 4; opacity: 0.75; }
+    72%    { r: 13; opacity: 0; }
+    100%   { r: 13; opacity: 0; }
+  }
+
+  /* BIOGEN: a claim only stands once its identifier attaches */
+  .b-claim { animation: bClaim 4.4s ease-in-out infinite; }
+  @keyframes bClaim {
+    0%, 34%  { stroke: var(--line); }
+    52%,90%  { stroke: var(--accent); }
+    100%     { stroke: var(--line); }
+  }
+  .b-chip { animation: bChip 4.4s cubic-bezier(.5,-0.4,.3,1.4) infinite; transform-origin: 101px 47px; }
+  @keyframes bChip {
+    0%, 30% { opacity: 0; transform: translate(16px, -20px) scale(0.6); }
+    48%     { opacity: 1; transform: translate(0,0) scale(1.15); }
+    54%,90% { opacity: 1; transform: translate(0,0) scale(1); }
+    100%    { opacity: 0; transform: translate(0,0) scale(1); }
+  }
+  .b-tick { stroke: var(--accent-ink); stroke-width: 2.2; stroke-linecap: round;
+    stroke-linejoin: round; fill: none; stroke-dasharray: 22;
+    animation: bTick 4.4s ease-out infinite; }
+  @keyframes bTick {
+    0%,54% { stroke-dashoffset: 22; opacity: 0; }
+    56%    { opacity: 1; }
+    70%,90%{ stroke-dashoffset: 0; opacity: 1; }
+    100%   { stroke-dashoffset: 0; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .u-curve, .u-fill, .u-bar, .u-peak, .t-needle, .t-old, .t-new, .t-halo,
+    .b-claim, .b-chip, .b-tick { animation: none; }
+    .u-curve { stroke-dashoffset: 0; }
+    .b-tick { stroke-dashoffset: 0; }
+  }
+
   a.collab-pill:hover { background: var(--accent); color: var(--bg-elev); border-color: var(--accent); }
   a.collab-pill.hot:hover { background: var(--hot-border); color: #fff; border-color: var(--hot-border); }
-
-  .cb-more {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: var(--accent-ink);
-    border-bottom: 1px solid var(--accent);
-    white-space: nowrap;
-    flex: 0 0 auto;
-  }
-  @media (max-width: 600px) {
-    .cb-person { white-space: normal; }
-  }
 
   /* COLLABORATORS */
   .collab-lead {
@@ -1768,8 +1905,6 @@
       padding-bottom: 12px;
     }
     .news-date, .award-year { font-size: 11px; }
-    .callout { padding: 12px 14px; font-size: 13px; gap: 10px; }
-    .callout .ico { font-size: 18px; }
     .filters { gap: 6px; }
     .filter-btn { padding: 5px 10px; font-size: 12px; }
     .pub-card { grid-template-columns: 1fr !important; }
@@ -1830,7 +1965,6 @@
       <a href="/live/">See It Work</a>
       <a href="/notes.html">Notes</a>
       <a href="/oss.html">Open Source</a>
-      <a href="#news">News</a>
       <div class="nav-more">
         <button type="button" class="nav-more-btn" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu">
           More
@@ -1874,6 +2008,15 @@
           Scholar
         </a>
       </div>
+
+      <a class="seeking" href="mailto:mdelias.hossain@ucf.edu?subject=Research%20internship">
+        <span class="seek-dot"></span>
+        <span class="seek-body">
+          <span class="seek-lead">Seeking Summer 2027 internship</span>
+          <span class="seek-sub">Trustworthy AI &middot; LLM safety &middot; RL</span>
+        </span>
+      </a>
+
       <div class="stat-row">
         <div class="stat"><span class="num" data-target="890" data-suffix="+" data-metric="cites">0</span><span class="label">Cites</span></div>
         <div class="stat"><span class="num" data-target="12" data-suffix="" data-metric="hindex">0</span><span class="label">h-index</span></div>
@@ -2014,102 +2157,47 @@
 
       <section class="first-section bio" id="about">
         <p class="lead">
-          I am a <strong>Ph.D. researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Three concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
+          I am a <strong>Ph.D. researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Three concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? One constraint runs through all three: the method has to work on a model I cannot retrain, since that is the access most deployed systems allow. So the work is <strong>inference-time or training-free</strong>, tested under adversarial input and distribution shift. I also build language models from scratch, which changes what you believe about how they fail. My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
         </p>
-
-        <div class="collab-band">
-          <svg class="cb-icon" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path class="cbi-link" d="M9 18 Q18 6 27 18"/>
-            <circle class="cbi-ring" cx="27" cy="18" r="5"/>
-            <circle class="cbi-node"    cx="9"  cy="18" r="4.4"/>
-            <circle class="cbi-node n2" cx="27" cy="18" r="4.4"/>
-          </svg>
-          <span class="cb-label">Collaborating with</span>
-          <span class="cb-people">
-            <span class="cb-person cb-star"><a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a> <span class="cb-where">UCF &middot; formerly led AI research at Meta</span> <a class="cb-proj" href="/corrfilter/">on CorrFilter &rarr;</a></span>
-          </span>
-          <a class="cb-more" href="#collaborators">All collaborators &rarr;</a>
-        </div>
 
         <ol class="research-list">
           <li>
             <strong>Test-Time Uncertainty in Pretrained Transformers</strong>
             <ul>
-              <li>Inference-time uncertainty-aware attention for pretrained transformers <a class="tag" href="/uat-lite/">UAT-LITE</a></li>
-              <li>Bayesian uncertainty quantification for safe clinical decision support <a class="tag" href="https://arxiv.org/abs/2511.16625" target="_blank">MedBayes-Lite</a></li>
+              <li>Uncertainty-aware attention at inference time, without retraining.</li>
+              <li>Confidence calibrated enough to route clinical cases to a human.</li>
+              <li>Abstain under a fixed risk budget rather than answer every input.</li>
             </ul>
           </li>
           <li>
             <strong>Reliable AI Supervision</strong>
             <ul>
-              <li>Fault-tolerant preference alignment via multi-agent verification <a class="tag" href="#" target="_blank">MAV</a></li>
-              <li>Reliability-aware filtering when LLM judges share blind spots <a class="tag" href="/corrfilter/">CorrFilter</a></li>
+              <li><a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">Independent agents verify preference labels before RLHF or DPO.</a></li>
+              <li>What judge agreement is worth when the judges are not independent.</li>
+              <li>Oversight that still holds when the supervisor is itself a model.</li>
             </ul>
           </li>
           <li>
             <strong>Runtime Safety and Evaluation for LLM Agents</strong>
             <ul>
-              <li>Structured-plan intervention policies for tool-using agents <a class="tag" href="/nexus/">NEXUS</a></li>
-              <li>Information-bottleneck gates for the inter-agent surface <a class="tag" href="/channelguard/">ChannelGuard</a></li>
-              <li>Process-level evaluation of clinical LLM agents under uncertainty <a class="tag" href="/carebench/">CareBench</a></li>
+              <li>Inspect an agent's plan, then allow, block, confirm, or revise.</li>
+              <li>Gate inter-agent channels so poisoned output carries no instructions.</li>
+              <li>Score the trajectory a clinical agent takes, not just its answer.</li>
             </ul>
           </li>
         </ol>
 
-        <div class="callout">
-          <span class="ico">📢</span>
-          <div>Graduating <strong>Spring/Fall 2028</strong>. Seeking a <strong>Research Scientist role</strong> or <strong>Postdoctoral position</strong> in LLM training, reinforcement learning, and LLM safety. Please <a href="mailto:mdelias.hossain@ucf.edu">reach out</a> if you have an opening.</div>
-        </div>
-
-        <div class="mini-grid">
-
-          <a class="mini" href="/uat-lite/">
-            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <text class="mn-lbl" x="8" y="14">MC-DROPOUT PASSES</text>
-              <line x1="14" y1="52" x2="126" y2="52" stroke="var(--line)" stroke-width="1.4"/>
-              <rect class="u-band" x="46" y="24" width="48" height="14" rx="4"/>
-              <circle class="u-ghost" cx="70" cy="31" r="3.2"/>
-              <circle class="u-ghost g2" cx="70" cy="31" r="3.2"/>
-              <circle class="u-ghost g3" cx="70" cy="31" r="3.2"/>
-              <circle cx="70" cy="31" r="3.6" fill="var(--accent-ink)"/>
-              <line x1="70" y1="38" x2="70" y2="52" stroke="var(--line)" stroke-width="1.4"/>
-              <text class="mn-lbl" x="70" y="66" text-anchor="middle">calibrated interval</text>
-            </svg>
-            <span class="mini-name">UAT-LITE</span>
-            <span class="mini-desc">Stochastic passes disagree; the spread becomes an uncertainty estimate the model can report.</span>
-          </a>
-
-          <a class="mini" href="/tas/">
-            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <text class="mn-lbl" x="8" y="14">PARAMETRIC MEMORY</text>
-              <path d="M34 46 A36 36 0 0 1 106 46" fill="none" stroke="var(--line)" stroke-width="1.6"/>
-              <text class="mn-lbl t-old" x="28" y="40" text-anchor="middle" fill="var(--ink-muted)">stale</text>
-              <text class="mn-lbl t-new" x="112" y="40" text-anchor="middle" fill="var(--accent-ink)">current</text>
-              <line class="t-needle" x1="70" y1="46" x2="70" y2="20"/>
-              <circle cx="70" cy="46" r="4" fill="var(--accent-ink)"/>
-              <text class="mn-lbl" x="70" y="66" text-anchor="middle">steered at test time</text>
-            </svg>
-            <span class="mini-name">TAS</span>
-            <span class="mini-desc">The newer fact is already in the weights. Activation steering makes the forward pass prefer it.</span>
-          </a>
-
-          <a class="mini" href="/biogen/">
-            <svg viewBox="0 0 140 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <text class="mn-lbl" x="8" y="14">GENERATED CLAIM</text>
-              <rect class="b-claim" x="14" y="32" width="112" height="24" rx="6" fill="var(--bg)" stroke="var(--line)" stroke-width="1.6"/>
-              <line x1="24" y1="41" x2="80" y2="41" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
-              <line x1="24" y1="48" x2="62" y2="48" stroke="var(--ink-muted)" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
-              <g class="b-chip">
-                <rect x="86" y="36" width="34" height="16" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>
-                <text class="mn-lbl" x="103" y="47" text-anchor="middle" fill="var(--accent-ink)">PMID</text>
-              </g>
-              <text class="mn-lbl" x="70" y="70" text-anchor="middle">or it does not ship</text>
-            </svg>
-            <span class="mini-name">BIOGEN</span>
-            <span class="mini-desc">Every interpretation carries a verifiable identifier. Non-verifiable rate 0.000 across five datasets.</span>
-          </a>
-
-        </div>
+        <a class="talk" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">
+          <span class="talk-thumb">
+            <img src="/assets/figs/talk-rural-care.jpg" alt="Elias Hossain presenting a system design slide during the talk" loading="lazy" />
+            <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+          </span>
+          <span>
+            <span class="talk-lbl">Recorded talk</span>
+            <span class="talk-title">Using AI for Personalized Care and Nutrition for Rural Americans</span>
+            <span class="talk-meta">On bringing personalized care and nutrition support to rural American communities, walked through end to end.</span>
+          </span>
+        </a>
       </section>
 
       <section id="collaborators" class="reveal">
@@ -2198,29 +2286,6 @@
         <p class="collab-foot">Advised at UCF by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a> and <a href="https://www.cecs.ucf.edu/faculty/ivan-garibay/" target="_blank" rel="noopener">Dr. Ivan Garibay</a>.</p>
       </section>
 
-      <section id="news" class="reveal">
-        <div class="section-label">News</div>
-        <h2>Recent updates</h2>
-        <div class="news-list">
-          <div class="news-item">
-            <div class="news-date">Apr 2026</div>
-            <div>&#127881; First-author paper <strong>Fault-Tolerant Preference Alignment</strong> accepted at <strong>ICLR 2026 Trustworthy AI Workshop</strong>: multi-agent verification that filters corrupted supervision before RLHF/DPO.</div>
-          </div>
-          <div class="news-item">
-            <div class="news-date">Mar 2026</div>
-            <div>&#10024; Two PhD papers out the same month: AMR computational paradigms survey in <a href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener"><strong>Briefings in Bioinformatics</strong></a>, and the follow-up agentic RNA-seq paper in <strong>Frontiers in Bioinformatics</strong>.</div>
-          </div>
-          <div class="news-item">
-            <div class="news-date">Jan 2026</div>
-            <div>&#127908; At <strong>Amazon JFK&nbsp;27</strong> in New&nbsp;York for the <strong>Trusted AI Symposium</strong>, presenting <strong>SAVe V.1</strong>: multi-agent safe alignment verification for preference-based LLM optimization.</div>
-          </div>
-          <div class="news-item">
-            <div class="news-date">Oct 2025</div>
-            <div>&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener"><strong>CITE V.1</strong></a> (evidence-grounded LLM interpretation of RNA-seq clusters) at MIT Jameel Clinic's <strong>7th Molecular Machine Learning Conference</strong>.</div>
-          </div>
-        </div>
-      </section>
-
       <section class="reveal" id="publications">
         <div class="section-label">Selected Work</div>
         <h2>Featured Publications</h2>
@@ -2235,7 +2300,111 @@
         <div class="pubs-cards" id="pubs">
 
           <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb t-rl">Multi-Agent<br>LLM Systems<br><span style="font-size:13px;font-weight:500;letter-spacing:0.06em;opacity:0.85">REVIEW</span></div>
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, F. T. J. Faria, T. N. Ornee, M. Sheikh</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-desc">Across 2,100 test cases and eight attack families, the apparent safety of multi-agent LLM pipelines often rests on opaque provider filters rather than the system itself. ChannelGuard places training-free information-bottleneck gates on every inter-agent channel, blocking tool-output poisoning outright and halving prompt-injection success while holding task accuracy at 0.867.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/channelguard/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026channelguard,
+  title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
+  journal={arXiv preprint arXiv:2607.19430},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/nexus/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026nexus,
+  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2607.19356},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line live-venue">ACL ARR meta-review: borderline conference accept &middot; committing to EMNLP 2026</div>
+              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
+  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2602.02952},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb t-survey" aria-hidden="true">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <circle class="sv-ring" cx="100" cy="75" r="42"/>
+                <g>
+                  <line class="sv-edge" x1="142.0" y1="75.0" x2="121.0" y2="111.4"/>
+                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="111.4"/>
+                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="58.0" y2="75.0"/>
+                  <line class="sv-edge" x1="58.0" y1="75.0" x2="79.0" y2="38.6"/>
+                  <line class="sv-edge e2" x1="79.0" y1="38.6" x2="121.0" y2="38.6"/>
+                  <line class="sv-edge e3" x1="121.0" y1="38.6" x2="142.0" y2="75.0"/>
+                  <line class="sv-edge" x1="142.0" y1="75.0" x2="58.0" y2="75.0"/>
+                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="38.6"/>
+                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="121.0" y2="38.6"/>
+                </g>
+                <g class="sv-sweep">
+                  <path d="M100 75 L100 30 A45 45 0 0 1 131 43 Z" fill="#ffffff" opacity="0.16"/>
+                  <line x1="100" y1="75" x2="100" y2="30" stroke="#ffffff" stroke-width="1.4" opacity="0.7" stroke-linecap="round"/>
+                </g>
+                <circle class="sv-node" cx="142.0" cy="75.0" r="4"/>
+                <circle class="sv-node n2" cx="121.0" cy="111.4" r="4"/>
+                <circle class="sv-node n3" cx="79.0" cy="111.4" r="4"/>
+                <circle class="sv-node n4" cx="58.0" cy="75.0" r="4"/>
+                <circle class="sv-node n5" cx="79.0" cy="38.6" r="4"/>
+                <circle class="sv-node n6" cx="121.0" cy="38.6" r="4"/>
+                <circle class="sv-core" cx="100" cy="75" r="6.5"/>
+              </svg>
+            </div>
             <div class="pub-info">
               <h3>Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review</h3>
               <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. B. Nipu, M. S. Mahmood, M. J. Hossen, M. F. Mridha</div>
@@ -2287,58 +2456,6 @@
 
           <article class="pub pub-card" data-tag="trust">
             <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line live-venue">ACL ARR meta-review: borderline conference accept &middot; committing to EMNLP 2026</div>
-              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
-  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
-  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2602.02952},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, F. T. J. Faria, T. N. Ornee, M. Sheikh</div>
-              <div class="pub-venue-line">Preprint, 2026</div>
-              <p class="pub-desc">Across 2,100 test cases and eight attack families, the apparent safety of multi-agent LLM pipelines often rests on opaque provider filters rather than the system itself. ChannelGuard places training-free information-bottleneck gates on every inter-agent channel, blocking tool-output poisoning outright and halving prompt-injection success while holding task accuracy at 0.867.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/channelguard/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026channelguard,
-  title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
-  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
-  journal={arXiv preprint arXiv:2607.19430},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
               <a class="pub-fig-link" href="/assets/figs/ptc-overview.png" target="_blank" rel="noopener">
                 <img src="/assets/figs/ptc-overview-thumb.png" alt="Parametric temporal conflict overview: a frozen LLM baseline returning the outdated fact, conflict localization by comparing standard and date-prefixed prompts, and residual-stream steering that recovers the newer fact" loading="lazy" />
               </a>
@@ -2363,36 +2480,91 @@
             </div>
           </article>
 
-          <article class="pub pub-card" data-tag="agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
-              <div class="pub-venue-line">Preprint, 2026</div>
-              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/nexus/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026nexus,
-  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
-  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2607.19356},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
         </div>
       </section>
 
     </article>
+    <!-- RIGHT RAIL: public posts about the work -->
+    <aside class="rail">
+      <div class="rail-head">
+        <span class="rail-ttl">Press &amp; mentions</span>
+        <span class="rail-count">8</span>
+      </div>
+      <div class="rail-body">
+        <div class="rail-list">
+      <a class="rail-item" href="https://www.linkedin.com/pulse/your-ai-agents-only-safe-weakest-handoff-travis-lelle-s7r7e/" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></span><span class="rail-tag">Feature</span></span>
+        <span class="rail-title">Your AI Agents Are Only as Safe as the Weakest Handoff</span>
+        <span class="rail-quote">&ldquo;The paper, led by Elias Hossain at UCF&rsquo;s Complex Adaptive Systems Lab &hellip; the assumption that safety properties of individual components transfer to the composed system is wrong.&rdquo;</span>
+        <span class="rail-src">Travis Lelle &middot; LinkedIn &middot; Jul 2026</span>
+      </a>
+      <a class="rail-item" href="https://github.com/LLMSecurity/awesome-agent-skills-security" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span><span class="rail-tag">Reading list</span></span>
+        <span class="rail-title">ChannelGuard listed among agent security defenses</span>
+        <span class="rail-src">awesome-agent-skills-security &middot; GitHub</span>
+      </a>
+      <a class="rail-item" href="https://beyond-desk.com/signal/g-1037" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></svg></span><span class="rail-tag">Digest</span></span>
+        <span class="rail-title">ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</span>
+        <span class="rail-quote">&ldquo;A training-free framework using embedding-similarity gates on each inter-agent channel.&rdquo;</span>
+        <span class="rail-src">Beyond Desk &middot; Jul 2026</span>
+      </a>
+      <a class="rail-item" href="https://moltbook.com/post/b26a4958-6a39-44c1-a5e3-56fe24b61854" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="rail-tag">Post</span></span>
+        <span class="rail-title">Safe models do not make safe pipelines</span>
+        <span class="rail-src">Moltbook</span>
+      </a>
+      <a class="rail-item" href="https://www.linkedin.com/posts/asif-alli-954b4324_nexus-structured-runtime-safety-for-tool-using-activity-7486013801515917312-JRnK/" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></span><span class="rail-tag">Practitioner</span></span>
+        <span class="rail-title">NEXUS changes how we design systems at the boundary</span>
+        <span class="rail-quote">&ldquo;The architectural implications of NEXUS are underdiscussed.&rdquo;</span>
+        <span class="rail-src">Asif Alli &middot; LinkedIn</span>
+      </a>
+      <a class="rail-item" href="https://www.moltbook.com/post/cb6a83de-ea56-486b-b200-bc8937e79dfa" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="rail-tag">Post</span></span>
+        <span class="rail-title">A runtime safety monitor is not a safety system</span>
+        <span class="rail-src">Moltbook</span>
+      </a>
+      <a class="rail-item" href="https://paper.dou.ac/p/2607.19356v1" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span class="rail-tag">Digest</span></span>
+        <span class="rail-title">NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</span>
+        <span class="rail-src">&#27599;&#26085;&#35770;&#25991; Daily Papers</span>
+      </a>
+      <a class="rail-item" href="https://x.com/FSFG/status/2080198084663890083" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.2 9.5 12.6h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.9L0 1.2h7.6l5.2 6.9 6.1-6.9zm-1.3 19.6h2L6.5 3.2H4.4l13.2 17.6z"/></svg></span><span class="rail-tag">Post</span></span>
+        <span class="rail-title">ChannelGuard shared with agent-security practitioners</span>
+        <span class="rail-src">@FSFG &middot; X</span>
+      </a>
+        </div>
+      </div>
+
+      <div class="rail-group rail-news">
+        <div class="rail-head">
+          <span class="rail-ttl">News</span>
+          <span class="rail-count">4</span>
+        </div>
+        <div class="rail-list rail-list-news">
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Apr 2026</span></span>
+            <span class="rail-text">&#127881; First-author paper <a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener"><strong>Fault-Tolerant Preference Alignment</strong></a> accepted at <strong>ICLR 2026 Trustworthy AI Workshop</strong>: multi-agent verification that filters corrupted supervision before RLHF/DPO.</span>
+          </div>
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Mar 2026</span></span>
+            <span class="rail-text">&#10024; Two PhD papers out the same month: AMR computational paradigms survey in <a href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener"><strong>Briefings in Bioinformatics</strong></a>, and the follow-up agentic RNA-seq paper in <strong>Frontiers in Bioinformatics</strong>.</span>
+          </div>
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Jan 2026</span></span>
+            <span class="rail-text">&#127908; At <strong>Amazon JFK&nbsp;27</strong> in New&nbsp;York for the <strong>Trusted AI Symposium</strong>, presenting <strong>SAVe V.1</strong>: multi-agent safe alignment verification for preference-based LLM optimization.</span>
+          </div>
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Oct 2025</span></span>
+            <span class="rail-text">&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener"><strong>CITE V.1</strong></a> (evidence-grounded LLM interpretation of RNA-seq clusters) at MIT Jameel Clinic's <strong>7th Molecular Machine Learning Conference</strong>.</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+
   </div>
 </div>
 
@@ -2677,8 +2849,15 @@
         io.unobserve(e.target);
       }
     });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  }, { threshold: 0.02, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => {
+    // Anything already within the first screen is shown outright. Waiting for
+    // the observer left a hidden section occupying space below the fold, which
+    // read as an unexplained gap until the first scroll.
+    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    else io.observe(el);
+  });
+
 
   // Mobile hamburger toggle
   (function () {

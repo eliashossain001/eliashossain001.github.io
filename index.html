@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Elias Hossain · Researcher</title>
-<meta name="description" content="PhD researcher at UCF working on trustworthy LLMs, uncertainty quantification, and AI-driven drug discovery for antimicrobial resistance." />
+<meta name="description" content="Doctoral researcher at UCF working on trustworthy LLMs, uncertainty quantification, and AI-driven drug discovery for antimicrobial resistance." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -934,6 +934,11 @@
     border-left: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
     padding-left: 9px;
   }
+  .rail-who {
+    display: block; margin-top: 2px;
+    font-size: 11px; line-height: 1.45;
+    color: var(--ink-muted); font-style: italic;
+  }
   .rail-src {
     display: block; margin-top: 6px;
     font-family: 'JetBrains Mono', monospace;
@@ -1007,6 +1012,91 @@
   .rail-text strong { color: var(--ink); font-weight: 600; }
   .rail-text a { color: var(--news-ink); border-bottom: 1px solid color-mix(in srgb, var(--news-dot) 55%, transparent); }
   .rail-text a:hover { border-bottom-color: var(--news-dot); }
+
+  /* PHOTO REEL — conference moments. Uniform height, natural widths, so
+     portrait and landscape shots sit together without cropping either. */
+  .reel-wrap { position: relative; margin-top: 22px; }
+  .reel {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--ink-muted) 42%, transparent) transparent;
+  }
+  .reel::-webkit-scrollbar { height: 6px; }
+  .reel::-webkit-scrollbar-track { background: transparent; }
+  .reel::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--ink-muted) 38%, transparent);
+    border-radius: 3px;
+  }
+  .reel::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  .shot {
+    flex: 0 0 auto;
+    margin: 0;
+    scroll-snap-align: start;
+    max-width: 86vw;
+  }
+  .shot img {
+    display: block;
+    height: 250px;
+    width: auto;
+    max-width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    object-fit: cover;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .shot:hover img { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .shot figcaption {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--ink-muted);
+    max-width: 320px;
+  }
+  .shot figcaption b { color: var(--ink-soft); font-weight: 600; }
+  @media (max-width: 640px) {
+    .shot img { height: 200px; }
+  }
+
+  /* TALKS SLIDER — one recorded talk at a time, scroll or arrows to move.
+     Adding another is one <a class="talk"> entry; the dots build themselves. */
+  .talks { position: relative; margin-top: 18px; }
+  .talks-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  .talks-track::-webkit-scrollbar { display: none; }
+  .talks-track > .talk { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; margin-top: 0; }
+  .talks-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    color: var(--ink-soft); cursor: pointer; padding: 0; z-index: 3;
+    box-shadow: var(--shadow); transition: all 0.18s ease;
+  }
+  .talks-nav:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .talks-nav svg { width: 14px; height: 14px; }
+  .talks-prev { left: -12px; }
+  .talks-next { right: -12px; }
+  .talks-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+  .talks-dot {
+    width: 6px; height: 6px; border-radius: 50%; border: none; padding: 0;
+    background: color-mix(in srgb, var(--ink-muted) 45%, transparent);
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .talks-dot.on { background: var(--accent); width: 17px; border-radius: 3px; }
+  @media (max-width: 560px) {
+    .talks-prev { left: 2px; } .talks-next { right: 2px; }
+  }
 
   /* TALK CARD — a recorded talk, sitting under the About block */
   .talk {
@@ -1304,178 +1394,6 @@
     color: var(--ink-muted);
     line-height: 1.55;
   }
-
-  /* WORK IN PROGRESS — single spotlight card */
-  .spotlight {
-    position: relative;
-    display: grid;
-    grid-template-columns: 210px 1fr;
-    gap: 30px;
-    align-items: center;
-    padding: 30px 32px;
-    border-radius: 18px;
-    border: 1px solid var(--line);
-    background:
-      radial-gradient(120% 150% at 0% 0%, var(--accent-soft) 0%, transparent 58%),
-      var(--bg-elev);
-    overflow: hidden;
-    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-  }
-  .spotlight::before {
-    /* slow sheen that sweeps the card */
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.42) 50%, transparent 62%);
-    background-size: 260% 100%;
-    animation: spotSheen 7s ease-in-out infinite;
-    pointer-events: none;
-  }
-  [data-theme="dark"] .spotlight::before {
-    background: linear-gradient(105deg, transparent 38%, rgba(126,224,197,0.10) 50%, transparent 62%);
-    background-size: 260% 100%;
-  }
-  @keyframes spotSheen {
-    0%, 100% { background-position: 170% 0; }
-    55%      { background-position: -70% 0; }
-  }
-  .spotlight:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-  }
-  @media (max-width: 700px) {
-    .spotlight { grid-template-columns: 1fr; gap: 18px; padding: 24px 20px; }
-    .spotlight-art { margin: 0 auto; }
-  }
-
-  .spotlight-art {
-    position: relative;
-    width: 190px;
-    height: 190px;
-    display: grid;
-    place-items: center;
-  }
-  .spotlight-art svg { width: 100%; height: 100%; overflow: visible; }
-  .sp-chord  { stroke: var(--accent); }
-  .sp-judge  { fill: var(--accent); opacity: 0.92; }
-  .sp-judge.j3 { fill: var(--accent-ink); }
-  .sp-funnel { stroke: var(--ink-soft); opacity: 0.55; }
-  .sp-drop   { fill: var(--accent-ink); }
-  /* judges drift in and out of agreement */
-  .sp-chord { animation: spChord 5.2s ease-in-out infinite; transform-origin: center; }
-  .sp-chord.c2 { animation-delay: -1.7s; }
-  .sp-chord.c3 { animation-delay: -3.4s; }
-  @keyframes spChord {
-    0%, 100% { opacity: 0.16; }
-    50%      { opacity: 0.92; }
-  }
-  .sp-judge { animation: spPulse 4.4s ease-in-out infinite; transform-origin: center; }
-  .sp-judge.j2 { animation-delay: -1.4s; }
-  .sp-judge.j3 { animation-delay: -2.9s; }
-  @keyframes spPulse {
-    0%, 100% { r: 12; opacity: 0.92; }
-    50%      { r: 14.5; opacity: 1; }
-  }
-  /* samples falling through the filter */
-  .sp-drop { animation: spDrop 3.6s linear infinite; }
-  .sp-drop.d2 { animation-delay: -1.2s; }
-  .sp-drop.d3 { animation-delay: -2.4s; }
-  @keyframes spDrop {
-    0%   { transform: translateY(0);    opacity: 0; }
-    18%  { opacity: 1; }
-    78%  { opacity: 1; }
-    100% { transform: translateY(46px); opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .spotlight::before,
-    .sp-chord, .sp-judge, .sp-drop { animation: none; }
-    .sp-chord { opacity: 0.55; }
-  }
-
-  .spotlight-body { min-width: 0; }
-  .spotlight-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--accent-ink);
-    background: var(--accent-soft);
-    border-radius: 999px;
-    padding: 4px 11px;
-    margin-bottom: 12px;
-  }
-  .spotlight-eyebrow::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: spBlink 2.2s ease-in-out infinite;
-  }
-  @keyframes spBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
-  @media (prefers-reduced-motion: reduce) {
-    .spotlight-eyebrow::before { animation: none; }
-  }
-  .spotlight-title {
-    font-family: 'Fraunces', serif;
-    font-size: 27px;
-    font-weight: 600;
-    line-height: 1.15;
-    margin: 0 0 10px;
-  }
-  .spotlight-title a { color: var(--ink); border: none; }
-  .spotlight-title a:hover { color: var(--accent-ink); }
-  .spotlight-title .sp-arrow {
-    display: inline-block;
-    transition: transform 0.22s ease;
-    color: var(--accent);
-  }
-  .spotlight:hover .spotlight-title .sp-arrow { transform: translateX(5px); }
-  .spotlight-lede {
-    font-size: 15px;
-    color: var(--ink-soft);
-    line-height: 1.62;
-    margin: 0 0 16px;
-    max-width: 60ch;
-  }
-  .spotlight-tags { display: flex; flex-wrap: wrap; gap: 7px; }
-  .spotlight-tags span {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    letter-spacing: 0.04em;
-    color: var(--pill-ink);
-    background: var(--pill-bg);
-    border-radius: 6px;
-    padding: 4px 9px;
-  }
-  .wip-note {
-    margin-top: 16px;
-    font-size: 12.5px;
-    color: var(--ink-muted);
-    font-style: italic;
-  }
-
-  .news-list { display: flex; flex-direction: column; gap: 10px; }
-  .news-item {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 14px;
-    align-items: baseline;
-    font-size: 14px;
-    color: var(--ink-soft);
-    padding-bottom: 10px;
-    border-bottom: 1px dashed var(--line);
-  }
-  .news-item:last-child { border-bottom: none; }
-  .news-date {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11.5px;
-    color: var(--accent-ink);
-  }
-  .news-item strong { color: var(--ink); font-weight: 600; }
 
   /* FULL-WIDTH SECTIONS BELOW */
   .full-section {
@@ -1971,7 +1889,7 @@
           <span class="nav-more-arrow">&#9662;</span>
         </button>
         <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
-          <a href="#inreview" role="menuitem">Work in Progress</a>
+          <a href="#moments" role="menuitem">Conferences</a>
           <a href="#certificates" role="menuitem">Certificate</a>
           <a href="#projects" role="menuitem">Projects</a>
           <a href="#awards" role="menuitem">Awards / Recognition</a>
@@ -1996,7 +1914,7 @@
         <img id="avatarImg" alt="Elias Hossain" />
       </div>
       <h1>Elias <span class="accent">Hossain</span></h1>
-      <div class="role">PhD Researcher · UCF</div>
+      <div class="role">Doctoral Researcher · UCF</div>
       <div class="email"><a href="mailto:mdelias.hossain@ucf.edu">mdelias.hossain@ucf.edu</a></div>
       <div class="actions">
         <a class="btn" href="/cv/Elias_CV.pdf" target="_blank">
@@ -2157,7 +2075,7 @@
 
       <section class="first-section bio" id="about">
         <p class="lead">
-          I am a <strong>Ph.D. researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Three concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? One constraint runs through all three: the method has to work on a model I cannot retrain, since that is the access most deployed systems allow. So the work is <strong>inference-time or training-free</strong>, tested under adversarial input and distribution shift. I also build language models from scratch, which changes what you believe about how they fail. My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
+          I am a <strong>Doctoral researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. Three concrete questions drive the work. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when the judges themselves share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? One constraint runs through all three: the method has to work on a model I cannot retrain, since that is the access most deployed systems allow. So the work is <strong>inference-time or training-free</strong>, tested under adversarial input and distribution shift. I also build language models from scratch, which changes what you believe about how they fail. My applied vertical is <strong>clinical and biomedical AI</strong>, where the cost of confident errors is measured in patient harm, not benchmarks.
         </p>
 
         <ol class="research-list">
@@ -2187,17 +2105,83 @@
           </li>
         </ol>
 
-        <a class="talk" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">
-          <span class="talk-thumb">
-            <img src="/assets/figs/talk-rural-care.jpg" alt="Elias Hossain presenting a system design slide during the talk" loading="lazy" />
-            <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-          </span>
-          <span>
-            <span class="talk-lbl">Recorded talk</span>
-            <span class="talk-title">Using AI for Personalized Care and Nutrition for Rural Americans</span>
-            <span class="talk-meta">On bringing personalized care and nutrition support to rural American communities, walked through end to end.</span>
-          </span>
-        </a>
+        <div class="talks" id="talks">
+          <button class="talks-nav talks-prev" type="button" aria-label="Previous talk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="talks-track">
+          <a class="talk" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">
+            <span class="talk-thumb">
+              <img src="/assets/figs/talk-rural-care.jpg" alt="" loading="lazy" />
+              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+            </span>
+            <span>
+              <span class="talk-lbl">Recorded talk</span>
+              <span class="talk-title">Using AI for Personalized Care and Nutrition for Rural Americans</span>
+              <span class="talk-meta">On bringing personalized care and nutrition support to rural American communities, walked through end to end.</span>
+            </span>
+          </a>
+          <a class="talk" href="https://www.youtube.com/watch?v=dftil1z8oIE" target="_blank" rel="noopener">
+            <span class="talk-thumb">
+              <img src="/assets/figs/talk-dftil1z8.jpg" alt="" loading="lazy" />
+              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+            </span>
+            <span>
+              <span class="talk-lbl">Recorded talk</span>
+              <span class="talk-title">Analyzing Post-Vaccination Heart Attack Risk Using Machine Learning</span>
+              <span class="talk-meta">Closing lecture of Spring 2025, working through a risk-analysis study end to end with the class.</span>
+            </span>
+          </a>
+          <a class="talk" href="https://www.youtube.com/watch?v=-x6QBaVVvkA" target="_blank" rel="noopener">
+            <span class="talk-thumb">
+              <img src="/assets/figs/talk-x6QBaVVv.jpg" alt="" loading="lazy" />
+              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+            </span>
+            <span>
+              <span class="talk-lbl">Recorded talk</span>
+              <span class="talk-title">Analysing and Identifying COVID-19 Risk Factors using Machine Learning</span>
+              <span class="talk-meta">Walking through the modelling and the risk factors the analysis surfaced.</span>
+            </span>
+          </a>
+          </div>
+          <button class="talks-nav talks-next" type="button" aria-label="Next talk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="talks-dots">
+          <button class="talks-dot on" type="button" aria-label="Talk 1"></button>
+          <button class="talks-dot" type="button" aria-label="Talk 2"></button>
+          <button class="talks-dot" type="button" aria-label="Talk 3"></button>
+          </div>
+        </div>
+      </section>
+
+      <section id="moments" class="reveal">
+        <div class="section-label">Out and About</div>
+        <h2>Conferences and talks</h2>
+        <div class="reel-wrap">
+          <div class="reel">
+            <figure class="shot">
+              <img src="/assets/photos/reel/invited_talk.jpg" alt="Invited talk on AI in healthcare at the Mississippi Health and Innovation Conference, 2024" loading="lazy" />
+              <figcaption><b>Mississippi Health &amp; Innovation Conference, 2024</b><br>Invited talk on AI in healthcare and what it can mean for rural America.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="/assets/photos/reel/dr_david.jpg" alt="Mississippi Health and Innovation Conference, 2024: With Professor David." loading="lazy" />
+              <figcaption><b>Mississippi Health &amp; Innovation Conference, 2024</b><br>With Professor David.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="/assets/photos/reel/MIT.jpg" alt="MoML 2025, MIT: Molecular Machine Learning Conference, Cambridge." loading="lazy" />
+              <figcaption><b>MoML 2025, MIT</b><br>Molecular Machine Learning Conference, Cambridge.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="/assets/photos/reel/MIT-3.jpg" alt="MoML 2025, MIT: Molecular Machine Learning Conference, Cambridge." loading="lazy" />
+              <figcaption><b>MoML 2025, MIT</b><br>Molecular Machine Learning Conference, Cambridge.</figcaption>
+            </figure>
+            <figure class="shot">
+              <img src="/assets/photos/reel/MIT-2.jpg" alt="MoML 2025, MIT: Molecular Machine Learning Conference, Cambridge." loading="lazy" />
+              <figcaption><b>MoML 2025, MIT</b><br>Molecular Machine Learning Conference, Cambridge.</figcaption>
+            </figure>
+          </div>
+        </div>
       </section>
 
       <section id="collaborators" class="reveal">
@@ -2496,44 +2480,52 @@
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></span><span class="rail-tag">Feature</span></span>
         <span class="rail-title">Your AI Agents Are Only as Safe as the Weakest Handoff</span>
         <span class="rail-quote">&ldquo;The paper, led by Elias Hossain at UCF&rsquo;s Complex Adaptive Systems Lab &hellip; the assumption that safety properties of individual components transfer to the composed system is wrong.&rdquo;</span>
+        <span class="rail-who">Security practitioner at GuidePoint Security</span>
         <span class="rail-src">Travis Lelle &middot; LinkedIn &middot; Jul 2026</span>
+      </a>
+      <a class="rail-item" href="https://x.com/FSFG/status/2080198084663890083" target="_blank" rel="noopener">
+        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.2 9.5 12.6h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.9L0 1.2h7.6l5.2 6.9 6.1-6.9zm-1.3 19.6h2L6.5 3.2H4.4l13.2 17.6z"/></svg></span><span class="rail-tag">Post</span></span>
+        <span class="rail-title">ChannelGuard shared with agent-security practitioners</span>
+        <span class="rail-quote">Passed along to readers following agent security: the finding that individually safe models stop being safe once they are chained into a pipeline.</span>
+        <span class="rail-src">@FSFG &middot; X</span>
       </a>
       <a class="rail-item" href="https://github.com/LLMSecurity/awesome-agent-skills-security" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></span><span class="rail-tag">Reading list</span></span>
         <span class="rail-title">ChannelGuard listed among agent security defenses</span>
+        <span class="rail-who">Curated index of agent security research</span>
         <span class="rail-src">awesome-agent-skills-security &middot; GitHub</span>
       </a>
       <a class="rail-item" href="https://beyond-desk.com/signal/g-1037" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></svg></span><span class="rail-tag">Digest</span></span>
         <span class="rail-title">ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</span>
         <span class="rail-quote">&ldquo;A training-free framework using embedding-similarity gates on each inter-agent channel.&rdquo;</span>
+        <span class="rail-who">Digest that summarises new research for practitioners</span>
         <span class="rail-src">Beyond Desk &middot; Jul 2026</span>
       </a>
       <a class="rail-item" href="https://moltbook.com/post/b26a4958-6a39-44c1-a5e3-56fe24b61854" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="rail-tag">Post</span></span>
         <span class="rail-title">Safe models do not make safe pipelines</span>
+        <span class="rail-who">Community site for people building agent systems</span>
         <span class="rail-src">Moltbook</span>
       </a>
       <a class="rail-item" href="https://www.linkedin.com/posts/asif-alli-954b4324_nexus-structured-runtime-safety-for-tool-using-activity-7486013801515917312-JRnK/" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></span><span class="rail-tag">Practitioner</span></span>
         <span class="rail-title">NEXUS changes how we design systems at the boundary</span>
         <span class="rail-quote">&ldquo;The architectural implications of NEXUS are underdiscussed.&rdquo;</span>
+        <span class="rail-who">Technology professional at Canadian Tire Financial Services</span>
         <span class="rail-src">Asif Alli &middot; LinkedIn</span>
       </a>
       <a class="rail-item" href="https://www.moltbook.com/post/cb6a83de-ea56-486b-b200-bc8937e79dfa" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="rail-tag">Post</span></span>
         <span class="rail-title">A runtime safety monitor is not a safety system</span>
+        <span class="rail-who">Community site for people building agent systems</span>
         <span class="rail-src">Moltbook</span>
       </a>
       <a class="rail-item" href="https://paper.dou.ac/p/2607.19356v1" target="_blank" rel="noopener">
         <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span><span class="rail-tag">Digest</span></span>
         <span class="rail-title">NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</span>
+        <span class="rail-who">Chinese-language digest of new papers</span>
         <span class="rail-src">&#27599;&#26085;&#35770;&#25991; Daily Papers</span>
-      </a>
-      <a class="rail-item" href="https://x.com/FSFG/status/2080198084663890083" target="_blank" rel="noopener">
-        <span class="rail-top"><span class="rail-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.2 9.5 12.6h-7.4l-5.8-7.6-6.7 7.6H.4l8.6-9.9L0 1.2h7.6l5.2 6.9 6.1-6.9zm-1.3 19.6h2L6.5 3.2H4.4l13.2 17.6z"/></svg></span><span class="rail-tag">Post</span></span>
-        <span class="rail-title">ChannelGuard shared with agent-security practitioners</span>
-        <span class="rail-src">@FSFG &middot; X</span>
       </a>
         </div>
       </div>
@@ -2568,46 +2560,6 @@
   </div>
 </div>
 
-
-<section class="full-section reveal" id="inreview">
-  <div class="section-label">In the Pipeline</div>
-  <h2>Work in progress</h2>
-  <p class="pubs-sub">Current work under review. Happy to discuss it in detail &mdash; <a href="mailto:mdelias.hossain@ucf.edu">get in touch</a>.</p>
-  <div class="spotlight">
-    <div class="spotlight-art" aria-hidden="true">
-      <svg viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
-        <!-- chords between judges: the correlation that consensus assumes away -->
-        <g fill="none" stroke-width="1.6" stroke-linecap="round">
-          <path class="sp-chord"    d="M52 46 Q95 24 138 46"/>
-          <path class="sp-chord c2" d="M138 46 Q152 78 116 96"/>
-          <path class="sp-chord c3" d="M52 46 Q38 78 74 96"/>
-        </g>
-        <!-- three judges -->
-        <circle class="sp-judge"    cx="52"  cy="46" r="12"/>
-        <circle class="sp-judge j2" cx="138" cy="46" r="12"/>
-        <circle class="sp-judge j3" cx="95"  cy="86" r="12"/>
-        <!-- the filter -->
-        <path class="sp-funnel" d="M40 112 L150 112 L112 146 L112 168 L78 168 L78 146 Z"
-              fill="none" stroke-width="2" stroke-linejoin="round"/>
-        <!-- samples passing through -->
-        <circle class="sp-drop"    cx="72"  cy="118" r="3.4"/>
-        <circle class="sp-drop d2" cx="95"  cy="118" r="3.4"/>
-        <circle class="sp-drop d3" cx="118" cy="118" r="3.4"/>
-      </svg>
-    </div>
-    <div class="spotlight-body">
-      <span class="spotlight-eyebrow">Under review</span>
-      <h3 class="spotlight-title"><a href="/corrfilter/">CorrFilter <span class="sp-arrow">&rarr;</span></a></h3>
-      <p class="spotlight-lede">Alignment pipelines increasingly hand quality control to a panel of LLM judges and keep whatever the panel agrees on. That move quietly assumes the judges are independent. This work asks what happens when they are not, at scale, and what it costs the data you keep.</p>
-      <div class="spotlight-tags">
-        <span>llm-as-judge</span>
-        <span>preference-data</span>
-        <span>alignment</span>
-      </div>
-    </div>
-  </div>
-  <p class="wip-note">Methods and results for work under review are shared on request rather than posted publicly.</p>
-</section>
 
 <section class="full-section reveal" id="certificates">
   <div class="section-label">Professional Development</div>
@@ -2763,6 +2715,9 @@
 
   // Profile photo rotator: changes on load, nav clicks, and scroll-up-from-below
   // Per-photo crop position (defaults to 'center 25%' if not listed)
+  // ?v= is a cache buster: these filenames get reused when a photo is swapped,
+  // and without it browsers keep serving the old image from cache.
+  const PHOTO_V = '2';
   const photoCandidates = [
     '/assets/photos/photo1.jpg',
     '/assets/photos/photo2.jpg',
@@ -2771,6 +2726,7 @@
     '/assets/photos/photo5.jpg',
     '/assets/photos/photo6.jpg',
     '/assets/photos/photo7.png',
+    '/assets/photos/photo8.jpg',
   ];
   const photoCrop = {
     '/assets/photos/photo6.jpg': 'center 55%',
@@ -2786,7 +2742,7 @@
     avatarImg.onload = () => avatarImg.classList.add('loaded');
     avatarImg.onerror = () => { rotatePhoto(); };
     avatarImg.style.objectPosition = photoCrop[choice] || 'center 25%';
-    avatarImg.src = choice;
+    avatarImg.src = choice + '?v=' + PHOTO_V;
     currentPhoto = choice;
   }
   rotatePhoto();
@@ -2858,6 +2814,42 @@
     else io.observe(el);
   });
 
+
+
+  // Talks slider: native scroll-snap, with arrows and dots driving it.
+  // Adding a talk means adding one .talk card; dots are read from the DOM.
+  (function () {
+    var root = document.getElementById('talks');
+    if (!root) return;
+    var track = root.querySelector('.talks-track');
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.talk'));
+    var dots = Array.prototype.slice.call(root.querySelectorAll('.talks-dot'));
+    if (cards.length < 2) {
+      root.querySelectorAll('.talks-nav, .talks-dots').forEach(function (el) { el.style.display = 'none'; });
+      return;
+    }
+    function current() { return Math.round(track.scrollLeft / track.clientWidth); }
+    function go(n) {
+      var i = Math.max(0, Math.min(cards.length - 1, n));
+      track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+    }
+    function sync() {
+      var i = current();
+      dots.forEach(function (d, k) { d.classList.toggle('on', k === i); });
+      root.querySelector('.talks-prev').style.opacity = i === 0 ? '0.35' : '1';
+      root.querySelector('.talks-next').style.opacity = i === cards.length - 1 ? '0.35' : '1';
+    }
+    root.querySelector('.talks-prev').addEventListener('click', function () { go(current() - 1); });
+    root.querySelector('.talks-next').addEventListener('click', function () { go(current() + 1); });
+    dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); }); });
+    var t = null;
+    track.addEventListener('scroll', function () {
+      if (t) clearTimeout(t);
+      t = setTimeout(sync, 90);
+    }, { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+  })();
 
   // Mobile hamburger toggle
   (function () {

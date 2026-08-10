@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MPV · Fault-Tolerant Preference Alignment via Multi-Agent Verification</title>
+<meta name="description" content="MPV filters preference data with four independent verifier agents under a k-of-n consensus rule before RLHF or DPO training. ICLR 2026 Workshop on Principled Design for Trustworthy AI." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66;
+    --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c;
+    --accent-glow: rgba(14, 124, 102, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111311;
+    --bg-elev: #181b18;
+    --bg-code: #0a0c0a;
+    --ink: #ecebe4;
+    --ink-soft: #b8b7ad;
+    --ink-muted: #80807a;
+    --line: #262a25;
+    --accent: #4ed1b3;
+    --accent-soft: #14302a;
+    --accent-ink: #7ee0c5;
+    --accent-glow: rgba(78, 209, 179, 0.25);
+    --pill-bg: #1f2320;
+    --pill-ink: #c4c3bb;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .hero-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 820px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 720px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 2.6rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.5rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 760px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* RESULTS TABLE */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(14, 124, 102, 0.08);
+    border-bottom: 1px solid var(--line);
+  }
+  [data-theme="dark"] .code-header {
+    background: rgba(78, 209, 179, 0.06);
+  }
+  .code-header .code-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; font-weight: 600;
+    color: var(--accent);
+  }
+  [data-theme="dark"] .code-header .code-title { color: var(--accent-ink); }
+  .code-header .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: #8a8a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .code-block pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7;
+    color: #d4d4d4;
+  }
+  .cm { color: #7a8a78; } .kw { color: #ff8c69; } .st { color: #a5d6ff; }
+  .fn { color: #d2a8ff; } .hl { color: #7ee0c5; font-weight: 600; }
+  .nu { color: #79c0ff; }
+
+  /* STEPS */
+  .steps {
+    display: flex; flex-direction: column;
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .step {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1.2rem 1.4rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step-num {
+    flex-shrink: 0; width: 36px; height: 36px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600; color: var(--accent-ink);
+  }
+  .step-content h3 {
+    font-size: 0.98rem; font-weight: 600;
+    margin-bottom: 0.2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .step-content p { font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(14, 124, 102, 0.18);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  [data-theme="dark"] .copy-btn { color: var(--accent-ink); }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* LICENSE NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+  .license-notice .license-text a {
+    color: var(--warn-ink); border-bottom: 1px solid var(--warn-border); font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a {
+    color: var(--accent-ink);
+    margin: 0 6px;
+  }
+
+  /* FADE-IN (visible by default; JS just adds gentle enter animation if it runs) */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .step { flex-direction: column; gap: 0.8rem; }
+  }
+  /* ============ MPV-specific animation styles ============ */
+
+  /* Hero mark: four verifiers voting, then the consensus gate resolving */
+  .hero-logo svg { overflow: visible; }
+  .hv-agent { animation: hvBeat 5s ease-in-out infinite; transform-origin: center; }
+  .hv-agent.a2 { animation-delay: -1.25s; }
+  .hv-agent.a3 { animation-delay: -2.5s; }
+  .hv-agent.a4 { animation-delay: -3.75s; }
+  @keyframes hvBeat {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+  .hv-spoke { stroke: var(--accent); stroke-width: 0.055; stroke-linecap: round;
+    stroke-dasharray: 0.14 0.16; animation: hvFlow 3.2s linear infinite; }
+  @keyframes hvFlow { to { stroke-dashoffset: -0.6; } }
+  .hv-core { fill: var(--accent-soft); stroke: var(--accent-ink); stroke-width: 0.09; }
+  .hv-ring { fill: none; stroke: var(--accent); stroke-width: 0.05; opacity: 0.3; }
+  @media (prefers-reduced-motion: reduce) { .hv-agent, .hv-spoke { animation: none; } }
+
+  /* ---- The verification bench: the paper's Mona Lisa example, played out ---- */
+  .bench {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-top: 26px;
+    box-shadow: var(--shadow);
+  }
+  .bench-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 640px) { .bench-row { grid-template-columns: 1fr; } }
+  .bench-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    background: var(--pill-bg);
+    border-radius: 8px;
+    padding: 10px 13px;
+    margin-bottom: 14px;
+  }
+  .bench-prompt b { color: var(--ink); }
+  .resp {
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 11px 13px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    position: relative;
+    background: var(--bg);
+  }
+  .resp .rlab {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+  .resp.chosen { border-color: var(--warn-border); background: var(--warn-bg); }
+  .resp.chosen .rlab { color: var(--warn-ink); }
+  .resp .pick {
+    position: absolute; top: -9px; right: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--warn-border); color: #fff;
+    border-radius: 999px; padding: 2px 9px;
+  }
+
+  /* the four agents scoring in sequence */
+  .verdicts { display: flex; flex-direction: column; gap: 8px; }
+  .vrow {
+    display: grid;
+    grid-template-columns: 132px 1fr 58px 62px;
+    gap: 10px;
+    align-items: center;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--bg);
+    opacity: 0;
+    animation: vIn 12s ease-in-out infinite;
+  }
+  .vrow.v2 { animation-delay: -10.6s; }
+  .vrow.v3 { animation-delay: -9.2s; }
+  .vrow.v4 { animation-delay: -7.8s; }
+  @keyframes vIn {
+    0%, 8%    { opacity: 0; transform: translateY(6px); }
+    14%, 88%  { opacity: 1; transform: translateY(0); }
+    96%, 100% { opacity: 0; transform: translateY(0); }
+  }
+  @media (max-width: 560px) {
+    .vrow { grid-template-columns: 1fr 52px 58px; }
+    .vrow .vwhat { display: none; }
+  }
+  .vname { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--ink); font-weight: 600; }
+  .vwhat { font-size: 0.78rem; color: var(--ink-muted); }
+  .vscore { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--ink-soft); text-align: right; }
+  .vtag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+    text-align: center; border-radius: 999px; padding: 3px 0;
+  }
+  .vtag.pass { background: var(--accent-soft); color: var(--accent-ink); }
+  .vtag.fail { background: var(--warn-bg); color: var(--warn-ink); }
+
+  /* the tally and the verdict stamp */
+  .tally {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    margin-top: 16px; padding-top: 15px; border-top: 1px solid var(--line);
+  }
+  .tally-count {
+    font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 600; color: var(--ink);
+  }
+  .tally-count small { font-size: 0.8rem; color: var(--ink-muted); font-family: 'JetBrains Mono', monospace; }
+  .tally-rule { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--ink-muted); }
+  .stamp-out {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: var(--warn-bg); color: var(--warn-ink);
+    border: 1px solid var(--warn-border);
+    border-radius: 999px; padding: 6px 16px;
+    opacity: 0;
+    animation: stampIn 12s ease-out infinite;
+  }
+  @keyframes stampIn {
+    0%, 62%   { opacity: 0; transform: scale(0.8) rotate(-3deg); }
+    68%       { opacity: 1; transform: scale(1.1) rotate(1deg); }
+    72%, 88%  { opacity: 1; transform: scale(1) rotate(0deg); }
+    96%, 100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vrow, .stamp-out { animation: none; opacity: 1; }
+  }
+
+  /* ---- consensus dial: k as a safety / retention trade-off ---- */
+  .dial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 22px; }
+  @media (max-width: 640px) { .dial-grid { grid-template-columns: 1fr; } }
+  .dial {
+    border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--bg-elev); padding: 18px 16px; text-align: center;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .dial:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .dial.best { border-color: var(--accent); box-shadow: var(--shadow); }
+  .dial-k {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px;
+  }
+  .bar { height: 7px; border-radius: 4px; background: var(--pill-bg); overflow: hidden; margin: 5px 0 3px; }
+  .bar span { display: block; height: 100%; border-radius: 4px; transform-origin: left center; animation: barGrow 1.4s ease-out both; }
+  .bar.safe span { background: var(--accent); }
+  .bar.keep span { background: var(--warn-border); }
+  @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .bar-lab {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--ink-muted);
+    margin-bottom: 9px;
+  }
+  .dial-note { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.5; margin-top: 10px; }
+
+  /* theorem block */
+  .thm {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-elev);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 18px 22px;
+    margin-top: 22px;
+  }
+  .thm-lab {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent-ink); margin-bottom: 8px;
+  }
+  .thm-eq {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem; color: var(--ink);
+    text-align: center; margin: 14px 0 10px; letter-spacing: 0.01em;
+  }
+  .thm p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="../oss.html">Open Source</a>
+      <a href="/live/">See It Work</a>
+      <a href="#method">Method</a>
+      <a href="#bench">In Action</a>
+      <a href="#theory">Theory</a>
+      <a href="#results">Results</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <circle class="hv-ring" cx="0" cy="0" r="1.42"/>
+      <!-- four verifiers feeding one consensus core -->
+      <line class="hv-spoke" x1="-1.02" y1="-1.02" x2="-0.4" y2="-0.4"/>
+      <line class="hv-spoke" x1="1.02"  y1="-1.02" x2="0.4"  y2="-0.4"/>
+      <line class="hv-spoke" x1="-1.02" y1="1.02"  x2="-0.4" y2="0.4"/>
+      <line class="hv-spoke" x1="1.02"  y1="1.02"  x2="0.4"  y2="0.4"/>
+      <g class="hv-agent">
+        <circle cx="-1.28" cy="-1.28" r="0.30" fill="#2f9e7a" stroke="#fdfaf3" stroke-width="0.05"/>
+        <path d="M -1.4 -1.29 L -1.31 -1.19 L -1.15 -1.4" fill="none" stroke="#fdfaf3" stroke-width="0.085" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g class="hv-agent a2">
+        <circle cx="1.28" cy="-1.28" r="0.30" fill="#2f9e7a" stroke="#fdfaf3" stroke-width="0.05"/>
+        <path d="M 1.16 -1.29 L 1.25 -1.19 L 1.41 -1.4" fill="none" stroke="#fdfaf3" stroke-width="0.085" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g class="hv-agent a3">
+        <circle cx="-1.28" cy="1.28" r="0.30" fill="#c0392b" stroke="#fdfaf3" stroke-width="0.05"/>
+        <path d="M -1.39 1.17 L -1.17 1.39 M -1.17 1.17 L -1.39 1.39" fill="none" stroke="#fdfaf3" stroke-width="0.085" stroke-linecap="round"/>
+      </g>
+      <g class="hv-agent a4">
+        <circle cx="1.28" cy="1.28" r="0.30" fill="#2f9e7a" stroke="#fdfaf3" stroke-width="0.05"/>
+        <path d="M 1.16 1.27 L 1.25 1.37 L 1.41 1.16" fill="none" stroke="#fdfaf3" stroke-width="0.085" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <!-- consensus core -->
+      <circle class="hv-core" cx="0" cy="0" r="0.52"/>
+      <text x="0" y="0.13" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="0.46" font-weight="600" fill="#0a5c4c">k/n</text>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">ICLR 2026 Workshop &middot; Principled Design for Trustworthy AI</div>
+  <h1 class="fade-in">Fault-Tolerant <span class="brand-text">Preference Alignment</span><br>via Multi-Agent Verification</h1>
+  <p class="subtitle fade-in">RLHF and DPO assume the preference data is trustworthy. It often is not. <em>MPV</em> puts four independent verifier agents in front of training and lets only supervision that clears a <em>k</em>-of-<em>n</em> vote reach the optimizer.</p>
+  <div class="cta-row fade-in">
+    <a href="https://openreview.net/forum?id=u73knIzvbY" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Paper on OpenReview
+    </a>
+    <a href="../index.html#publications" class="btn btn-outline">Other work</a>
+  </div>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">0.005</div><div class="stat-label">Refusal rate, from 0.148</div></div>
+    <div class="stat"><div class="stat-value">4</div><div class="stat-label">Independent verifiers</div></div>
+    <div class="stat"><div class="stat-value">1.000</div><div class="stat-label">SafetyEval at k=3</div></div>
+    <div class="stat"><div class="stat-value">e<sup>&minus;nD</sup></div><div class="stat-label">Contamination decay</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">Verify the supervision, then optimize</h2>
+  <p class="section-desc fade-in">Most robustness work on alignment changes the <em>objective</em> so it tolerates noise. <em>MPV</em> is data-centric instead: it treats the preference set as a first-class security surface and cleans it <strong>before</strong> a single gradient step. Verification is static and decoupled from training, so no feedback flows back to the verifiers and the pipeline stays acyclic.</p>
+  <div class="method-figure fade-in"><img src="assets/architecture.png" alt="MPV pipeline: raw preference data enters a multi-agent verification layer of four agents, aggregated by k-of-n consensus filtering into a Verified Preference Dataset, which trains the aligned model by DPO with LoRA"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> Each preference pair <em>(x, y⁺, y⁻)</em> is evaluated independently by heterogeneous verifiers. Approvals are aggregated under a <em>k</em>-of-<em>n</em> rule to build the Verified Preference Dataset, which is then used for offline DPO. Figure from the paper.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">K</div>
+      <h3>Knowledge Verifier</h3>
+      <p>Checks factual consistency of the preferred response. Alone it preserves factual supervision but cannot block unsafe or biased preferences, which is why single-verifier filtering scores deceptively well.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">B</div>
+      <h3>Behavior Auditor</h3>
+      <p>Checks safety compliance. Catches harmful supervision that a factuality check waves through, closing the blind spot that makes one-model filters brittle.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">E</div>
+      <h3>Ethics Evaluator</h3>
+      <p>Judges ethical appropriateness. A preference can be factually right and still unfit to train on; this is the axis that catches it.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">T</div>
+      <h3>Trust Assessor</h3>
+      <p>Scores bias and coherence. Flags implausible or misleading supervision that reads fluently enough to survive the other three checks.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- IN ACTION -->
+<section id="bench" class="content">
+  <div class="section-label fade-in">In Action</div>
+  <h2 class="section-title fade-in">A corrupted preference, caught</h2>
+  <p class="section-desc fade-in">This is the worked example from the paper. The annotator prefers the wrong answer. One verifier catching it is not enough, and under a strict rule it does not have to be: the pair is rejected because it fails to clear consensus.</p>
+
+  <div class="bench fade-in">
+    <div class="bench-prompt"><b>Prompt</b> &nbsp; Who painted the Mona Lisa?</div>
+    <div class="bench-row">
+      <div class="resp">
+        <span class="rlab">Response A</span>
+        Leonardo da Vinci painted the Mona Lisa.
+      </div>
+      <div class="resp chosen">
+        <span class="pick">User preferred</span>
+        <span class="rlab">Response B</span>
+        Vincent van Gogh painted the Mona Lisa.
+      </div>
+    </div>
+
+    <div class="verdicts">
+      <div class="vrow">
+        <span class="vname">KnowledgeVerifier</span>
+        <span class="vwhat">Incorrect fact</span>
+        <span class="vscore">0.0</span>
+        <span class="vtag fail">Fail</span>
+      </div>
+      <div class="vrow v2">
+        <span class="vname">BehaviorAuditor</span>
+        <span class="vwhat">Safe content</span>
+        <span class="vscore">0.9</span>
+        <span class="vtag pass">Pass</span>
+      </div>
+      <div class="vrow v3">
+        <span class="vname">EthicsEvaluator</span>
+        <span class="vwhat">Ethically fine but wrong</span>
+        <span class="vscore">0.8</span>
+        <span class="vtag pass">Pass</span>
+      </div>
+      <div class="vrow v4">
+        <span class="vname">TrustAssessor</span>
+        <span class="vwhat">Implausible and misleading</span>
+        <span class="vscore">0.3</span>
+        <span class="vtag fail">Fail</span>
+      </div>
+    </div>
+
+    <div class="tally">
+      <span class="tally-count">2 / 4 <small>approvals</small></span>
+      <span class="tally-rule">consensus threshold k = 3</span>
+      <span class="stamp-out">Rejected &middot; never reaches training</span>
+    </div>
+  </div>
+  <p class="method-caption fade-in"><strong>Figure 2.</strong> Two of four agents approve. Because a majority of the bank is not enough under <em>k</em> = 3, this preference never enters the Verified Preference Dataset. A single safety model would have passed it.</p>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- THEORY -->
+<section id="theory" class="content">
+  <div class="section-label fade-in">Theory</div>
+  <h2 class="section-title fade-in">Why consensus works, and what it costs</h2>
+  <p class="section-desc fade-in">Let a fraction <em>&eta;</em> of preferences be corrupted, and let each verifier admit a corrupted pair with probability <em>&epsilon;</em>. A corrupted pair survives only if at least <em>k</em> of <em>n</em> agents are fooled at once.</p>
+
+  <div class="thm fade-in">
+    <div class="thm-lab">Theorem 1 &middot; exponential suppression</div>
+    <div class="thm-eq">&eta;&prime; &nbsp;&le;&nbsp; exp( &minus;n &middot; D(k/n &#8214; &epsilon;) )</div>
+    <p>If <em>&epsilon; &lt; k/n</em>, the effective contamination rate decays exponentially in the number of agents, where <em>D</em> is the Bernoulli KL divergence. Verifiers do not need to be individually excellent: even moderately reliable agents (<em>&epsilon; &lt; 0.5</em>) compose into a strong guarantee, provided their errors are not perfectly correlated.</p>
+  </div>
+
+  <div class="thm fade-in">
+    <div class="thm-lab">The other side of the ledger</div>
+    <div class="thm-eq">&rho; &nbsp;=&nbsp; Pr[ Y &ge; k ],&nbsp;&nbsp; Y &sim; Binomial(n, 1 &minus; &delta;)</div>
+    <p>Clean preferences are also rejected sometimes, at false-negative rate <em>&delta;</em>. Raising <em>k</em> suppresses corruption exponentially but shrinks the surviving dataset. The paper does not hide this: the threshold is presented as a tunable safety-versus-coverage dial rather than a heuristic, and the empirical results follow the prediction closely.</p>
+  </div>
+
+  <div class="dial-grid">
+    <div class="dial fade-in">
+      <div class="dial-k">k = 2 &middot; permissive</div>
+      <div class="bar safe"><span style="width:99.1%"></span></div>
+      <div class="bar-lab"><span>SafetyEval</span><span>0.991</span></div>
+      <div class="bar keep"><span style="width:39%"></span></div>
+      <div class="bar-lab"><span>Data retained</span><span>39.0%</span></div>
+      <p class="dial-note">Keeps the most data, weakest guarantee.</p>
+    </div>
+    <div class="dial best fade-in">
+      <div class="dial-k">k = 3 &middot; the setting used</div>
+      <div class="bar safe"><span style="width:100%"></span></div>
+      <div class="bar-lab"><span>SafetyEval</span><span>1.000</span></div>
+      <div class="bar keep"><span style="width:13.67%"></span></div>
+      <div class="bar-lab"><span>Data retained</span><span>13.67%</span></div>
+      <p class="dial-note">Near-perfect safety and truthfulness on what survives.</p>
+    </div>
+    <div class="dial fade-in">
+      <div class="dial-k">k = 4 &middot; unanimous</div>
+      <div class="bar safe"><span style="width:0%"></span></div>
+      <div class="bar-lab"><span>SafetyEval</span><span>N/A</span></div>
+      <div class="bar keep"><span style="width:0%"></span></div>
+      <div class="bar-lab"><span>Data retained</span><span>0.0%</span></div>
+      <p class="dial-note">Rejects everything. The dial has a far end, and this is it.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Qwen2-7B across four benchmarks</h2>
+  <p class="section-desc fade-in">Verified DPO is compared against an SFT baseline and raw DPO. The pattern is not a uniform lift: verification reshapes behaviour, buying robustness and lower over-refusal, and paying for it in coverage where the domain is ambiguous.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Dataset</th><th>Method</th><th>Primary metric</th><th>Secondary</th></tr>
+      </thead>
+      <tbody>
+        <tr><td rowspan="2">Anthropic HH</td><td>Raw DPO</td><td class="num">SafetyEval 0.590</td><td class="num">Refusal 0.070</td></tr>
+        <tr class="highlight"><td>MPV (k=3)</td><td class="num">SafetyEval <strong>0.590</strong></td><td class="num">Refusal <strong>0.055</strong></td></tr>
+        <tr><td rowspan="2">CarperAI Summarization</td><td>Raw DPO</td><td class="num">Win-rate 0.913</td><td class="num">Refusal 0.124</td></tr>
+        <tr class="highlight"><td>MPV (k=3)</td><td class="num">Win-rate <strong>0.913</strong></td><td class="num">Refusal <strong>0.005</strong></td></tr>
+        <tr><td rowspan="2">PubMedQA</td><td>Raw DPO</td><td class="num">Accuracy 0.526</td><td class="num">ECE 0.338</td></tr>
+        <tr class="highlight"><td>MPV (k=3)</td><td class="num">Accuracy <strong>0.550</strong></td><td class="num">ECE <strong>0.315</strong></td></tr>
+        <tr><td rowspan="2">TruthfulQA</td><td>Raw DPO</td><td class="num">Accuracy 0.359</td><td class="num">ECE 0.061</td></tr>
+        <tr><td>MPV (k=3)</td><td class="num">Accuracy 0.330</td><td class="num">ECE 0.101</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> The summarization result is the headline: refusals fall <strong>25&times;</strong>, from 0.148 at SFT and 0.124 at raw DPO down to 0.005, with win-rate unchanged. Verified supervision removes the spurious safety signals that push a model into refusing work it should do. TruthfulQA moves the other way, and the paper reports it plainly: under strict consensus, factually correct but weakly supported supervision gets filtered out too.</p>
+  </div>
+
+  <div class="feature-grid fade-in">
+    <div class="feature-card">
+      <div class="feature-icon">&#9878;</div>
+      <h3>One verifier is not enough</h3>
+      <p>KnowledgeVerifier alone scores 1.000 on TruthfulQA and 0.977 on safety, but it cannot block unsafe or biased preferences at all. The high score measures its blind spot, not its robustness.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#8646;</div>
+      <h3>Heterogeneity is the point</h3>
+      <p>Adding agents along different axes raises retention from 14.67% to 39.0% while tightening semantic constraints. Diverse failure modes are what make the consensus bound hold.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9881;</div>
+      <h3>Drops into existing stacks</h3>
+      <p>MPV operates entirely at the data layer, so it is agnostic to the optimizer. RLHF, DPO, or whatever replaces them next: the verification logic evolves without retraining anything.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite MPV</h2>
+  <p class="section-desc fade-in">If this framing of preference data as a security surface is useful to your work, please consider citing the paper.</p>
+  <div class="citation-block fade-in" id="bibtex">
+<button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@inproceedings{hossain2026mpv,
+  title     = {Fault-Tolerant Preference Alignment via Multi-Agent Verification},
+  author    = {Hossain, Elias and Rahimimovassagh, Maryam and Neupane, Subash
+               and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Yousefi, Niloofar},
+  booktitle = {ICLR 2026 Workshop on Principled Design for Trustworthy AI},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=u73knIzvbY},
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>MPV</strong> — Fault-Tolerant Preference Alignment via Multi-Agent Verification &nbsp;·&nbsp;
+    <a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">OpenReview</a> ·
+    <a href="../index.html#publications">More work</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  // Mark JS as enabled — only then do fade-in elements start hidden
+  document.documentElement.classList.add('js-on');
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  // Safety: reveal everything after 2s in case the observer never fires
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  // Theme toggle (persists across pages via localStorage)
+  const themeBtn = document.getElementById('themeBtn');
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+
+  // Copy BibTeX
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

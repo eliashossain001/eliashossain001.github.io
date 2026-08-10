@@ -2285,6 +2285,33 @@
 
           <article class="pub pub-card" data-tag="trust agentic">
             <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/mpv-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/mpv-architecture-thumb.png" alt="MPV pipeline: raw preference data passes through four verifier agents, a k-of-n consensus filter, and into a verified preference dataset used for DPO training" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Fault-Tolerant Preference Alignment via Multi-Agent Verification</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. Rahimimovassagh, S. Neupane, M. J. I. Basher, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">ICLR 2026 Workshop on Principled Design for Trustworthy AI</div>
+              <p class="pub-desc">RLHF and DPO both assume the preference data is trustworthy. MPV drops that assumption: four verifier agents check every preference pair for factuality, safety, ethics, and trust, and only pairs clearing a <em>k</em>-of-<em>n</em> vote reach training. Consensus provably suppresses corrupted supervision at an exponential rate, and on Qwen2-7B it cuts the summarization refusal rate from 0.148 to <strong>0.005</strong> while holding win-rate at parity.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">OPENREVIEW</a>
+                <a class="pub-pill" href="/mpv/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026mpv,
+  title={Fault-Tolerant Preference Alignment via Multi-Agent Verification},
+  author={Hossain, Elias and Rahimimovassagh, Maryam and Neupane, Subash and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Yousefi, Niloofar},
+  booktitle={ICLR 2026 Workshop on Principled Design for Trustworthy AI},
+  year={2026},
+  url={https://openreview.net/forum?id=u73knIzvbY}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb has-fig">
               <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
                 <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
               </a>

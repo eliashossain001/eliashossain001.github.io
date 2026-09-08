@@ -2283,6 +2283,58 @@
 
         <div class="pubs-cards" id="pubs">
 
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Findings of AACL-IJCNLP 2026</div>
+              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/nexus/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026nexus,
+  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
+  booktitle={Findings of the Association for Computational Linguistics: AACL-IJCNLP 2026},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line live-venue">ARR review complete, recommended for conference acceptance; committing to an ACL venue, 2026</div>
+              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
+  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2602.02952},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
           <article class="pub pub-card" data-tag="trust agentic">
             <div class="pub-thumb has-fig">
               <a class="pub-fig-link" href="/assets/figs/mpv-architecture.png" target="_blank" rel="noopener">
@@ -2330,58 +2382,6 @@
   title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
   author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
   journal={arXiv preprint arXiv:2607.19430},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
-              <div class="pub-venue-line live-venue">Committed to an ACL venue, 2026</div>
-              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/nexus/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026nexus,
-  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
-  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2607.19356},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line live-venue">Committed to an ACL venue, 2026</div>
-              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
-  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
-  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2602.02952},
   year={2026}
 }</pre>
               </div>
@@ -2560,9 +2560,13 @@
       <div class="rail-group rail-news">
         <div class="rail-head">
           <span class="rail-ttl">News</span>
-          <span class="rail-count">4</span>
+          <span class="rail-count">5</span>
         </div>
         <div class="rail-list rail-list-news">
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>
+            <span class="rail-text">&#127881; First-author paper <a href="/nexus/"><strong>NEXUS</strong></a> accepted to <strong>Findings of AACL-IJCNLP 2026</strong>: a plan-level runtime monitor that routes every tool call an LLM agent proposes to allow, block, confirm, or revise.</span>
+          </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Apr 2026</span></span>
             <span class="rail-text">&#127881; First-author paper <a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener"><strong>Fault-Tolerant Preference Alignment</strong></a> accepted at <strong>ICLR 2026 Trustworthy AI Workshop</strong>: multi-agent verification that filters corrupted supervision before RLHF/DPO.</span>
@@ -2675,7 +2679,7 @@
 </section>
 
 <footer>
-  © 2026 Elias Hossain · Last updated August 2026 · University of Central Florida.
+  © 2026 Elias Hossain · Last updated September 2026 · University of Central Florida.
 </footer>
 
 </main>

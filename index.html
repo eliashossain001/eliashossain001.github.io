@@ -1028,17 +1028,17 @@
   .rail-note.rail-fresh {
     background: color-mix(in srgb, var(--news-soft) 60%, transparent);
     border-bottom-color: color-mix(in srgb, var(--news-dot) 30%, transparent);
-    overflow: hidden;
     animation: freshIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   }
   .rail-note.rail-fresh::before { opacity: 1; width: 3px; }
   .rail-note.rail-fresh::after {
     content: '';
     position: absolute; inset: 0;
+    border-radius: 9px;
     pointer-events: none;
     background: linear-gradient(100deg,
       transparent 34%,
-      rgba(255, 255, 255, 0.62) 50%,
+      rgba(255, 255, 255, 0.42) 50%,
       transparent 66%);
     background-size: 260% 100%;
     background-repeat: no-repeat;
@@ -1062,11 +1062,12 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase;
     font-weight: 700;
-    color: var(--bg-elev);
-    background: var(--news-dot);
+    color: #ffffff;
+    background: var(--news-ink);
     border-radius: 4px; padding: 2px 6px;
     animation: newHalo 2.6s ease-in-out infinite;
   }
+  [data-theme="dark"] .rail-new { color: #181b18; background: var(--news-dot); }
   @keyframes newHalo {
     0%, 100% { box-shadow: 0 0 0 0 rgba(var(--news-glow), 0.55); }
     60%      { box-shadow: 0 0 0 7px rgba(var(--news-glow), 0); }

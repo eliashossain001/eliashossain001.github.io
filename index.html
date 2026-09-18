@@ -1385,6 +1385,44 @@
     font-weight: 600;
   }
 
+  /* Highlighted joint project inside a featured collaborator card */
+  .collab-project {
+    display: block;
+    margin-top: 12px;
+    padding: 11px 14px;
+    border-radius: 9px;
+    background: var(--hot-bg);
+    border: 1px solid var(--hot-border);
+    color: var(--ink);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .collab-project:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .collab-project .cp-label {
+    display: block;
+    font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--hot-ink);
+  }
+  .collab-project .cp-title {
+    display: block;
+    margin-top: 3px;
+    font-family: 'Fraunces', serif;
+    font-size: 15.5px; font-weight: 600; line-height: 1.3;
+    color: var(--ink);
+  }
+  .collab-project .cp-desc {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px; line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .collab-project .cp-go {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 12px; font-weight: 600;
+    color: var(--hot-ink);
+  }
+
   /* Collaboration reach stats */
   .collab-stats {
     display: flex;
@@ -2260,12 +2298,12 @@
         <div class="section-label">Collaborators</div>
         <h2>Who I work with</h2>
         <div class="collab-stats">
-          <div class="collab-stat"><span class="cs-num">13</span><span class="cs-lbl">Institutions</span></div>
-          <div class="collab-stat"><span class="cs-num">5</span><span class="cs-lbl">Countries</span></div>
-          <div class="collab-stat"><span class="cs-num">4</span><span class="cs-lbl">Continents</span></div>
-          <div class="collab-stat"><span class="cs-num">6</span><span class="cs-lbl">Industry Labs</span></div>
+          <div class="collab-stat"><span class="cs-num">11</span><span class="cs-lbl">Institutions</span></div>
+          <div class="collab-stat"><span class="cs-num">3</span><span class="cs-lbl">Countries</span></div>
+          <div class="collab-stat"><span class="cs-num">3</span><span class="cs-lbl">Continents</span></div>
+          <div class="collab-stat"><span class="cs-num">5</span><span class="cs-lbl">Industry Labs</span></div>
         </div>
-        <p class="collab-lead">I work with researchers who have led or built AI at <strong>Meta</strong>, <strong>Google&nbsp;AI</strong>, <strong>Intel</strong>, <strong>Amazon</strong>, <strong>GE Research</strong>, and <strong>audEERING</strong> &mdash; alongside academic and clinical groups on four continents.</p>
+        <p class="collab-lead">I work with researchers who have led or built AI at <strong>Meta</strong>, <strong>Google&nbsp;AI</strong>, <strong>Intel</strong>, <strong>Amazon</strong>, and <strong>GE Research</strong>, alongside academic and clinical groups on three continents.</p>
         <div class="collab-grid">
           <div class="collab-card feature">
             <div class="collab-monogram">SL</div>
@@ -2277,20 +2315,13 @@
                 <span class="collab-pill">Director, GE Research</span>
                 <span class="collab-pill">h-index 58</span>
                 <span class="collab-pill">19,000+ citations</span>
-                <a class="collab-pill hot" href="/Automatic-Jury-Consensus/">Joint project: Automatic-Jury-Consensus &rarr;</a>
               </div>
-            </div>
-          </div>
-          <div class="collab-card feature">
-            <div class="collab-monogram">BS</div>
-            <div>
-              <div class="collab-name"><a href="https://scholar.google.com/citations?user=TxKNCSoAAAAJ&amp;hl=en" target="_blank" rel="noopener">Bj&ouml;rn Schuller</a></div>
-              <div class="collab-role">Professor, TU M&uuml;nchen and Imperial College London &middot; CSO, audEERING</div>
-              <div class="collab-pills">
-                <span class="collab-pill hot">h-index 129 &middot; 87,000+ citations</span>
-                <span class="collab-pill">Affective computing</span>
-                <span class="collab-pill">Computer audition</span>
-              </div>
+              <a class="collab-project" href="/Automatic-Jury-Consensus/">
+                <span class="cp-label">Joint project &middot; Submitted to ICLR 2027</span>
+                <span class="cp-title">Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus</span>
+                <span class="cp-desc">Ten LLM judges with correlated errors carry the evidence of about 3.5 independent ones, and ignoring that dependence flips significance conclusions in up to 28% of comparisons.</span>
+                <span class="cp-go">Automatic-Jury-Consensus project page &rarr;</span>
+              </a>
             </div>
           </div>
           <div class="collab-card">
@@ -2326,8 +2357,6 @@
         </div>
         <div class="collab-chips">
           <span class="collab-chip">UCF</span>
-          <span class="collab-chip">TU M&uuml;nchen</span>
-          <span class="collab-chip">Imperial College London</span>
           <span class="collab-chip">New York University</span>
           <span class="collab-chip">UMBC</span>
           <span class="collab-chip">Univ. of Southern Queensland</span>
@@ -2353,6 +2382,31 @@
         </div>
 
         <div class="pubs-cards" id="pubs">
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/ajc-teaser.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/ajc-teaser-thumb.png" alt="Ten LLM judges vote 8-of-10 for response A, but three of the agreeing judges share the same blind spot; ignoring shared errors declares system A significantly better, while accounting for them finds no difference" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, N. Yousefi, S.-N. Lim</div>
+              <div class="pub-venue-line">Submitted to ICLR 2027 &middot; with Prof. Ser-Nam Lim</div>
+              <p class="pub-desc">Consensus among LLM judges assumes they fail independently. They do not: in a ten-judge bank the mean error correlation is 0.21, so the votes carry the evidence of about 3.5 independent judges, frontier judges from different providers are even more correlated (0.56), and ignoring the dependence flips significance conclusions in up to 28% of comparisons. A small trusted set is enough to estimate the dependence and choose the voting rule.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="/Automatic-Jury-Consensus/">PROJECT</a>
+                <a class="pub-pill" href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener">CODE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026agreement,
+  title={Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus},
+  author={Hossain, Elias and Yousefi, Niloofar and Lim, Ser-Nam},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
 
           <article class="pub pub-card" data-tag="agentic">
             <div class="pub-thumb has-fig">
@@ -2571,11 +2625,15 @@
       <div class="rail-group rail-news">
         <div class="rail-head">
           <span class="rail-ttl">News</span>
-          <span class="rail-count">5</span>
+          <span class="rail-count">6</span>
         </div>
         <div class="rail-list rail-list-news">
           <div class="rail-item rail-note rail-fresh">
             <span class="rail-top"><span class="rail-tag">Sep 2026</span><span class="rail-new">New</span></span>
+            <span class="rail-text">&#128221; New paper with <strong>Prof. Ser-Nam Lim</strong> submitted to <strong>ICLR 2027</strong>: <a href="/Automatic-Jury-Consensus/"><strong>Agreement Overstates Evidence</strong></a>, showing that ten correlated LLM judges carry the evidence of about 3.5 independent ones.</span>
+          </div>
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>
             <span class="rail-text">&#127881; First-author paper <a href="/nexus/"><strong>NEXUS</strong></a> accepted to <strong>Findings of AACL-IJCNLP 2026</strong>: a plan-level runtime monitor that routes every tool call an LLM agent proposes to allow, block, confirm, or revise.</span>
           </div>
           <div class="rail-item rail-note">

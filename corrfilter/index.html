@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CorrFilter · Auditing the Reliability of LLM-Judge Consensus</title>
-<meta name="description" content="A large-scale audit of the reliability assumptions behind LLM-judge consensus in alignment-data filtering. Under double-blind review: scope and scale are public, findings are shared on request." />
+<title>Automatic-Jury-Consensus · Agreement Overstates Evidence</title>
+<meta name="description" content="Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus. Ten LLM judges with correlated errors carry the statistical evidence of about 3.5 independent ones, and ignoring that dependence changes significance conclusions in up to 28% of comparisons." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -446,6 +446,56 @@
   }
   .redact-foot strong { font-weight: 700; }
 
+  /* FINDINGS */
+  .finding-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .finding-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.5rem 1.4rem;
+    transition: all 0.25s ease;
+  }
+  .finding-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .finding-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2.1rem; font-weight: 600;
+    color: var(--accent-ink); line-height: 1;
+    letter-spacing: -0.02em; margin-bottom: 0.3rem;
+  }
+  .finding-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-muted); margin-bottom: 0.9rem;
+  }
+  .finding-card h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem;
+  }
+  .finding-card p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+  .regime-note {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: var(--accent-ink);
+    line-height: 1.6;
+  }
+  .regime-note strong { font-weight: 700; }
+  .cite-box {
+    background: var(--bg-code); color: #e9e4d8;
+    border-radius: 12px; padding: 1.1rem 1.3rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+    line-height: 1.6; overflow-x: auto; white-space: pre;
+    margin-top: 1.2rem;
+  }
+
   /* ACCESS */
   .access-box {
     background: var(--bg-elev);
@@ -512,9 +562,10 @@
       <a href="../index.html#publications">Publications</a>
       <a href="/live/">See It Work</a>
       <a href="#question">Question</a>
-      <a href="#scale">Scale</a>
       <a href="#findings">Findings</a>
-      <a href="#access">Access</a>
+      <a href="#setup">Setup</a>
+      <a href="#limits">Limits</a>
+      <a href="#access">Code</a>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
         <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -546,28 +597,31 @@
       <circle class="sp-drop d3" cx="118" cy="118" r="3.4"/>
     </svg>
   </div>
-  <div class="venue-badge fade-in"><span class="dot"></span> Under double-blind review</div>
-  <h1 class="fade-in"><span class="brand-text">CorrFilter</span></h1>
-  <p class="tagline fade-in">A large-scale audit of the reliability assumptions behind LLM-judge consensus in alignment-data filtering.</p>
+  <div class="venue-badge fade-in"><span class="dot"></span> Preprint &middot; 2026</div>
+  <h1 class="fade-in"><span class="brand-text">Automatic-Jury-Consensus</span></h1>
+  <p class="tagline fade-in">Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus</p>
   <div class="fade-in"><p class="supervision">
-    <span class="sup-label">Supervised by</span>
-    <a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a>
-    <span class="sup-where">University of Central Florida &middot; formerly led AI research at Meta</span>
+    <span class="sup-label">Authors</span>
+    Elias Hossain, Niloofar Yousefi,
+    <a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Ser-Nam Lim</a>
+    <span class="sup-where">University of Central Florida</span>
   </p></div>
 
   <div class="cta-row fade-in">
-    <a href="mailto:mdelias.hossain@ucf.edu?subject=CorrFilter%20%E2%80%94%20manuscript%20request" class="btn btn-primary">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Request the manuscript
+    <a href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      Code
     </a>
-    <a href="../index.html#publications" class="btn btn-outline">Other work</a>
+    <a href="mailto:mdelias.hossain@ucf.edu?subject=Automatic-Jury-Consensus%20paper" class="btn btn-outline">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Contact
+    </a>
   </div>
-  <p class="hero-note fade-in">Manuscript and results held privately during review</p>
   <div class="stats-bar fade-in">
-    <div class="stat"><div class="stat-value">16</div><div class="stat-label">Judges per Bank</div></div>
-    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Model Families</div></div>
-    <div class="stat"><div class="stat-value">3</div><div class="stat-label">Preference Datasets</div></div>
-    <div class="stat"><div class="stat-value">4</div><div class="stat-label">Frontier Providers</div></div>
+    <div class="stat"><div class="stat-value">0.21</div><div class="stat-label">Mean error correlation</div></div>
+    <div class="stat"><div class="stat-value">3.5</div><div class="stat-label">Effective judges of 10</div></div>
+    <div class="stat"><div class="stat-value">28%</div><div class="stat-label">Significance flips</div></div>
+    <div class="stat"><div class="stat-value">0.56</div><div class="stat-label">Frontier correlation</div></div>
   </div>
 </section>
 
@@ -576,50 +630,24 @@
 <!-- QUESTION -->
 <section id="question" class="content">
   <div class="section-label fade-in">The Question</div>
-  <h2 class="section-title fade-in">What does agreement actually buy you?</h2>
-  <p class="section-desc fade-in">Alignment pipelines increasingly delegate data curation to panels of LLM judges: a preference pair is kept when enough judges agree. Every such rule rests on an assumption about <em>how</em> those judges fail. This project tests that assumption directly, in the filtering setting where it has consequences, rather than inferring it from headline judge accuracy. The work is supervised by <a href="https://scholar.google.com/citations?user=HX0BfLYAAAAJ" target="_blank" rel="noopener">Prof. Ser-Nam Lim</a>, who led AI research teams at Meta from 2018 to 2023.</p>
+  <h2 class="section-title fade-in">How much evidence does agreement actually provide?</h2>
+  <p class="section-desc fade-in">Alignment pipelines increasingly use panels of LLM judges to decide which of two responses is preferred, and keep an example only when enough judges agree. The intuition is that agreement among many judges is stronger evidence than any single judge. That intuition assumes the judges make their errors independently. LLM judges share pretraining data, post-training recipes, evaluation templates, and blind spots, so they often make the same mistakes. This project measures how much that dependence weakens consensus.</p>
   <div class="feature-grid">
     <div class="feature-card fade-in">
-      <div class="feature-icon">◉</div>
-      <h3>Where it bites</h3>
-      <p>Consensus rules decide which preference pairs survive to train a policy. Whatever they let through becomes the reward signal, so a filtering assumption that quietly fails does not stay contained at the filtering stage.</p>
+      <div class="feature-icon">i</div>
+      <h3>How much independent information?</h3>
+      <p>We estimate the pairwise correlation of judge errors and convert it into an effective number of independent judges, so that a bank's evidence is reported in the same units as its size.</p>
     </div>
     <div class="feature-card fade-in">
-      <div class="feature-icon">⇄</div>
-      <h3>Measured, not assumed</h3>
-      <p>Judges are run over fixed item sets so that banks of different sizes, families, and prompt conditions are directly comparable, and every panel-level claim is checked against a matched statistical test rather than a pooled vote count.</p>
+      <div class="feature-icon">ii</div>
+      <h3>Can shared errors change conclusions?</h3>
+      <p>We compare a pooled-vote test, which treats every judge vote as independent, with an item-level test that uses each preference pair as one observation, and count how often they disagree.</p>
     </div>
     <div class="feature-card fade-in">
-      <div class="feature-icon">≡</div>
-      <h3>On real data</h3>
-      <p>The behaviour is characterised on public preference data as it is, including a human-labelled safety set. No synthetic corruption is required to make the effect appear, and label-noise sensitivity is swept rather than assumed away.</p>
+      <div class="feature-icon">iii</div>
+      <h3>Does the pattern of errors matter?</h3>
+      <p>We separate errors shared by most judges from errors concentrated in a smaller group, and test which way of combining judge decisions works under each pattern.</p>
     </div>
-  </div>
-</section>
-
-<div class="divider"><hr></div>
-
-<!-- SCALE -->
-<section id="scale" class="content">
-  <div class="section-label fade-in">Scale of the Evidence</div>
-  <h2 class="section-title fade-in">How far the study reaches</h2>
-  <p class="section-desc fade-in">The experimental grid is the part of this work that can be described in full without pre-empting the results. It spans bank size, model family, parameter scale, prompt condition, dataset, judge training regime, and capability tier.</p>
-  <div class="result-table-wrap fade-in">
-    <table class="results">
-      <thead><tr><th>Dimension</th><th>Coverage</th></tr></thead>
-      <tbody>
-        <tr><td class="dim">Judge bank sizes</td><td class="cov">4 → 16 judges</td></tr>
-        <tr><td class="dim">Open-weight model families</td><td class="cov">5</td></tr>
-        <tr><td class="dim">Parameter range</td><td class="cov">1.5B – 14B</td></tr>
-        <tr><td class="dim">Prompt conditions per model</td><td class="cov">2 styles</td></tr>
-        <tr><td class="dim">Preference datasets</td><td class="cov">3 public, incl. human safety labels</td></tr>
-        <tr><td class="dim">Judge training regimes</td><td class="cov">base · DPO · GRPO, matched bank</td></tr>
-        <tr><td class="dim">Frontier capability tier</td><td class="cov">4 commercial providers</td></tr>
-        <tr><td class="dim">Label-noise robustness</td><td class="cov">40-seed sweep</td></tr>
-        <tr><td class="dim">Pipeline</td><td class="cov">32 staged drivers, SLURM cluster runs</td></tr>
-      </tbody>
-    </table>
-    <p class="table-caption">The grid is deliberately wider than one bank on one dataset: several of the claims only become checkable when bank size, family, training regime, and capability tier can each be varied while the others are held fixed.</p>
   </div>
 </section>
 
@@ -628,36 +656,87 @@
 <!-- FINDINGS -->
 <section id="findings" class="content">
   <div class="section-label fade-in">Findings</div>
-  <h2 class="section-title fade-in">Held until publication</h2>
-  <p class="section-desc fade-in">The manuscript reports three principal findings, a diagnostic that separates the regimes they imply, and a mitigation for each. Those are the contribution, so they stay off this page while the paper is in review. Collaborators and hiring committees are welcome to the full draft on request.</p>
-  <div class="redact-grid">
-    <div class="redact-card fade-in">
-      <div class="redact-head"><span class="redact-num">01</span><span class="redact-lock">Withheld</span></div>
-      <div class="redact-bars">
-        <div class="redact-bar" style="width: 96%"></div>
-        <div class="redact-bar" style="width: 88%"></div>
-        <div class="redact-bar" style="width: 71%"></div>
-      </div>
+  <h2 class="section-title fade-in">Agreement overstates evidence</h2>
+  <p class="section-desc fade-in">The number of judge votes should not be read as the amount of independent statistical evidence. Correlated errors shrink a bank's evidence well below its nominal size, can change statistical verdicts, and are stronger, not weaker, among the most accurate judges.</p>
+  <div class="finding-grid">
+    <div class="finding-card fade-in">
+      <div class="finding-num">10 &rarr; 3.5</div>
+      <div class="finding-unit">judges &rarr; effective judges</div>
+      <h3>Shared errors shrink the bank</h3>
+      <p>In the main ten-judge bank, the mean pairwise error correlation is 0.21. This inflates the variance of the mean error rate by a factor of 2.85, so the ten judges carry about as much information as 3.5 independent ones. The same holds on two more datasets and 73 alternative bank compositions.</p>
     </div>
-    <div class="redact-card fade-in">
-      <div class="redact-head"><span class="redact-num">02</span><span class="redact-lock">Withheld</span></div>
-      <div class="redact-bars">
-        <div class="redact-bar" style="width: 92%"></div>
-        <div class="redact-bar" style="width: 79%"></div>
-        <div class="redact-bar" style="width: 58%"></div>
-      </div>
+    <div class="finding-card fade-in">
+      <div class="finding-num">up to 28%</div>
+      <div class="finding-unit">of comparisons flip</div>
+      <h3>Conclusions change</h3>
+      <p>On resampled 100-pair panels, a pooled-vote test finds a significant system difference in 79% of panels, while an item-level test does so in 52%. In 28% of panels the verdict depends only on whether shared errors are ignored.</p>
     </div>
-    <div class="redact-card fade-in">
-      <div class="redact-head"><span class="redact-num">03</span><span class="redact-lock">Withheld</span></div>
-      <div class="redact-bars">
-        <div class="redact-bar" style="width: 94%"></div>
-        <div class="redact-bar" style="width: 83%"></div>
-        <div class="redact-bar" style="width: 66%"></div>
-      </div>
+    <div class="finding-card fade-in">
+      <div class="finding-num">0.56</div>
+      <div class="finding-unit">frontier error correlation</div>
+      <h3>Accuracy is not independence</h3>
+      <p>Frontier judges from three different providers reach 91&ndash;93% accuracy, yet make the same error together at 7.7&times; the rate expected under independence. Cross-provider judges are about as correlated as judges from one provider. Adding open-weight judges to the frontier bank raises the effective number of judges from 1.88 to 3.83.</p>
+    </div>
+    <div class="finding-card fade-in">
+      <div class="finding-num">2 patterns</div>
+      <div class="finding-unit">different best filters</div>
+      <h3>The pattern of errors matters</h3>
+      <p>When many judges fail together, measured correlation rises. When failures are concentrated in a vulnerable subgroup, correlation can fall, from 0.22 to 0.07 in our experiments, even as majority decisions get worse. The two patterns favor different filters, so correlation magnitude alone is not enough.</p>
     </div>
   </div>
-  <div class="redact-foot fade-in">
-    <strong>What is not withheld:</strong> the manuscript also documents three places where the proposed mitigations do <em>not</em> yet win, including one where no downstream claim is made at all. Those negative results are reported in the paper with the same prominence as the positive ones, and they are the first thing shared with anyone who asks about the work.
+  <div class="regime-note fade-in">
+    <strong>Recommendation.</strong> Report error dependence alongside judge accuracy, treat the item rather than the vote as the unit of inference, and use a small trusted set of about 100 labelled examples to estimate judge accuracy, identify shared mistakes, and choose the voting rule before applying it to new data.
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- SETUP -->
+<section id="setup" class="content">
+  <div class="section-label fade-in">Setup</div>
+  <h2 class="section-title fade-in">Judges, data, and protocol</h2>
+  <p class="section-desc fade-in">Open-weight and frontier judges are evaluated on the same preference pairs, so that dependence can be compared across banks, datasets, and capability tiers on identical items.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead><tr><th>Component</th><th>Coverage</th></tr></thead>
+      <tbody>
+        <tr><td class="dim">Main open-weight bank</td><td class="cov">10 judges: Llama-3.1-8B, Qwen-2.5-7B, Gemma-2-9B, Mistral-7B-v0.3, Phi-3.5-mini &times; 2 prompt styles</td></tr>
+        <tr><td class="dim">Frontier judges</td><td class="cov">6: three Gemini models, plus GPT, Claude, and Grok</td></tr>
+        <tr><td class="dim">Preference datasets</td><td class="cov">RewardBench v2 &middot; UltraFeedback &middot; PKU-SafeRLHF</td></tr>
+        <tr><td class="dim">Calibration set</td><td class="cov">1,195 stratified RewardBench pairs (1,133 answered by all ten judges)</td></tr>
+        <tr><td class="dim">Robustness</td><td class="cov">73 alternative bank compositions; label-noise sweep of 1&ndash;10%</td></tr>
+        <tr><td class="dim">Training-regime control</td><td class="cov">DPO- and GRPO-trained open-weight judges</td></tr>
+        <tr><td class="dim">Transfer screen</td><td class="cov">8 LLM-AggreFact components, plus factuality and code judging</td></tr>
+        <tr><td class="dim">Filters compared</td><td class="cov">majority &middot; 0.75 supermajority &middot; CorrFilter &middot; Bias-Cluster &middot; learned selector</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption">Filters are compared on held-out splits at matched retention, and no threshold or other parameter is tuned on the test split.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITS -->
+<section id="limits" class="content">
+  <div class="section-label fade-in">Scope</div>
+  <h2 class="section-title fade-in">What the paper does not claim</h2>
+  <p class="section-desc fade-in">The contribution is a measurement and validation protocol, not a new aggregation method that replaces majority voting. The negative results are reported with the same prominence as the positive ones.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&times;</div>
+      <h3>No universal filter</h3>
+      <p>No single fixed rule works best under both error patterns. None of the 11 screened factuality and code settings met the criteria for a filter to help, and on all eight LLM-AggreFact components neither CorrFilter nor Bias-Cluster beats plain majority.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&asymp;</div>
+      <h3>A bounded safeguard</h3>
+      <p>The learned selector helps mainly when the best rule shifts between datasets. It guards against transferring an unsuitable filter, and its gains over a fixed rule are small.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">!</div>
+      <h3>Controlled regimes</h3>
+      <p>The global and subgroup patterns are created by controlled interventions and do not establish how often each occurs naturally, although subgroup failures do appear in the unmodified data.</p>
+    </div>
   </div>
 </section>
 
@@ -665,29 +744,35 @@
 
 <!-- ACCESS -->
 <section id="access" class="content">
-  <div class="section-label fade-in">Access</div>
-  <h2 class="section-title fade-in">Requesting the work</h2>
+  <div class="section-label fade-in">Code</div>
+  <h2 class="section-title fade-in">Use the work</h2>
   <div class="access-box fade-in">
-    <h3>Available on request</h3>
-    <p>The paper is under double-blind review, so the manuscript stays private for now. I am glad to share it directly with people who have a reason to read it.</p>
+    <h3>Code and paper</h3>
+    <p>The repository contains the code for the experiments in the paper. The method-level recipe is simple enough to apply to any judge bank:</p>
     <ul class="access-list">
-      <li>Full manuscript, including the negative results and limitations</li>
-      <li>Experimental grid, judge-bank configurations, and evaluation protocol</li>
+      <li>Estimate error correlation and the effective number of judges for your own bank</li>
+      <li>Validate the voting rule on a small trusted set before applying it to new data</li>
     </ul>
-    <a href="mailto:mdelias.hossain@ucf.edu?subject=CorrFilter%20%E2%80%94%20manuscript%20request" class="btn btn-primary">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      Email me about CorrFilter
+    <a href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      github.com/eliashossain001/Automatic-Jury-Consensus
     </a>
+    <div class="cite-box">@article{hossain2026agreement,
+  title  = {Agreement Overstates Evidence: Error Dependence
+            in LLM Judge Consensus},
+  author = {Hossain, Elias and Yousefi, Niloofar and Lim, Ser-Nam},
+  year   = {2026}
+}</div>
   </div>
 </section>
 
 <footer class="site-footer">
   <p>
-    <strong>CorrFilter</strong> &mdash; Auditing the reliability of LLM-judge consensus &nbsp;·&nbsp;
-    <a href="../index.html#publications">Publications</a> ·
-    <a href="../channelguard/">ChannelGuard</a> ·
-    <a href="../uat-lite/">UAT-LITE</a> ·
-    <a href="../nexus/">NEXUS</a> ·
+    <strong>Automatic-Jury-Consensus</strong> &middot; Error dependence in LLM judge consensus &nbsp;&middot;&nbsp;
+    <a href="../index.html#publications">Publications</a> &middot;
+    <a href="../channelguard/">ChannelGuard</a> &middot;
+    <a href="../uat-lite/">UAT-LITE</a> &middot;
+    <a href="../nexus/">NEXUS</a> &middot;
     <a href="../tas/">TAS</a>
   </p>
   <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>

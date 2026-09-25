@@ -993,6 +993,30 @@
     .sv-edge, .sv-node, .sv-sweep { animation: none; }
   }
 
+  /* POE MARK — animated thumb for the frozen-actor steering card: a sharp frozen
+     actor, a wide low-precision prior that drifts away, and the precision-weighted
+     composition, which stays anchored to the actor while the prior moves. */
+  .pub-thumb.t-poe {
+    background: linear-gradient(135deg, #6A1B9A 0%, #4A148C 100%);
+    padding: 6px;
+  }
+  .pub-thumb.t-poe svg { width: 100%; height: 100%; display: block; }
+  .poe-axis   { stroke: #ffffff; stroke-width: 0.9; opacity: 0.25; }
+  .poe-post   { fill: #ffffff; opacity: 0.20; }
+  .poe-actor  { fill: none; stroke: #ffffff; stroke-width: 1.9; opacity: 0.95; }
+  .poe-anchor { stroke: #ffffff; stroke-width: 1; opacity: 0.4; stroke-dasharray: 2 3; }
+  .poe-peak   { fill: #ffffff; opacity: 0.95; }
+  .poe-prior { fill: none; stroke: #ffffff; stroke-width: 1.3; stroke-dasharray: 4 4; }
+  .poe-ring  { fill: none; stroke: #ffffff; stroke-width: 1.6; opacity: 0.95; }
+  .poe-prior-g { opacity: 0.52; animation: poeDrift 7s ease-in-out infinite; }
+  @keyframes poeDrift {
+    0%, 100% { transform: translateX(0);   opacity: 0.52; }
+    50%      { transform: translateX(9px); opacity: 0.30; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .poe-prior-g { animation: none; }
+  }
+
   /* NEWS block in the rail — same shape as press, different colour so the two
      streams stay distinguishable at a glance. */
   .rail-group { margin-top: 26px; }
@@ -2382,6 +2406,37 @@
         </div>
 
         <div class="pubs-cards" id="pubs">
+
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb t-poe">
+              <span class="pub-status s-pub">NeurIPS 2026</span>
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line class="poe-axis" x1="10" y1="120" x2="190" y2="120"/>
+                <path class="poe-post" d="M10.0 120.0 L16.0 120.0 L22.0 120.0 L28.0 119.9 L34.0 119.7 L40.0 119.0 L46.0 117.2 L52.0 113.1 L58.0 105.3 L64.0 93.3 L70.0 78.7 L76.0 65.4 L82.0 58.3 L88.0 60.6 L94.0 71.1 L100.0 85.6 L106.0 99.4 L112.0 109.4 L118.0 115.4 L124.0 118.3 L130.0 119.4 L136.0 119.8 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0 L190 120.0 L10 120.0 Z"/>
+                <g class="poe-prior-g"><path class="poe-prior" d="M-24.0 119.9 L-17.0 119.8 L-10.0 119.7 L-3.0 119.5 L4.0 119.2 L11.0 118.8 L18.0 118.3 L25.0 117.5 L32.0 116.5 L39.0 115.2 L46.0 113.5 L53.0 111.5 L60.0 109.1 L67.0 106.4 L74.0 103.5 L81.0 100.3 L88.0 97.1 L95.0 94.0 L102.0 91.2 L109.0 88.9 L116.0 87.2 L123.0 86.2 L130.0 86.0 L137.0 86.7 L144.0 88.1 L151.0 90.2 L158.0 92.8 L165.0 95.8 L172.0 98.9 L179.0 102.1 L186.0 105.2 L193.0 108.0 L200.0 110.5 L207.0 112.7 L214.0 114.5"/></g>
+                <path class="poe-actor" d="M10.0 120.0 L16.0 120.0 L22.0 119.9 L28.0 119.5 L34.0 118.6 L40.0 116.4 L46.0 111.9 L52.0 104.0 L58.0 92.5 L64.0 79.1 L70.0 67.1 L76.0 60.5 L82.0 61.8 L88.0 70.6 L94.0 83.6 L100.0 96.7 L106.0 107.0 L112.0 113.7 L118.0 117.4 L124.0 119.0 L130.0 119.7 L136.0 119.9 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0"/>
+                <line class="poe-anchor" x1="78" y1="120" x2="78" y2="50"/>
+                <circle class="poe-ring" cx="78" cy="60" r="3.6"/>
+                <circle class="poe-peak" cx="83.6" cy="58" r="3.2"/>
+              </svg>
+            </div>
+            <div class="pub-info">
+              <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">NeurIPS 2026, Main Track</div>
+              <p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: across four D4RL environments the HELP/FROZEN/HURT split is 4/5/3, and under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026policies,
+  title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
+  author={Hossain, Elias and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Garibay, Ozlem and Yousefi, Niloofar},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
 
           <article class="pub pub-card" data-tag="trust">
             <div class="pub-thumb has-fig">

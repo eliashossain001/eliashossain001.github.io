@@ -1834,6 +1834,54 @@
   .award-year { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent-ink); }
   .award strong { color: var(--ink); font-weight: 600; }
 
+  /* REVIEWER RECOGNITION (featured letter + archive list) */
+  .recog-feature {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    align-items: center;
+    padding: 22px 24px;
+    margin-bottom: 22px;
+    background: var(--bg-elev);
+    border: 1px solid var(--accent);
+    border-left-width: 4px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .recog-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border-radius: 999px;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+  }
+  .recog-feature h3 { font-size: 19px; margin: 0 0 6px; color: var(--ink); }
+  .recog-feature p { font-size: 14px; color: var(--ink-soft); margin: 0 0 8px; line-height: 1.55; }
+  .recog-feature ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
+  .recog-btn {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bg-elev);
+    background: var(--accent);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .recog-btn:hover { background: var(--accent-ink); }
+  .recog-sub { font-size: 13px; color: var(--ink-muted); margin: 0 0 12px; }
+  @media (max-width: 600px) {
+    .recog-feature { grid-template-columns: 1fr; padding: 18px; }
+    .recog-btn { justify-self: start; }
+  }
+
   /* PROJECT CARDS (animated icon + content) */
   .proj-grid {
     display: grid;
@@ -2025,6 +2073,7 @@
         <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
           <a href="#moments" role="menuitem">Conferences</a>
           <a href="#certificates" role="menuitem">Certificate</a>
+          <a href="#recognition" role="menuitem">Reviewer Recognition</a>
           <a href="#projects" role="menuitem">Projects</a>
           <a href="#awards" role="menuitem">Awards / Recognition</a>
         </div>
@@ -2175,6 +2224,7 @@
         <div class="peer-cat">
           <div class="cat-label">Workshops</div>
           <div class="peer-pills">
+            <span class="peer-pill">NeurIPS AI4GOOD</span>
             <span class="peer-pill">ICLR Trustworthy AI</span>
           </div>
         </div>
@@ -2189,6 +2239,7 @@
             <span class="peer-pill">Springer</span>
           </div>
         </div>
+        <div class="peer-intro"><a href="#recognition">Recognition letters &rarr;</a></div>
       </div>
 
       <div class="side-section">
@@ -2794,6 +2845,41 @@
     <div class="award">
       <div class="award-year">2022</div>
       <div><strong>IBM Professional Data Science Certificate</strong> &mdash; Coursera. End-to-end data science workflows: statistical modeling, machine learning with Python, and production pipelines. <a href="https://www.coursera.org/account/accomplishments/specialization/7XUWGHVG9R5C" target="_blank" rel="noopener">Verify</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="full-section reveal" id="recognition">
+  <div class="section-label">Peer Review Service</div>
+  <h2>Reviewer Recognition</h2>
+
+  <div class="recog-feature">
+    <div>
+      <span class="recog-badge">NeurIPS 2026</span>
+      <h3>Reviewer, Workshop on Trustworthy AI for Good (AI4GOOD)</h3>
+      <p>Certified by the AI4GOOD Program Chairs for reviewing submissions to the workshop, co-located with NeurIPS 2026 in Sydney, Australia. Reviewed papers:</p>
+      <ul>
+        <li>Algorithmic Taint Tracking: Attention-Based Provenance Enforcement for Secure Tool-Augmented LLMs</li>
+        <li>Break It to Align It: Annotation-Free Medical Safety Alignment via Preference Inversion</li>
+        <li>Auditing Selective Trust: A Pre-Deployment Benchmark and Mitigation for Trustworthy AI</li>
+      </ul>
+    </div>
+    <a class="recog-btn" href="/review/neurips2026-ai4good-reviewer-letter.pdf" target="_blank" rel="noopener">View letter</a>
+  </div>
+
+  <p class="recog-sub">Journal reviewer letters and certificates</p>
+  <div class="awards">
+    <div class="award">
+      <div class="award-year">2025</div>
+      <div><strong>Computers in Biology and Medicine</strong> (Elsevier). Certificate of Reviewing for 2 reviews, April to July 2025. <a href="/review/elsevier-cbm-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2025</div>
+      <div><strong>Scientific Reports</strong> (Springer Nature). Reviewer Certificate, March 2025. <a href="/review/springer-scientific-reports-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2024</div>
+      <div><strong>PLOS ONE</strong>. Active-reviewer confirmation letter from the Editor-in-Chief, November 2024. <a href="/review/plos-one-reviewer-letter-2024.pdf" target="_blank" rel="noopener">Letter</a></div>
     </div>
   </div>
 </section>

@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>When Policies Cannot Be Retrained · Post-Training Steering in Offline RL</title>
+<meta name="description" content="Deployment-time steering of a frozen offline RL actor by Product-of-Experts composition with a goal-conditioned prior. For diagonal-Gaussian policies, PoE(α) is the same deterministic policy as KL-regularized adaptation with β = α/(1−α). NeurIPS 2026." />
+<meta property="og:title" content="When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning" />
+<meta property="og:description" content="Steering a frozen offline RL actor at deployment time. An actor-anchored safety layer for objective shift, not a universal return maximizer. NeurIPS 2026." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://eliashossain001.github.io/poe-steering/assets/fig3_degradation.png" />
+<link rel="canonical" href="https://eliashossain001.github.io/poe-steering/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0e7c66;
+    --accent-soft: #d6efe7;
+    --accent-ink: #0a5c4c;
+    --accent-glow: rgba(14, 124, 102, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #111311;
+    --bg-elev: #181b18;
+    --bg-code: #0a0c0a;
+    --ink: #ecebe4;
+    --ink-soft: #b8b7ad;
+    --ink-muted: #80807a;
+    --line: #262a25;
+    --accent: #4ed1b3;
+    --accent-soft: #14302a;
+    --accent-ink: #7ee0c5;
+    --accent-glow: rgba(78, 209, 179, 0.25);
+    --pill-bg: #1f2320;
+    --pill-ink: #c4c3bb;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .hero-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 820px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 720px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 2.6rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.5rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 760px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* RESULTS TABLE */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(14, 124, 102, 0.08);
+    border-bottom: 1px solid var(--line);
+  }
+  [data-theme="dark"] .code-header {
+    background: rgba(78, 209, 179, 0.06);
+  }
+  .code-header .code-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; font-weight: 600;
+    color: var(--accent);
+  }
+  [data-theme="dark"] .code-header .code-title { color: var(--accent-ink); }
+  .code-header .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: #8a8a8a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .code-block pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; line-height: 1.7;
+    color: #d4d4d4;
+  }
+  .cm { color: #7a8a78; } .kw { color: #ff8c69; } .st { color: #a5d6ff; }
+  .fn { color: #d2a8ff; } .hl { color: #7ee0c5; font-weight: 600; }
+  .nu { color: #79c0ff; }
+
+  /* STEPS */
+  .steps {
+    display: flex; flex-direction: column;
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .step {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1.2rem 1.4rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: all 0.2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step-num {
+    flex-shrink: 0; width: 36px; height: 36px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600; color: var(--accent-ink);
+  }
+  .step-content h3 {
+    font-size: 0.98rem; font-weight: 600;
+    margin-bottom: 0.2rem;
+    font-family: 'Inter', sans-serif;
+  }
+  .step-content p { font-size: 0.88rem; color: var(--ink-soft); }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(14, 124, 102, 0.18);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  [data-theme="dark"] .copy-btn { color: var(--accent-ink); }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+
+  /* LICENSE NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+  .license-notice .license-text a {
+    color: var(--warn-ink); border-bottom: 1px solid var(--warn-border); font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a {
+    color: var(--accent-ink);
+    margin: 0 6px;
+  }
+
+  /* FADE-IN (visible by default; JS just adds gentle enter animation if it runs) */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .step { flex-direction: column; gap: 0.8rem; }
+  }
+  /* ============ PoE-steering page styles ============ */
+  :root {
+    --actor: #1b1d1a;
+    --prior: #c2662d;
+    --post: #0e7c66;
+    --help: #2f9e5a;
+    --frozen: #a9a8a0;
+    --hurt: #c8493f;
+  }
+  [data-theme="dark"] {
+    --actor: #ecebe4;
+    --prior: #f0a066;
+    --post: #4ed1b3;
+    --help: #4cc27a;
+    --frozen: #6c6c66;
+    --hurt: #ff7a6b;
+  }
+
+  .authors {
+    font-size: 1rem; color: var(--ink); margin: 0 auto 0.4rem; max-width: 820px;
+  }
+  .authors a { color: var(--ink); border-bottom: 1px dotted var(--ink-muted); }
+  .authors a:hover { color: var(--accent-ink); }
+  .authors sup { color: var(--accent-ink); font-size: 0.7em; }
+  .affil { font-size: 0.88rem; color: var(--ink-muted); margin-bottom: 0.3rem; }
+  .affil-note { font-size: 0.78rem; color: var(--ink-muted); margin-bottom: 2rem; }
+
+  /* hero mark */
+  .hero-logo svg { overflow: visible; }
+  .hm-actor { fill: none; stroke: var(--actor); stroke-width: 2.2; }
+  .hm-prior { fill: none; stroke: var(--prior); stroke-width: 1.8; stroke-dasharray: 5 4; }
+  .hm-post  { fill: var(--accent-soft); stroke: var(--post); stroke-width: 2.4; }
+  .hm-axis  { stroke: var(--line); stroke-width: 1.4; }
+  .hm-prior-g { animation: hmDrift 7s ease-in-out infinite; }
+  .hm-post-g  { animation: hmPost 7s ease-in-out infinite; }
+  @keyframes hmDrift { 0%,100% { transform: translateX(-10px); } 50% { transform: translateX(16px); } }
+  @keyframes hmPost  { 0%,100% { transform: translateX(-4px); }  50% { transform: translateX(7px); } }
+  @media (prefers-reduced-motion: reduce) { .hm-prior-g, .hm-post-g { animation: none; } }
+
+  /* white figure surfaces stay white in dark mode (paper figures are rendered on white) */
+  .paper-fig { background: #ffffff; }
+  .paper-fig img { border-radius: 6px; }
+
+  /* setting chips */
+  .no-list { display: flex; gap: 10px; flex-wrap: wrap; margin: -1rem 0 2.2rem; }
+  .no-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    padding: 6px 13px; border-radius: 999px;
+    background: var(--warn-bg); color: var(--warn-ink); border: 1px solid var(--warn-border);
+  }
+  .yes-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem;
+    padding: 6px 13px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent);
+  }
+
+  /* equation */
+  .eq-card {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px 24px; margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  .eq {
+    font-family: 'Fraunces', Georgia, serif; font-size: 1.22rem; color: var(--ink);
+    text-align: center; margin: 6px 0 12px; line-height: 1.6; overflow-x: auto;
+  }
+  .eq i { font-style: italic; }
+  .eq .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 4px; }
+  .eq .frac > span:first-child { border-bottom: 1px solid var(--ink-soft); padding: 0 6px 2px; }
+  .eq .frac > span:last-child { padding: 2px 6px 0; }
+  .eq-note { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+
+  .chain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  @media (max-width: 760px) { .chain { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .chain { grid-template-columns: 1fr; } }
+  .chain-step {
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 12px 10px; background: var(--bg);
+  }
+  .chain-step .cs-n {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent-ink); margin-bottom: 6px;
+  }
+  .chain-step .cs-eq { font-family: 'Fraunces', serif; font-size: 0.98rem; color: var(--ink); line-height: 1.45; }
+
+  /* ---- interactive demo ---- */
+  .demo {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow);
+  }
+  .demo svg { width: 100%; height: auto; display: block; }
+  .demo-legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 4px 0 14px; font-size: 0.82rem; color: var(--ink-soft); }
+  .demo-legend em { font-style: normal; }
+  .demo-legend > span { display: inline-flex; align-items: center; gap: 7px; }
+  .demo-legend i { width: 22px; height: 0; border-top: 2.5px solid; display: inline-block; }
+  .lg-actor { border-color: var(--actor) !important; }
+  .lg-prior { border-color: var(--prior) !important; border-top-style: dashed !important; }
+  .lg-post  { border-color: var(--post) !important; }
+  .lg-add   { border-color: var(--hurt) !important; border-top-style: dotted !important; }
+  .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 26px; margin-top: 16px; }
+  @media (max-width: 640px) { .controls { grid-template-columns: 1fr; } }
+  .ctl label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: var(--ink-soft); margin-bottom: 6px;
+  }
+  .ctl label b { color: var(--ink); font-weight: 600; }
+  .ctl input[type=range] { width: 100%; accent-color: var(--accent); }
+  .ctl .hint { font-size: 0.76rem; color: var(--ink-muted); margin-top: 4px; }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .preset {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+    padding: 6px 12px; border-radius: 8px; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--line); color: var(--ink-soft);
+  }
+  .preset:hover, .preset.on { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+  @media (max-width: 640px) { .readout { grid-template-columns: 1fr 1fr; } }
+  .ro { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--bg); }
+  .ro .ro-v { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: var(--accent-ink); line-height: 1.1; }
+  .ro .ro-v.bad { color: var(--warn-ink); }
+  .ro .ro-l { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); margin-top: 4px; }
+  .demo-say { margin-top: 14px; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6; min-height: 3em; }
+
+  /* verdict chips in tables */
+  .vd { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase;
+        padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .vd.help { background: color-mix(in srgb, var(--help) 18%, transparent); color: var(--help); }
+  .vd.frozen { background: var(--pill-bg); color: var(--ink-soft); }
+  .vd.hurt { background: var(--warn-bg); color: var(--warn-ink); }
+  td.pos { color: var(--help); }
+  td.neg { color: var(--warn-ink); }
+
+  /* split bars */
+  .split { display: flex; height: 26px; border-radius: 7px; overflow: hidden; margin: 6px 0 4px; }
+  .split span { display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #fff; font-weight: 600; }
+  .split .s-help { background: var(--help); }
+  .split .s-frozen { background: var(--frozen); color: #1b1d1a; }
+  .split .s-hurt { background: var(--hurt); }
+  .split-row { display: grid; grid-template-columns: 210px 1fr; gap: 14px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .split-row:last-child { border-bottom: none; }
+  .split-name { font-size: 0.86rem; color: var(--ink); }
+  .split-name small { display: block; color: var(--ink-muted); font-size: 0.74rem; }
+  @media (max-width: 560px) { .split-row { grid-template-columns: 1fr; gap: 2px; } }
+
+  /* degradation bars */
+  .deg { display: grid; grid-template-columns: 150px 1fr 70px; gap: 12px; align-items: center; margin: 8px 0; }
+  .deg-n { font-size: 0.86rem; color: var(--ink); }
+  .deg-v { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--ink-soft); text-align: right; }
+  .deg-b { height: 12px; background: var(--pill-bg); border-radius: 6px; overflow: hidden; }
+  .deg-b span { display: block; height: 100%; border-radius: 6px; transform-origin: left center; animation: barGrow 1.4s ease-out both; }
+  @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .deg-b .b-frozen { background: var(--actor); }
+  .deg-b .b-poe { background: var(--post); }
+  .deg-b .b-add { background: var(--prior); }
+  .deg-b .b-prior { background: var(--hurt); }
+  @media (max-width: 560px) { .deg { grid-template-columns: 1fr 64px; } .deg-b { grid-column: 1 / -1; order: 3; } }
+
+  .thm {
+    border-left: 3px solid var(--accent);
+    background: var(--bg-elev);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 18px 22px;
+    margin-top: 18px;
+  }
+  .thm-lab {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent-ink); margin-bottom: 8px;
+  }
+  .thm p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.65; }
+  .thm .eq { font-size: 1.08rem; }
+
+  .tldr {
+    max-width: 820px; margin: 0 auto;
+    background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 24px; text-align: left; box-shadow: var(--shadow);
+  }
+  .tldr .thm-lab { margin-bottom: 6px; }
+  .tldr p { font-size: 0.98rem; color: var(--ink-soft); line-height: 1.65; }
+
+  .limits { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .limits li {
+    padding: 12px 16px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--bg-elev); font-size: 0.9rem; color: var(--ink-soft); line-height: 1.6;
+  }
+  .limits li strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:elias.hossain191@gmail.com" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.140-.35 6.44-1.54 6.44-7A5.440 5.440 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.320 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="#setting">Setting</a>
+      <a href="#method">Method</a>
+      <a href="#demo">Try It</a>
+      <a href="#results">Results</a>
+      <a href="#ceiling">Boundary</a>
+      <a href="#citation">Citation</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-logo fade-in">
+    <svg viewBox="0 0 160 110" width="150" height="104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <line class="hm-axis" x1="4" y1="96" x2="156" y2="96"/>
+      <g class="hm-post-g"><path class="hm-post" d="M30 96 C52 96 60 22 72 22 C84 22 92 96 114 96 Z"/></g>
+      <path class="hm-actor" d="M18 96 C46 96 54 30 68 30 C82 30 90 96 118 96"/>
+      <g class="hm-prior-g"><path class="hm-prior" d="M40 96 C76 96 88 52 104 52 C120 52 132 96 158 96"/></g>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">NeurIPS 2026 &middot; Main Track</div>
+  <h1 class="fade-in">When Policies <span class="brand-text">Cannot Be Retrained</span></h1>
+  <p class="subtitle fade-in">A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</p>
+
+  <p class="authors fade-in">
+    <a href="../index.html">Elias Hossain</a><sup>*</sup> &nbsp;·&nbsp;
+    Mohammad Jahid Ibna Basher &nbsp;·&nbsp;
+    Ivan Garibay &nbsp;·&nbsp;
+    Ozlem Garibay &nbsp;·&nbsp;
+    Niloofar Yousefi<sup>*</sup>
+  </p>
+  <p class="affil fade-in">Complex Adaptive Systems Laboratory, Department of Industrial Engineering and Management Systems, University of Central Florida</p>
+  <p class="affil-note fade-in"><sup>*</sup>Corresponding authors</p>
+
+  <div class="cta-row fade-in">
+    <a href="https://arxiv.org/abs/2604.22873" class="btn btn-primary" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Paper
+    </a>
+    <a href="https://github.com/eliashossain001/poe_composition" class="btn btn-outline" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> Code
+    </a>
+    <a href="#citation" class="btn btn-outline">BibTeX</a>
+  </div>
+
+  <div class="tldr fade-in">
+    <div class="thm-lab">TL;DR</div>
+    <p>An offline RL actor has been trained and approved, then the deployment objective changes and the actor cannot be retrained. We steer it at deployment by composing it with a goal-conditioned prior as a <strong>Product of Experts</strong>. For diagonal-Gaussian policies this is exactly the same deterministic policy as <strong>KL-regularized adaptation</strong> with &beta; = &alpha;/(1&minus;&alpha;). Its real value is <strong>graceful degradation</strong>: when the prior is bad, it stays with the frozen actor, while additive and prior-only adaptation collapse. Its limit is the actor itself: steering can help or preserve a competent actor, can hurt one near its ceiling, and cannot rescue one that fails.</p>
+  </div>
+
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">&beta; = &alpha;/(1&minus;&alpha;)</div><div class="stat-label">PoE &equiv; KL-Reg</div></div>
+    <div class="stat"><div class="stat-value">&le; 2&times;10<sup>&minus;6</sup></div><div class="stat-label">Max PoE vs KL-Reg mean gap</div></div>
+    <div class="stat"><div class="stat-value">4 / 4 / 4</div><div class="stat-label">Help / Frozen / Hurt, 10 seeds</div></div>
+    <div class="stat"><div class="stat-value">0</div><div class="stat-label">Actor gradient steps</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- SETTING -->
+<section id="setting" class="content">
+  <div class="section-label fade-in">The Setting</div>
+  <h2 class="section-title fade-in">The objective moved. The actor cannot.</h2>
+  <p class="section-desc fade-in">Offline RL methods handle objective change <em>during training</em>, through conservative value estimates or behavior regularization. A common deployment situation is left out: the actor has already been trained and validated, the objective is revised afterwards, and changing the actor is not an option because data access is limited, retraining is expensive, or every policy change has to go back through governance and revalidation.</p>
+  <div class="no-list fade-in">
+    <span class="no-chip">no new interaction</span>
+    <span class="no-chip">no new data collection</span>
+    <span class="no-chip">no actor retraining</span>
+    <span class="yes-chip">stay conservative w.r.t. the validated actor</span>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&pi;</div>
+      <h3>A frozen actor</h3>
+      <p>A diagonal-Gaussian actor &pi;<sub>&theta;</sub>(a&nbsp;|&nbsp;s), trained once by behavioral cloning on a fixed D4RL dataset, then frozen. Its parameters are never touched again.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">g</div>
+      <h3>A shifted goal</h3>
+      <p>The deployment goal g weights three reward channels recovered from the dataset (forward progress, control magnitude, alive), giving r<sub>g</sub>(s,a) = g&nbsp;&middot;&nbsp;r<sub>c</sub>(s,a). We test speed, balanced, and control-weighted goals.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&rho;</div>
+      <h3>A separate prior</h3>
+      <p>A goal-conditioned prior &rho;<sub>&phi;</sub>(a&nbsp;|&nbsp;s,g), trained on the same offline data with goal-weighted BC plus a contrastive ranking term. It reweights dataset actions and never queries a critic.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">One rule, two names</h2>
+  <p class="section-desc fade-in">The deployed policy is the frozen actor multiplied by the prior, with one knob &alpha; &isin; [0,1] trading conservatism for adaptation. &alpha; &rarr; 1 gives back the frozen actor; &alpha; &rarr; 0 gives the prior restricted to actions the actor supports. In finite action spaces the product never puts mass where the actor puts none.</p>
+
+  <div class="eq-card fade-in">
+    <div class="thm-lab">Product-of-Experts refinement &middot; Eq. 2</div>
+    <div class="eq">&pi;<sub>ref</sub>(a | s, g) &nbsp;&prop;&nbsp; &pi;<sub>&theta;</sub>(a | s)<sup>&alpha;</sup> &nbsp;&rho;<sub>&phi;</sub>(a | s, g)<sup>1&minus;&alpha;</sup></div>
+    <p class="eq-note">This is the unique maximizer of an entropy-regularized objective, equivalently <em>argmin<sub>&pi;</sub></em> [ &alpha;&nbsp;KL(&pi;&#8214;&pi;<sub>&theta;</sub>) + (1&minus;&alpha;)&nbsp;KL(&pi;&#8214;&rho;<sub>&phi;</sub>) ], the KL barycenter of actor and prior (Theorem&nbsp;1).</p>
+  </div>
+
+  <div class="two-col">
+    <div class="eq-card fade-in">
+      <div class="thm-lab">Gaussian closed form &middot; Sec. 4.3</div>
+      <div class="eq">&Sigma;<sub>ref</sub><sup>&minus;1</sup> = &alpha;&Sigma;<sub>&theta;</sub><sup>&minus;1</sup> + (1&minus;&alpha;)&Sigma;<sub>&phi;</sub><sup>&minus;1</sup></div>
+      <div class="eq">&mu;<sub>ref</sub> = &Sigma;<sub>ref</sub> [ &alpha;&Sigma;<sub>&theta;</sub><sup>&minus;1</sup>&mu;<sub>&theta;</sub> + (1&minus;&alpha;)&Sigma;<sub>&phi;</sub><sup>&minus;1</sup>&mu;<sub>&phi;</sub> ]</div>
+      <p class="eq-note">A precision-weighted average. A confident prior moves the action; a diffuse one barely does. This is where the robustness comes from.</p>
+    </div>
+    <div class="eq-card fade-in">
+      <div class="thm-lab">KL-regularized adaptation</div>
+      <div class="eq">argmin<sub>&pi;</sub> &nbsp;E<sub>&pi;</sub>[ &minus;log &rho;<sub>&phi;</sub> ] + &beta;&nbsp;KL(&pi; &#8214; &pi;<sub>&theta;</sub>)</div>
+      <p class="eq-note">The familiar frozen-actor trust-region update. Treated as a separate mechanism in prior work, but for diagonal Gaussians it is the same deterministic policy as PoE once &beta; = &alpha;/(1&minus;&alpha;).</p>
+    </div>
+  </div>
+
+  <div class="eq-card fade-in">
+    <div class="thm-lab">From KL-Reg to PoE in four steps</div>
+    <div class="chain">
+      <div class="chain-step"><div class="cs-n">(i)</div><div class="cs-eq">&pi;* &prop; &pi;<sub>&theta;</sub>&nbsp;&rho;<sub>&phi;</sub><sup>1/&beta;</sup></div></div>
+      <div class="chain-step"><div class="cs-n">(ii)</div><div class="cs-eq">&Lambda;<sub>KL</sub>(&beta;) = &Sigma;<sub>&theta;</sub><sup>&minus;1</sup> + &beta;<sup>&minus;1</sup>&Sigma;<sub>&phi;</sub><sup>&minus;1</sup></div></div>
+      <div class="chain-step"><div class="cs-n">(iii)</div><div class="cs-eq">&beta; = &alpha;/(1&minus;&alpha;) &rArr; &Lambda;<sub>KL</sub> = &alpha;<sup>&minus;1</sup>&Lambda;<sub>PoE</sub></div></div>
+      <div class="chain-step"><div class="cs-n">(iv)</div><div class="cs-eq">&mu;<sub>KL</sub> = &mu;<sub>ref</sub>, &nbsp;&Sigma;<sub>PoE</sub> = &alpha;<sup>&minus;1</sup>&Sigma;<sub>KL</sub></div></div>
+    </div>
+    <p class="eq-note" style="margin-top:14px">The natural parameters are scalar multiples, so the means coincide exactly and the covariances differ by the global factor 1/&alpha;, which cancels under deterministic (mean-action) deployment. The Gaussian algebra is standard. What the paper adds is making the identity explicit for frozen-actor deployment and organizing the empirical study around it. The grid &alpha; &isin; {0.1, 0.3, 0.5, 0.7, 0.9} maps to &beta; &isin; {0.111, 0.429, 1, 2.333, 9}.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- DEMO -->
+<section id="demo" class="content">
+  <div class="section-label fade-in">Try It</div>
+  <h2 class="section-title fade-in">Why a bad prior is ignored</h2>
+  <p class="section-desc fade-in">A one-dimensional version of the paper's own example. The frozen actor is N(0,&nbsp;1) and the prior's mean is 1. Move &alpha; and the prior's spread, and compare where the precision-weighted PoE action lands with where an additive mix (&lambda; = 0.5) lands. Curves are drawn at equal height so their shapes can be compared; the markers show the deployed (mean) action.</p>
+
+  <div class="demo fade-in">
+    <div class="demo-legend">
+      <span><i class="lg-actor"></i><em>Frozen actor &pi;<sub>&theta;</sub></em></span>
+      <span><i class="lg-prior"></i><em>Prior &rho;<sub>&phi;</sub></em></span>
+      <span><i class="lg-post"></i>PoE / KL-Reg</span>
+      <span><i class="lg-add"></i>Additive mix action</span>
+    </div>
+    <svg id="demoSvg" viewBox="0 0 640 240" role="img" aria-label="Actor, prior and PoE posterior densities"></svg>
+    <div class="controls">
+      <div class="ctl">
+        <label for="alpha"><span>actor weight &alpha;</span> <b id="alphaV">0.50</b></label>
+        <input id="alpha" type="range" min="0.02" max="0.98" step="0.01" value="0.5" />
+        <div class="hint">matched KL weight &beta; = &alpha;/(1&minus;&alpha;) = <b id="betaV">1.000</b></div>
+      </div>
+      <div class="ctl">
+        <label for="sig"><span>prior std &sigma;<sub>&phi;</sub></span> <b id="sigV">0.10</b></label>
+        <input id="sig" type="range" min="-1" max="1" step="0.01" value="-1" />
+        <div class="hint">log scale, 0.1 (confident) to 10 (diffuse)</div>
+      </div>
+    </div>
+    <div class="presets">
+      <button class="preset on" data-a="0.5" data-s="-1">Confident trained prior</button>
+      <button class="preset" data-a="0.5" data-s="1">Random / diffuse prior</button>
+      <button class="preset" data-a="0.9" data-s="-1">Conservative &alpha; = 0.9</button>
+      <button class="preset" data-a="0.1" data-s="-0.3">Aggressive &alpha; = 0.1</button>
+    </div>
+    <div class="readout">
+      <div class="ro"><div class="ro-v" id="roPoe">0.990</div><div class="ro-l">PoE action</div></div>
+      <div class="ro"><div class="ro-v" id="roAdd">0.500</div><div class="ro-l">Additive action</div></div>
+      <div class="ro"><div class="ro-v" id="roSd">0.141</div><div class="ro-l">PoE std</div></div>
+      <div class="ro"><div class="ro-v" id="roKl">0.00</div><div class="ro-l">KL(PoE &#8214; actor)</div></div>
+    </div>
+    <p class="demo-say" id="demoSay"></p>
+  </div>
+  <p class="method-caption fade-in" style="margin-top:0.9rem"><strong>Interactive.</strong> With &alpha; = 0.5, a prior N(1,&nbsp;0.1<sup>2</sup>) moves the mean to 0.99, while a prior N(1,&nbsp;10<sup>2</sup>) moves it only to 0.0099 (paper, Fig.&nbsp;3 caption). Additive mixing ignores confidence and always lands halfway, which is how it carries a damaged prior's mean straight into the deployed action.</p>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Three things the rollouts show</h2>
+  <p class="section-desc fade-in">All main results are real MuJoCo rollouts with deterministic mean actions: D4RL HalfCheetah, Hopper and Walker2d medium plus Hopper medium-expert, three goals, 5 seeds &times; 5 episodes per cell (3,900 headline episodes, plus 3,900 more for a ten-seed replication), with 95% bootstrap CIs and seed-matched paired differences. A cell is <span class="vd help">Help</span> if the best composition beats the frozen actor by more than the half-width &epsilon; of the actor's CI, <span class="vd hurt">Hurt</span> if it falls short by more than &epsilon;, and <span class="vd frozen">Frozen</span> otherwise.</p>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin-bottom:0.6rem">1 &middot; PoE and KL-Reg really are one policy</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">On 5,000 dataset states per environment and every &alpha;, |&mu;<sub>PoE</sub> &minus; &mu;<sub>KL-Reg</sub>| &le; 2&times;10<sup>&minus;6</sup>, at float-32 precision. At &alpha; = 0.5, &beta; = 1, the rollouts give bit-identical returns and episode lengths in all 12 cells. Elsewhere the paired CIs include zero; the leftover spread is MuJoCo amplifying float-level jitter over 1,000 steps, not a difference between policies.</p>
+  <div class="method-figure paper-fig fade-in"><img src="assets/fig1_equivalence.png" alt="Left: per-state maximum difference between PoE and KL-Reg means is below 2e-6 for all alpha, and about 1e-10 at alpha 0.5. Right: seed-matched return differences between PoE and matched KL-Reg are centred on zero." loading="lazy"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> Empirical check of the identity. Left: |&mu;<sub>PoE</sub> &minus; &mu;<sub>KL-Reg</sub>| over 5,000 dataset states per &alpha; (log scale; dashed line is float-32 precision). Right: seed-matched rollout return differences at each matched (&alpha;, &beta;) pair, pooled over all 12 cells.</p>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin-bottom:0.6rem">2 &middot; With a good prior: help, tie, or hurt</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">Steering is not a free improvement. With ten seeds the 12 headline cells split evenly: 4 help, 4 tie, 4 hurt (five seeds: 4/5/3). HalfCheetah ties on every goal. The speed goal G<sub>1</sub> hurts wherever the actor is already near its velocity ceiling.</p>
+
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Setting</th><th>Goal</th><th>&Delta; (5 seeds)</th><th>&Delta; (10 seeds)</th><th>CI half-width (10 seeds)</th><th>Verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>HalfCheetah-M</td><td>G<sub>1</sub> speed</td><td class="num">+247.6</td><td class="num">+232.1</td><td class="num">359.2</td><td><span class="vd frozen">Frozen</span></td></tr>
+        <tr><td>HalfCheetah-M</td><td>G<sub>2</sub> balanced</td><td class="num">+167.5</td><td class="num">+135.2</td><td class="num">186.4</td><td><span class="vd frozen">Frozen</span></td></tr>
+        <tr><td>HalfCheetah-M</td><td>G<sub>3</sub> control</td><td class="num">+29.0</td><td class="num">+29.0</td><td class="num">50.0</td><td><span class="vd frozen">Frozen</span></td></tr>
+        <tr><td>Hopper-M</td><td>G<sub>1</sub> speed</td><td class="num neg">&minus;291.0</td><td class="num neg">&minus;338.6</td><td class="num">45.4</td><td><span class="vd hurt">Hurt</span></td></tr>
+        <tr class="highlight"><td>Hopper-M</td><td>G<sub>2</sub> balanced</td><td class="num">+143.8</td><td class="num">+147.6</td><td class="num">30.4</td><td><span class="vd help">Help</span></td></tr>
+        <tr><td>Hopper-M</td><td>G<sub>3</sub> control</td><td class="num">&minus;4.6</td><td class="num neg">&minus;11.0</td><td class="num">6.3</td><td><span class="vd frozen">Frozen</span> &rarr; <span class="vd hurt">Hurt</span></td></tr>
+        <tr><td>Walker2d-M</td><td>G<sub>1</sub> speed</td><td class="num neg">&minus;2,029.9</td><td class="num neg">&minus;2,013.8</td><td class="num">159.8</td><td><span class="vd hurt">Hurt</span></td></tr>
+        <tr><td>Walker2d-M</td><td>G<sub>2</sub> balanced</td><td class="num">+123.5</td><td class="num">+86.4</td><td class="num">101.6</td><td><span class="vd frozen">Frozen</span></td></tr>
+        <tr class="highlight"><td>Walker2d-M</td><td>G<sub>3</sub> control</td><td class="num">+55.4</td><td class="num">+22.4</td><td class="num">21.3</td><td><span class="vd help">Help</span></td></tr>
+        <tr><td>Hopper-ME</td><td>G<sub>1</sub> speed</td><td class="num neg">&minus;877.8</td><td class="num neg">&minus;892.0</td><td class="num">55.8</td><td><span class="vd hurt">Hurt</span></td></tr>
+        <tr class="highlight"><td>Hopper-ME</td><td>G<sub>2</sub> balanced</td><td class="num">+54.5</td><td class="num">+74.7</td><td class="num">37.2</td><td><span class="vd help">Help</span></td></tr>
+        <tr class="highlight"><td>Hopper-ME</td><td>G<sub>3</sub> control</td><td class="num">+110.2</td><td class="num">+112.4</td><td class="num">7.6</td><td><span class="vd help">Help</span></td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> Best-in-family composition minus frozen actor, in goal-weighted return. The only verdict that changes with ten seeds is Hopper-medium G<sub>3</sub>, which moves from a tie to a small hurt (&Delta; = &minus;11.0 against &epsilon; = 6.3).</p>
+  </div>
+
+  <div class="method-figure paper-fig fade-in" style="margin-top:1.6rem"><img src="assets/fig2_headline.png" alt="Bar charts of goal-weighted return for Frozen Actor, Prior Only, Additive, KL-Reg, PoE and AWR across four D4RL settings and three goals." loading="lazy"></div>
+  <p class="method-caption fade-in"><strong>Figure 2.</strong> Headline rollouts: mean goal-weighted return with 95% bootstrap CIs, 25 episodes per cell. Rows are settings, columns are goals; each composition family is shown at its best operating point.</p>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin-bottom:0.6rem">3 &middot; With a bad prior: it stays home</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">This is the paper's strongest practical result. We replace the trained prior with undertrained, noisy (&sigma; = 0.05 parameter noise) and random versions. Prior-only and additive deployment collapse. Precision-weighted composition stays close to the frozen actor, because a degraded prior has low precision and the posterior mean shrinks back toward the actor.</p>
+
+  <div class="result-table-wrap fade-in">
+    <div class="thm-lab" style="margin-bottom:10px">Mean goal-weighted return under a random prior</div>
+    <div class="deg"><span class="deg-n">Frozen actor</span><div class="deg-b"><span class="b-frozen" style="width:94.0%"></span></div><span class="deg-v">1,410.5</span></div>
+    <div class="deg"><span class="deg-n">PoE / KL-Reg</span><div class="deg-b"><span class="b-poe" style="width:100%"></span></div><span class="deg-v">1,499.8</span></div>
+    <div class="deg"><span class="deg-n">Additive (&lambda; = 0.5)</span><div class="deg-b"><span class="b-add" style="width:10.9%"></span></div><span class="deg-v">164.2</span></div>
+    <div class="deg"><span class="deg-n">Prior only</span><div class="deg-b"><span class="b-prior" style="width:5.8%"></span></div><span class="deg-v">86.3</span></div>
+    <p class="table-caption">Under the noisy prior the order holds (Prior only 193.8, Additive 362.0, PoE/KL-Reg 639.6), and under the undertrained prior too (200.4 / 753.3 / 1,110.0). A random prior can even score above the trained one, but only because it is <em>ignored</em>: mean KL to the frozen actor is 0.61 under the random prior versus 10.4 under the trained one.</p>
+  </div>
+
+  <div class="method-figure paper-fig fade-in" style="margin-top:1.6rem"><img src="assets/fig3_degradation.png" alt="Heatmaps of composition return minus frozen-actor return for Prior Only, Additive, KL-Reg and PoE under trained, undertrained, noisy and random priors, across four settings." loading="lazy"></div>
+  <p class="method-caption fade-in"><strong>Figure 3.</strong> Prior-degradation rollouts at a fixed operating point (PoE &alpha; = 0.5, matched KL-Reg &beta; = 1, Additive &lambda; = 0.5), shown as composition minus frozen-actor return, averaged over goals. The comparison that matters is within a row: under the same random prior, Prior Only and Additive collapse while PoE/KL-Reg do not.</p>
+
+  <div class="eq-card fade-in" style="margin-top:1.4rem">
+    <div class="thm-lab">Choosing &alpha; without rollouts</div>
+    <p class="eq-note">A <strong>KL-budget rule</strong> picks the strongest steering (smallest &alpha;) whose mean dataset-state KL from the frozen actor stays within a budget &kappa;. It needs only the dataset, the actor and the prior. On halfcheetah-medium-v2 (scored with the off-policy diagnostic evaluator, not rollouts), its loss against the hindsight-best &alpha; is at most 0.020 across &kappa; &isin; {0.1, 0.3, 0.5, 1.0} and all goals, and zero at &kappa; = 1.0. &kappa; is a deployment design choice, trading goal-directed gain for proximity to the validated actor.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CEILING -->
+<section id="ceiling" class="content">
+  <div class="section-label fade-in">Where It Stops</div>
+  <h2 class="section-title fade-in">The actor-competence ceiling</h2>
+  <p class="section-desc fade-in">Does turning the knob fix the hurt cells? No. An &alpha; sweep over six harder settings (medium-replay and medium-expert for each locomotion task, 5,850 episodes) shows the boundary is set by how competent the frozen actor is, not by &alpha;. The equivalence still holds: at &alpha; = 0.5, |&mu;<sub>PoE</sub> &minus; &mu;<sub>KL-Reg</sub>| is exactly 0 in all 18 cells.</p>
+
+  <div class="method-figure paper-fig fade-in"><img src="assets/fig4_verdicts.png" alt="Stacked bars of Help, Frozen and Hurt verdict fractions for the headline package and each harder-regime alpha setting, with AntMaze at zero success for every method." loading="lazy"></div>
+  <p class="method-caption fade-in"><strong>Figure 4.</strong> Help / Frozen / Hurt counts for the 12 headline cells (ten seeds) and for every harder-regime cell&ndash;&alpha; combination (9 cells per row). Medium-replay drifts toward ties as &alpha; grows; medium-expert stays hurt at every &alpha;. Walker2d medium-expert is the clearest case: the frozen actor reaches 4,920 on G<sub>1</sub>, while PoE falls to {399, 72, 62, 63, 78} across &alpha;. Near the locomotion ceiling, even small precision-weighted shifts push the action off the high-support ridge.</p>
+
+  <div class="feature-grid" style="margin-top:1.6rem">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#8709;</div>
+      <h3>An actor that fails stays failed</h3>
+      <p>AntMaze BC actors that never reach the goal solve 0 of 75 episodes, and every method inherits that zero. With six umaze actors at 39&ndash;67% success, PoE/KL-Reg keep 24&ndash;69% while Prior Only collapses to 0%, but composition never beats the frozen actor.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&#9995;</div>
+      <h3>Beyond locomotion: Adroit</h3>
+      <p>On pen-human, composition preserves a moderately competent actor (a tie on every goal at &alpha; = 0.9) while prior-only and additive steering hurt, with additive at 0% success. On hammer-human, where the actor is incompetent, no method succeeds.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">&rho;</div>
+      <h3>The prior matters near the ceiling</h3>
+      <p>Swap the contrastive prior for one trained by advantage-weighted regression and the headline split moves from 4/5/3 to 4/8/0: no cell hurts, and Hopper medium-expert G<sub>1</sub> goes from &minus;878 to +117. The hurt cells come from a near-ceiling actor <em>combined with</em> the contrastive prior.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- BASELINES -->
+<section id="baselines" class="content">
+  <div class="section-label fade-in">Baselines</div>
+  <h2 class="section-title fade-in">Critics help in places, but do not remove the boundary</h2>
+  <p class="section-desc fade-in">Critic-guided steering is a strong option when a reliable critic is affordable, validated, and its &beta; can be tuned. It is not our default for governed deployment: its best &beta; was picked per cell from realized returns with no rollout-free selector, single-&beta; operation is fragile, it inherits critic error directly, and a critic in the action path is heavier to revalidate than a one-knob reweighting.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead><tr><th>Method</th><th>Help / Frozen / Hurt</th><th>Needs a critic</th><th>Closed-form &equiv;</th><th>What it falls back on</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>PoE / KL-Reg (best &alpha;)</td><td class="num">4 / 5 / 3</td><td>No</td><td>Yes</td><td>The frozen actor, when the prior is weak</td></tr>
+        <tr><td>CQL-guided (best &beta;)</td><td class="num">5 / 7 / 0</td><td>Yes</td><td>No</td><td>The critic, errors included</td></tr>
+        <tr><td>IQL-guided (best &beta;)</td><td class="num">6 / 6 / 0</td><td>Yes</td><td>No</td><td>The critic, errors included</td></tr>
+        <tr><td>Critic-gradient (AWR/AWAC-style)</td><td class="num">improves 3 of 12</td><td>Yes</td><td>No</td><td>A raw &nabla;<sub>a</sub>Q step, off-support</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 2.</strong> Five-seed splits on the 12 headline cells, each family swept over its knob (&alpha; &isin; {0.1,&hellip;,0.9}; &beta; &isin; {0.5, 1, 3}) and shown at its best value per cell. The critic-gradient step falls more than 100 return points below Frozen in 7 cells once it leaves the data support. At &beta; = 1.0, IQL collapses to about 5 return on all three harder-regime hopper medium-expert cells. An SF/GPI baseline is competitive on HalfCheetah but fragile on Hopper and Walker2d.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- DIAGNOSTIC -->
+<section id="diagnostic" class="content">
+  <div class="section-label fade-in">In Practice</div>
+  <h2 class="section-title fade-in">Deciding before you deploy</h2>
+  <p class="section-desc fade-in">A dataset-only sensitivity score <em>S</em>, the closed-form mean KL between the &alpha; = 0.5 composition and the frozen actor on dataset states, ranks steering risk without any rollouts. On the 12 headline cells the three five-seed hurt cells score highest (min hurt 5.06, max non-hurt 4.96; Spearman &minus;0.77, p = 0.003 against return deltas; pooled over 30 cells &minus;0.67, p &lt; 10<sup>&minus;4</sup>). The separation is retrospective and imperfect, and no threshold transfers across regimes, but it suggests a simple procedure:</p>
+  <div class="steps">
+    <div class="step fade-in"><div class="step-num">1</div><div class="step-content"><h3>Retrain if the actor itself is incompetent</h3><p>Near-zero offline success (as in AntMaze) is a dataset-visible sign that no reweighting will help.</p></div></div>
+    <div class="step fade-in"><div class="step-num">2</div><div class="step-content"><h3>Abstain when S exceeds a prespecified threshold</h3><p>A large S means steering moves the validated actor far. Actor&ndash;prior log-density mismatch and the actor's normalized-return saturation point the same way.</p></div></div>
+    <div class="step fade-in"><div class="step-num">3</div><div class="step-content"><h3>Otherwise steer within a dataset-state KL budget</h3><p>Pick &alpha; with the KL-budget rule. The worst case of a bad prior is staying close to the actor you already validated.</p></div></div>
+  </div>
+
+  <div class="thm fade-in">
+    <div class="thm-lab">Theory, read for structure only</div>
+    <p><strong>Theorem 1</strong> (variational optimality): with finite actions, PoE is the unique maximizer of E<sub>&pi;</sub>[&alpha;&nbsp;log&nbsp;&pi;<sub>&theta;</sub> + (1&minus;&alpha;)&nbsp;log&nbsp;&rho;<sub>&phi;</sub>] + H(&pi;) on the common support. <strong>Theorem 2</strong> splits the return change into a one-step advantage gain minus a total-variation deviation penalty with coefficient 2&gamma;/(1&minus;&gamma;)<sup>2</sup>, which is 19,800 at &gamma; = 0.99. That makes the bound vacuous as a predictor, and we do not use it to classify cells. Its value is the reading it gives: help cells pair a useful gain with small deviation, hurt cells pair a small gain with deviations that leave the region of reliable behavior.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITATIONS -->
+<section id="limitations" class="content">
+  <div class="section-label fade-in">Limitations</div>
+  <h2 class="section-title fade-in">What this does not claim</h2>
+  <ul class="limits">
+    <li class="fade-in"><strong>Policy class.</strong> The closed form and the equivalence assume diagonal-Gaussian actors and priors. For mixture or diffusion policies the product has no closed form, so extending the policy class changes the method, not just the analysis.</li>
+    <li class="fade-in"><strong>Deterministic deployment.</strong> PoE &equiv; KL-Reg holds at the mean action used in our rollouts. Under stochastic sampling the two rules have different covariances and different stochastic KLs.</li>
+    <li class="fade-in"><strong>Near-ceiling actors.</strong> Composition hurts 3 of 12 headline cells with five seeds (4 with ten) and most medium-expert cells at every &alpha;.</li>
+    <li class="fade-in"><strong>Scope.</strong> D4RL locomotion, AntMaze and two Adroit tasks, all with BC-trained actors and linear reward-component goal shifts. Objectives that need behavior outside the actor's support, such as reverse motion, are out of scope by design. The KL-budget selector was evaluated with the off-policy evaluator, and the sensitivity score was validated retrospectively.</li>
+  </ul>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITATION -->
+<section id="citation" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">BibTeX</h2>
+  <p class="section-desc fade-in">If you find this work useful, please consider citing:</p>
+  <div class="citation-block fade-in" id="bibtex">
+<button class="copy-btn" onclick="copyBib()">Copy BibTeX</button>@inproceedings{hossain2026policies,
+  title     = {When Policies Cannot Be Retrained: A Unified Closed-Form View
+               of Post-Training Steering in Offline Reinforcement Learning},
+  author    = {Hossain, Elias and Basher, Mohammad Jahid Ibna and Garibay, Ivan
+               and Garibay, Ozlem and Yousefi, Niloofar},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026}
+}</div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>When Policies Cannot Be Retrained</strong> &nbsp;·&nbsp; NeurIPS 2026 &nbsp;·&nbsp;
+    <a href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">Paper</a> ·
+    <a href="https://github.com/eliashossain001/poe_composition" target="_blank" rel="noopener">Code</a> ·
+    <a href="../index.html#publications">More work</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · Complex Adaptive Systems Lab, UCF · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  // Theme toggle (persists across pages via localStorage)
+  const themeBtn = document.getElementById('themeBtn');
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch (e) {}
+    drawDemo();
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  function copyBib() {
+    const block = document.getElementById('bibtex');
+    const bib = block.textContent.replace('Copy BibTeX', '').trim();
+    navigator.clipboard.writeText(bib).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy BibTeX', 2000);
+    });
+  }
+
+  // ---------- Interactive 1-D PoE demo ----------
+  // Actor N(0, 1); prior N(1, sigma^2). PoE precision = a/1 + (1-a)/sigma^2.
+  const MU_A = 0, SD_A = 1, MU_P = 1;
+  const X0 = -3, X1 = 3, W = 640, H = 240, PADL = 20, PADR = 20, TOP = 18, BASE = 200;
+  const svg = document.getElementById('demoSvg');
+  const aIn = document.getElementById('alpha');
+  const sIn = document.getElementById('sig');
+  const NS = 'http://www.w3.org/2000/svg';
+  const px = x => PADL + (x - X0) / (X1 - X0) * (W - PADL - PADR);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  function curve(mu, sd) {
+    // shape normalized to unit peak; very wide curves are clipped to the window
+    let d = '';
+    for (let i = 0; i <= 240; i++) {
+      const x = X0 + (X1 - X0) * i / 240;
+      const y = Math.exp(-0.5 * ((x - mu) / sd) ** 2);
+      d += (i ? 'L' : 'M') + px(x).toFixed(1) + ' ' + (BASE - y * (BASE - TOP)).toFixed(1);
+    }
+    return d;
+  }
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    svg.appendChild(e);
+    return e;
+  }
+  function marker(x, color, label, row, dash) {
+    const cx = px(Math.max(X0, Math.min(X1, x)));
+    el('line', { x1: cx, y1: TOP - 4, x2: cx, y2: BASE, stroke: color, 'stroke-width': 1.6, 'stroke-dasharray': dash || '', opacity: 0.9 });
+    el('circle', { cx: cx, cy: BASE, r: 5, fill: color });
+    const t = el('text', { x: cx, y: BASE + 18 + row * 14, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace', 'font-size': 11, fill: color });
+    t.textContent = label;
+  }
+
+  function drawDemo() {
+    const a = parseFloat(aIn.value);
+    const sd = Math.pow(10, parseFloat(sIn.value));
+    const prec = a / (SD_A * SD_A) + (1 - a) / (sd * sd);
+    const sdPost = Math.sqrt(1 / prec);
+    const muPost = (a * MU_A / (SD_A * SD_A) + (1 - a) * MU_P / (sd * sd)) / prec;
+    const muAdd = 0.5 * MU_A + 0.5 * MU_P;
+    const kl = Math.log(SD_A / sdPost) + (sdPost * sdPost + (muPost - MU_A) ** 2) / (2 * SD_A * SD_A) - 0.5;
+
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    el('line', { x1: PADL, y1: BASE, x2: W - PADR, y2: BASE, stroke: css('--line'), 'stroke-width': 1.4 });
+    [-3, -2, -1, 0, 1, 2, 3].forEach(v => {
+      el('line', { x1: px(v), y1: BASE, x2: px(v), y2: BASE + 4, stroke: css('--ink-muted'), 'stroke-width': 1 });
+    });
+    el('path', { d: curve(muPost, sdPost) + ` L${px(X1)} ${BASE} L${px(X0)} ${BASE} Z`, fill: css('--accent-soft'), opacity: 0.85 });
+    el('path', { d: curve(MU_P, sd), fill: 'none', stroke: css('--prior'), 'stroke-width': 2, 'stroke-dasharray': '6 5' });
+    el('path', { d: curve(MU_A, SD_A), fill: 'none', stroke: css('--actor'), 'stroke-width': 2.2 });
+    el('path', { d: curve(muPost, sdPost), fill: 'none', stroke: css('--post'), 'stroke-width': 2.6 });
+    marker(muAdd, css('--hurt'), 'additive', 1, '2 3');
+    marker(muPost, css('--post'), 'PoE', 0);
+
+    document.getElementById('alphaV').textContent = a.toFixed(2);
+    document.getElementById('betaV').textContent = (a / (1 - a)).toFixed(3);
+    document.getElementById('sigV').textContent = sd < 1 ? sd.toFixed(2) : sd.toFixed(1);
+    document.getElementById('roPoe').textContent = muPost.toFixed(muPost < 0.1 ? 4 : 3);
+    document.getElementById('roAdd').textContent = muAdd.toFixed(3);
+    document.getElementById('roSd').textContent = sdPost.toFixed(3);
+    const klEl = document.getElementById('roKl');
+    klEl.textContent = kl.toFixed(2);
+    klEl.classList.toggle('bad', kl > 2);
+
+    let say;
+    if (sd >= 3) say = 'The prior is diffuse, so it carries little precision. PoE stays on the frozen actor and the deployed action barely moves. A random prior is harmless here because it is ignored. The additive mix still jumps halfway to the prior mean.';
+    else if (sd <= 0.3 && a <= 0.7) say = 'The prior is confident, so its precision dominates and PoE moves the action most of the way to the prior. When the prior is right, this is useful steering. When the actor is near its ceiling, this is where the steering cost shows up.';
+    else if (a >= 0.85) say = 'A high actor weight keeps the deployed policy close to the validated actor, even with a confident prior. This is the conservative end of the dial.';
+    else say = 'In between, the action lands where the two precisions balance. The KL to the frozen actor is the quantity the KL-budget rule caps when it picks α from the dataset alone.';
+    document.getElementById('demoSay').textContent = say;
+  }
+
+  document.querySelectorAll('.preset').forEach(b => b.addEventListener('click', () => {
+    aIn.value = b.dataset.a; sIn.value = b.dataset.s;
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    drawDemo();
+  }));
+  [aIn, sIn].forEach(i => i.addEventListener('input', () => {
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('on'));
+    drawDemo();
+  }));
+  drawDemo();
+</script>
+
+</body>
+</html>

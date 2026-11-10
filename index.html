@@ -2475,9 +2475,11 @@
               <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
               <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
               <div class="pub-venue-line">NeurIPS 2026, Main Track</div>
-              <p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: across four D4RL environments the HELP/FROZEN/HURT split is 4/5/3, and under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse.</p>
+              <p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse, and across D4RL MuJoCo, AntMaze, and Adroit its effect is bounded by actor competence (HELP/FROZEN/HURT 4/4/4 over ten seeds).</p>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/poe-steering/">PROJECT</a>
+                <a class="pub-pill" href="https://github.com/eliashossain001/poe_composition" target="_blank" rel="noopener">CODE</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
                 <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026policies,
   title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
@@ -2736,7 +2738,7 @@
         <div class="rail-list rail-list-news">
           <div class="rail-item rail-note rail-fresh">
             <span class="rail-top"><span class="rail-tag">Sep 2026</span><span class="rail-new">New</span></span>
-            <span class="rail-text">&#127881; First-author paper <a href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener"><strong>When Policies Cannot Be Retrained</strong></a> accepted to the <strong>NeurIPS 2026 Main Track</strong>: closed-form, post-training steering of a frozen offline RL policy through product-of-experts composition, for deployments where fine-tuning is not an option.</span>
+            <span class="rail-text">&#127881; First-author paper <a href="/poe-steering/"><strong>When Policies Cannot Be Retrained</strong></a> accepted to the <strong>NeurIPS 2026 Main Track</strong>: closed-form, post-training steering of a frozen offline RL policy through product-of-experts composition, for deployments where fine-tuning is not an option.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>

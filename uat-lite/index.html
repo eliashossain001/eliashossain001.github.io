@@ -425,6 +425,7 @@
     transition: all 0.18s;
   }
   .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+  .citation-block .copy-btn { color: #cdb8ec; }
 
   /* NOTICE */
   .license-notice {
@@ -440,6 +441,55 @@
     font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
   }
   .license-notice .license-text strong { font-weight: 700; }
+
+  /* ANIMATED FIGURE */
+  .anim-figure { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 0.8rem; line-height: 0; }
+  .anim-figure img { width: 100%; display: block; }
+  details.paper-fig { margin: 0 auto 2.6rem; max-width: 1080px; }
+  details.paper-fig > summary {
+    cursor: pointer; list-style: none; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-ink);
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 0 18px;
+  }
+  details.paper-fig > summary::-webkit-details-marker { display: none; }
+  details.paper-fig > summary::before { content: '\25B8  '; }
+  details.paper-fig[open] > summary::before { content: '\25BE  '; }
+
+  /* CODE SECTION */
+  .code-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+  @media (max-width: 860px) { .code-grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; box-shadow: var(--shadow); }
+  .panel h3 { font-family: 'Inter', sans-serif; font-size: 0.98rem; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+  .panel p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+  .code-block {
+    background: var(--bg-code); border-radius: 10px; padding: 16px 18px; margin: 0.4rem 0 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.7; color: #d4d4d4;
+    white-space: pre; overflow-x: auto; position: relative;
+  }
+  .code-block:last-child { margin-bottom: 0; }
+  .code-block .c { color: #8a8f87; }
+  .code-block .k { color: #c4a7ef; }
+  .code-block .s { color: #a5d6a7; }
+  .code-block { padding-top: 40px; }
+  .code-block .copy-btn { top: 8px; right: 8px; color: #cdb8ec; background: rgba(183,156,224,0.16); border-color: rgba(183,156,224,0.5); }
+  .code-block .copy-btn:hover { background: #b79ce0; color: #1b1d1a; }
+  .ckpt-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .ckpt-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  .ckpt-table tr:last-child td { border-bottom: none; }
+  .ckpt-table a { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .ckpt-table .muted { color: var(--ink-muted); font-size: 0.78rem; text-align: right; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.4rem; }
+  .chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; padding: 5px 11px; border-radius: 100px;
+    background: var(--pill-bg); color: var(--pill-ink); border: 1px solid var(--line); transition: all 0.18s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .chip b { color: var(--accent-ink); font-weight: 600; }
+  .maintainer { display: flex; gap: 16px; align-items: center; margin-top: 18px; }
+  .maintainer img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); flex-shrink: 0; }
+  .maintainer .who { font-size: 0.9rem; line-height: 1.5; }
+  .maintainer .who strong { font-size: 1rem; }
+  .maintainer .who span { color: var(--ink-soft); font-size: 0.84rem; }
 
   /* FOOTER */
   footer.site-footer {
@@ -470,7 +520,7 @@
 <nav class="nav">
   <div class="nav-inner">
     <div class="nav-icons">
-      <a href="mailto:mdelias.hossain@ucf.edu" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="mailto:elias.hossain191@gmail.com" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
       <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
       <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
       <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
@@ -487,6 +537,7 @@
       <a href="#method">Method</a>
       <a href="#results">Results</a>
       <a href="#limitations">Limitations</a>
+      <a href="#code">Code</a>
       <a href="#citation">Citation</a>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
         <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -531,9 +582,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> arXiv
     </a>
     <a href="https://arxiv.org/pdf/2602.02952" class="btn btn-outline" target="_blank" rel="noopener">📄 PDF</a>
-    <a href="assets/uat_lite_architecture.png" class="btn btn-outline" target="_blank" rel="noopener">🖼 Figure</a>
+    <a href="https://github.com/eliashossain001/uat-lite" class="btn btn-outline" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg> Code</a>
+    <a href="https://github.com/eliashossain001/uat-lite/releases/tag/v1.0" class="btn btn-outline" target="_blank" rel="noopener">💾 Checkpoints</a>
+    <a href="#code" class="btn btn-outline">🚀 Quick start</a>
   </div>
-  <p class="code-pending fade-in">Code release pending</p>
+  <p class="code-pending fade-in">Code, checkpoints and every experiment script are released under Apache&nbsp;2.0</p>
   <div class="stats-bar fade-in">
     <div class="stat"><div class="stat-value">0</div><div class="stat-label">Weights Updated</div></div>
     <div class="stat"><div class="stat-value">M=10</div><div class="stat-label">MC Passes</div></div>
@@ -579,8 +632,12 @@
     &alpha;&prime;<sub>ij</sub> = &alpha;<sub>ij</sub> · exp( &minus;&lambda; · U(x<sub>j</sub>) )
     <span class="eq-note">Attention from token <em>i</em> to token <em>j</em> is down-weighted in proportion to the epistemic uncertainty of the key token <em>j</em>, with &lambda; controlling modulation strength.</span>
   </div>
-  <div class="method-figure fade-in"><img src="assets/uat_lite_architecture.png" alt="UAT-LITE architecture: Bayesian embedding calibration with Monte Carlo sampling produces token-level epistemic uncertainty, which modulates attention inside a pretrained transformer encoder; layer-wise variance decomposition and a confidence-guided decision module follow"></div>
+  <div class="anim-figure fade-in"><img src="assets/uat_lite_pipeline.svg" alt="Animated overview of UAT-LITE: stochastic embedding, online token uncertainty, uncertainty-aware attention, M stochastic passes, calibrated prediction"></div>
+  <p class="method-caption fade-in">One fine-tuned model, <em>M</em> stochastic forward passes. Each pass attenuates attention with the token uncertainty &Ucirc; estimated online from the previous passes; the prediction averages the <em>M</em> logits and can be temperature-scaled.</p>
+  <details class="paper-fig fade-in"><summary>Show the paper's architecture figure</summary>
+  <div class="method-figure"><img src="assets/uat_lite_architecture.png" alt="UAT-LITE architecture: Bayesian embedding calibration with Monte Carlo sampling produces token-level epistemic uncertainty, which modulates attention inside a pretrained transformer encoder; layer-wise variance decomposition and a confidence-guided decision module follow"></div>
   <p class="method-caption fade-in"><strong>Figure 1.</strong> Overview of UAT-LITE. Token-level epistemic uncertainty is estimated by Monte Carlo sampling at the embedding layer and used to modulate self-attention in a pretrained transformer encoder. A layer-wise variance decomposition attributes predictive uncertainty across depth, and a confidence-guided decision module converts sequence-level uncertainty into a predict-or-abstain choice.</p>
+  </details>
   <div class="feature-grid">
     <div class="feature-card fade-in">
       <div class="feature-icon">1</div>
@@ -695,6 +752,73 @@
 
 <div class="divider"><hr></div>
 
+<!-- CODE -->
+<section id="code" class="content">
+  <div class="section-label fade-in">Code</div>
+  <h2 class="section-title fade-in">Run it in a few lines</h2>
+  <p class="section-desc fade-in">The <a href="https://github.com/eliashossain001/uat-lite" target="_blank" rel="noopener">GitHub repository</a> contains the library, the five released checkpoints, the baselines (temperature scaling, MC dropout, deep ensembles, SWAG) and one script per experiment in the paper. Every script accepts a checkpoint path or a release URL.</p>
+  <div class="code-grid">
+    <div class="panel fade-in">
+      <h3>📦 Install</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>git clone https://github.com/eliashossain001/uat-lite.git
+cd uat-lite &amp;&amp; pip install -e .
+make test   <span class="c"># CPU, a few seconds</span></div>
+      <h3>🐳 Docker</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button>docker build -t uat-lite .
+docker run --rm -it --gpus all uat-lite</div>
+    </div>
+    <div class="panel fade-in">
+        <h3>💾 Released checkpoints</h3>
+        <table class="ckpt-table">
+          <tr><td><a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/sst2.pt">sst2.pt</a></td><td>SST-2 · IMDb</td><td class="muted">BERT-base</td></tr>
+          <tr><td><a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/mnli.pt">mnli.pt</a></td><td>MNLI · HANS · ANLI · SNLI</td><td class="muted">BERT-base</td></tr>
+          <tr><td><a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/squad.pt">squad.pt</a></td><td>SQuAD 2.0</td><td class="muted">BERT-base</td></tr>
+          <tr><td><a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/medqa.pt">medqa.pt</a></td><td>MedQA</td><td class="muted">Bio_ClinicalBERT</td></tr>
+          <tr><td><a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/pubmedqa.pt">pubmedqa.pt</a></td><td>PubMedQA</td><td class="muted">Bio_ClinicalBERT</td></tr>
+        </table>
+        <p style="margin-top:0.8rem">About 0.44&nbsp;GB each, weights and config only, with <a href="https://github.com/eliashossain001/uat-lite/releases/download/v1.0/SHA256SUMS">SHA-256 checksums</a>.</p>
+    </div>
+  </div>
+  <div class="panel fade-in" style="margin-top:18px">
+      <h3>🚀 Quick start</h3>
+      <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copy</button><span class="k">from</span> uat_lite.inference <span class="k">import</span> load_checkpoint
+<span class="k">import</span> torch
+<span class="k">from</span> transformers <span class="k">import</span> AutoTokenizer
+
+model = load_checkpoint(<span class="s">"https://github.com/eliashossain001/uat-lite/releases/download/v1.0/mnli.pt"</span>, <span class="s">"cuda"</span>)
+tok = AutoTokenizer.from_pretrained(model.base_model_name)
+x = tok([<span class="s">"A man is playing a guitar."</span>], [<span class="s">"Someone makes music."</span>],
+        return_tensors=<span class="s">"pt"</span>).to(<span class="s">"cuda"</span>)
+
+out = model.forward_uat(x[<span class="s">"input_ids"</span>], x[<span class="s">"attention_mask"</span>], num_samples=10)
+probs = torch.softmax(out[<span class="s">"logits_samples"</span>].mean(0), -1)  <span class="c"># predictive distribution</span>
+u = out[<span class="s">"token_uncertainty"</span>]                              <span class="c"># per-token uncertainty</span></div>
+  </div>
+  <div class="code-grid" style="margin-top:18px">
+    <div class="panel fade-in">
+        <h3>🔬 Reproduce the paper</h3>
+        <p>One <code>make</code> target per experiment group; results are written as JSON under <code>results/</code>.</p>
+        <div class="chips" style="margin-top:0.8rem">
+          <span class="chip"><b>make</b> train</span><span class="chip"><b>make</b> selective</span>
+          <span class="chip"><b>make</b> shift</span><span class="chip"><b>make</b> clinical</span>
+          <span class="chip"><b>make</b> ood</span><span class="chip"><b>make</b> risk-coverage</span>
+          <span class="chip"><b>make</b> ablations</span><span class="chip"><b>make</b> latency</span>
+        </div>
+    </div>
+    <div class="panel fade-in">
+        <h3>👤 Lead author &amp; maintainer</h3>
+        <div class="maintainer" style="margin-top:0">
+          <img src="https://github.com/eliashossain001.png" alt="Elias Hossain">
+          <div class="who"><strong>Elias Hossain</strong><br>
+          <span>PhD Candidate, Complex Adaptive Systems Lab, University of Central Florida</span><br>
+          <a href="mailto:elias.hossain191@gmail.com">elias.hossain191@gmail.com</a> · <a href="https://github.com/eliashossain001/uat-lite/issues" target="_blank" rel="noopener">open an issue</a></div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
 <!-- CITATION -->
 <section id="citation" class="content">
   <div class="section-label fade-in">Citation</div>
@@ -718,6 +842,7 @@
   <p>
     <strong>UAT-LITE</strong> &mdash; Inference-time uncertainty-aware attention &nbsp;·&nbsp;
     <a href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">arXiv</a> ·
+    <a href="https://github.com/eliashossain001/uat-lite" target="_blank" rel="noopener">Code</a> ·
     <a href="../index.html#publications">Publications</a> ·
     <a href="../channelguard/">ChannelGuard</a> ·
     <a href="../nexus/">NEXUS</a> ·
@@ -760,6 +885,14 @@
     const open = navLinks.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open);
   });
+
+  function copyCode(btn) {
+    const text = btn.parentElement.textContent.replace(btn.textContent, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
 
   function copyBib() {
     const block = document.getElementById('bibtex');

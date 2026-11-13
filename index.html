@@ -1116,6 +1116,48 @@
   .rail-text a { color: var(--news-ink); border-bottom: 1px solid color-mix(in srgb, var(--news-dot) 55%, transparent); }
   .rail-text a:hover { border-bottom-color: var(--news-dot); }
 
+  /* NEWS TIMELINE — a thin rule down the left with a dot per item, no row
+     dividers, a plain date line and a one-line muted detail, so the feed
+     reads as a calm timeline rather than a stack of paragraphs. */
+  .rail-list-news {
+    max-height: 380px;
+    background: linear-gradient(var(--line), var(--line)) 4px 0 / 1px 100% no-repeat;
+    background-attachment: local;
+  }
+  .rail-list-news .rail-item {
+    border-bottom: none;
+    padding: 8px 8px 12px 20px;
+    border-radius: 0 9px 9px 0;
+  }
+  .rail-list-news .rail-item:last-child { margin-bottom: 8px; }
+  .rail-list-news .rail-item::before,
+  .rail-list-news .rail-note.rail-fresh::before {
+    top: 12px; bottom: auto; left: 1px;
+    width: 7px; height: 7px; border-radius: 50%;
+    box-sizing: border-box;
+    background: var(--bg);
+    border: 1.5px solid var(--news-dot);
+    opacity: 1; transform: none;
+  }
+  .rail-list-news .rail-note.rail-fresh::before,
+  .rail-list-news .rail-item:hover::before { background: var(--news-dot); }
+  .rail-list-news .rail-top { margin-bottom: 3px; }
+  .rail-list-news .rail-tag,
+  .rail-list-news .rail-item:hover .rail-tag {
+    background: none; padding: 0;
+    font-size: 9px; color: var(--ink-muted);
+  }
+  .rail-list-news .rail-fresh .rail-tag { color: var(--news-ink); }
+  .rail-list-news .rail-text { font-size: 13px; line-height: 1.45; }
+  .rail-sub {
+    display: block; margin-top: 3px;
+    font-size: 11.5px; line-height: 1.45;
+    color: var(--ink-muted);
+  }
+  @media (max-width: 1239px) {
+    .rail-list-news { background: none; }
+  }
+
   /* PHOTO REEL — conference moments. Uniform height, natural widths, so
      portrait and landscape shots sit together without cropping either. */
   .reel-wrap { position: relative; margin-top: 22px; }
@@ -2495,6 +2537,33 @@
 
           <article class="pub pub-card" data-tag="trust">
             <div class="pub-thumb has-fig">
+              <span class="pub-status s-pub">EACL 2027</span>
+              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">EACL 2027, Main Conference</div>
+              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2027uatlite,
+  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
+  booktitle={Proceedings of the 2027 Conference of the European Chapter of the Association for Computational Linguistics (EACL)},
+  year={2027}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
               <a class="pub-fig-link" href="/assets/figs/ajc-teaser.png" target="_blank" rel="noopener">
                 <img src="/assets/figs/ajc-teaser-thumb.png" alt="Ten LLM judges vote 8-of-10 for response A, but three of the agreeing judges share the same blind spot; ignoring shared errors declares system A significantly better, while accounting for them finds no difference" loading="lazy" />
               </a>
@@ -2538,32 +2607,6 @@
   title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
   author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
   booktitle={Findings of the Association for Computational Linguistics: AACL-IJCNLP 2026},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line live-venue">ARR review complete, recommended for conference acceptance; committing to an ACL venue, 2026</div>
-              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026uatlite,
-  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
-  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2602.02952},
   year={2026}
 }</pre>
               </div>
@@ -2735,36 +2778,45 @@
       <div class="rail-group rail-news">
         <div class="rail-head">
           <span class="rail-ttl">News</span>
-          <span class="rail-count">7</span>
+          <span class="rail-count">8</span>
         </div>
         <div class="rail-list rail-list-news">
           <div class="rail-item rail-note rail-fresh">
-            <span class="rail-top"><span class="rail-tag">Sep 2026</span><span class="rail-new">New</span></span>
-            <span class="rail-text">&#127881; First-author paper <a href="/poe-steering/"><strong>When Policies Cannot Be Retrained</strong></a> accepted to the <strong>NeurIPS 2026 Main Track</strong>: closed-form, post-training steering of a frozen offline RL policy through product-of-experts composition, for deployments where fine-tuning is not an option.</span>
+            <span class="rail-top"><span class="rail-tag">Nov 2026</span><span class="rail-new">New</span></span>
+            <span class="rail-text">&#127881; <a href="/uat-lite/"><strong>UAT-LITE</strong></a> accepted to <strong>EACL 2027</strong> (Main Conference).</span>
+            <span class="rail-sub">Inference-time, uncertainty-aware attention for pretrained transformers, with no retraining.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>
-            <span class="rail-text">&#127881; First-author paper <a href="/nexus/"><strong>NEXUS</strong></a> accepted to <strong>Findings of AACL-IJCNLP 2026</strong>: a plan-level runtime monitor that routes every tool call an LLM agent proposes to allow, block, confirm, or revise.</span>
+            <span class="rail-text">&#127881; <a href="/poe-steering/"><strong>When Policies Cannot Be Retrained</strong></a> accepted to the <strong>NeurIPS 2026</strong> Main Track.</span>
+            <span class="rail-sub">Closed-form steering of a frozen offline RL policy.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>
-            <span class="rail-text">&#128269; Serving as a <strong>reviewer</strong> for the <strong>Trustworthy AI for Good</strong> workshop @ <strong>NeurIPS 2026</strong>.</span>
+            <span class="rail-text">&#127881; <a href="/nexus/"><strong>NEXUS</strong></a> accepted to <strong>Findings of AACL-IJCNLP 2026</strong>.</span>
+            <span class="rail-sub">A runtime safety monitor for tool-using LLM agents.</span>
+          </div>
+          <div class="rail-item rail-note">
+            <span class="rail-top"><span class="rail-tag">Sep 2026</span></span>
+            <span class="rail-text">&#128269; Reviewer for the <strong>Trustworthy AI for Good</strong> workshop @ NeurIPS 2026.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Apr 2026</span></span>
-            <span class="rail-text">&#127881; First-author paper <a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener"><strong>Fault-Tolerant Preference Alignment</strong></a> accepted at <strong>ICLR 2026 Trustworthy AI Workshop</strong>: multi-agent verification that filters corrupted supervision before RLHF/DPO.</span>
+            <span class="rail-text">&#127881; <a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener"><strong>Fault-Tolerant Preference Alignment</strong></a> at the <strong>ICLR 2026</strong> Trustworthy AI Workshop.</span>
+            <span class="rail-sub">Multi-agent verification that filters corrupted supervision before RLHF/DPO.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Mar 2026</span></span>
-            <span class="rail-text">&#10024; Two PhD papers out the same month: AMR computational paradigms survey in <a href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener"><strong>Briefings in Bioinformatics</strong></a>, and the follow-up agentic RNA-seq paper in <strong>Frontiers in Bioinformatics</strong>.</span>
+            <span class="rail-text">&#10024; Two papers out in <a href="https://academic.oup.com/bib/article/27/3/bbag219/8675356" target="_blank" rel="noopener"><strong>Briefings in Bioinformatics</strong></a> and <strong>Frontiers in Bioinformatics</strong>.</span>
+            <span class="rail-sub">An AMR computational paradigms survey and a follow-up agentic RNA-seq paper.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Jan 2026</span></span>
-            <span class="rail-text">&#127908; At <strong>Amazon JFK&nbsp;27</strong> in New&nbsp;York for the <strong>Trusted AI Symposium</strong>, presenting <strong>SAVe V.1</strong>: multi-agent safe alignment verification for preference-based LLM optimization.</span>
+            <span class="rail-text">&#127908; Presented <strong>SAVe V.1</strong> at the Amazon <strong>Trusted AI Symposium</strong>, New&nbsp;York.</span>
           </div>
           <div class="rail-item rail-note">
             <span class="rail-top"><span class="rail-tag">Oct 2025</span></span>
-            <span class="rail-text">&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener"><strong>CITE V.1</strong></a> (evidence-grounded LLM interpretation of RNA-seq clusters) at MIT Jameel Clinic's <strong>7th Molecular Machine Learning Conference</strong>.</span>
+            <span class="rail-text">&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener"><strong>CITE V.1</strong></a> at MIT Jameel Clinic&rsquo;s <strong>Molecular ML Conference</strong>.</span>
           </div>
         </div>
       </div>

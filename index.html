@@ -1860,6 +1860,17 @@
     letter-spacing: 0;
     text-transform: none;
   }
+  .pub-rank {
+    display: inline-block; vertical-align: 2px;
+    margin-left: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-style: normal; font-weight: 700;
+    font-size: 9.5px; letter-spacing: 0.08em;
+    color: #1B5E20; background: #E8F5E9;
+    border: 1px solid #A5D6A7;
+    border-radius: 4px; padding: 1px 6px;
+  }
+  [data-theme="dark"] .pub-rank { color: #A5D6A7; background: #1B2E1C; border-color: #2E5E31; }
   .pub-info .pub-desc { font-size: 13px; color: var(--ink-muted); margin: 0 0 8px; line-height: 1.5; }
   .pub-info .pub-links { margin-top: auto; padding-top: 4px; }
 
@@ -2518,7 +2529,7 @@
             <div class="pub-info">
               <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
               <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">NeurIPS 2026, Main Track</div>
+              <div class="pub-venue-line">NeurIPS 2026, Main Track <span class="pub-rank" title="CORE conference ranking">CORE A*</span></div>
               <p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse, and across D4RL MuJoCo, AntMaze, and Adroit its effect is bounded by actor competence (HELP/FROZEN/HURT 4/4/4 over ten seeds).</p>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
@@ -2546,7 +2557,7 @@
             <div class="pub-info">
               <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
               <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">EACL 2027, Main Conference</div>
+              <div class="pub-venue-line">EACL 2027, Main Conference <span class="pub-rank" title="CORE conference ranking">CORE A</span></div>
               <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>

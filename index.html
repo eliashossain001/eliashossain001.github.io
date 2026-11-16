@@ -2086,7 +2086,96 @@
     .actions { flex-direction: column; align-items: stretch; }
     .btn { width: 100%; justify-content: center; }
   }
+
+  /* RESEARCH MAP: one setting, three questions, papers as nodes */
+  .rmap { margin: 6px 0 30px; }
+  .rmap-k {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent-ink);
+    font-weight: 500; margin-bottom: 4px;
+  }
+  .rmap-root {
+    position: relative; margin: 0 auto 22px; max-width: 470px; text-align: center;
+    background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px;
+    padding: 12px 16px 14px;
+  }
+  .rmap-root strong { display: block; font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 17px; line-height: 1.3; color: var(--ink); }
+  .rmap-root .rmap-sub { display: block; font-size: 13px; color: var(--ink-soft); margin: 3px 0 9px; }
+  .rmap-root::after {
+    content: ''; position: absolute; left: 50%; bottom: -23px; width: 1.5px; height: 22px;
+    background: var(--accent); opacity: 0.6;
+  }
+  .rmap-branches {
+    position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px; padding-top: 20px;
+  }
+  .rmap-branches::before {
+    content: ''; position: absolute; top: 0; left: 16.6%; right: 16.6%; height: 1.5px;
+    background: var(--accent); opacity: 0.6;
+  }
+  .rmap-b {
+    position: relative; display: flex; flex-direction: column;
+    background: var(--bg-elev); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 13px 13px; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .rmap-b:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+  .rmap-b::before {
+    content: ''; position: absolute; left: 50%; top: -21px; width: 1.5px; height: 20px;
+    background: var(--accent); opacity: 0.6;
+  }
+  .rmap-ico { width: 34px; height: 34px; margin-bottom: 6px; color: var(--accent); }
+  .rmap-ico svg { width: 100%; height: 100%; display: block; }
+  .rmap-b h3 { font-size: 15.5px; line-height: 1.3; margin-bottom: 5px; color: var(--ink); }
+  .rmap-b p { font-size: 13px; line-height: 1.5; color: var(--ink-soft); margin: 0 0 10px; flex: 1; }
+  .rmap-chips { display: flex; flex-direction: column; gap: 6px; }
+  .rmap-chip {
+    display: flex; flex-direction: column; gap: 1px;
+    font-size: 12.5px; font-weight: 600; line-height: 1.3; color: var(--ink);
+    background: var(--pill-bg); border: 1px solid transparent; border-radius: 8px;
+    padding: 6px 9px; transition: border-color 0.15s, background 0.15s;
+  }
+  .rmap-chip .v {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink);
+  }
+  .rmap-chip:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .rmap-root .rmap-chip { display: inline-flex; text-align: left; background: var(--bg-elev); }
+  .rmap-applied {
+    margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px;
+    font-size: 13px; color: var(--ink-soft);
+    border: 1px dashed var(--line); border-radius: 12px; padding: 9px 13px;
+  }
+  .rmap-applied .rmap-k { margin: 0; }
+  .rmap-applied .rmap-chip { flex-direction: row; gap: 6px; align-items: baseline; padding: 4px 9px; }
+  @media (max-width: 640px) {
+    .rmap-root { text-align: left; margin-bottom: 14px; }
+    .rmap-root::after { left: 14px; bottom: -15px; height: 14px; }
+    .rmap-branches { grid-template-columns: 1fr; padding-top: 0; padding-left: 28px; }
+    .rmap-branches::before { left: 14px; right: auto; top: -1px; bottom: 30px; width: 1.5px; height: auto; }
+    .rmap-b::before { left: -14px; top: 26px; width: 14px; height: 1.5px; }
+  }
+
+  /* Plain-language line + collapsible technical summary on publication cards */
+  .pub-plain { font-size: 14.5px; line-height: 1.6; color: var(--ink); margin: 2px 0 8px; }
+  .pub-plain-k {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink);
+    margin-right: 6px;
+  }
+  .pub-tech { margin: 0 0 10px; }
+  .pub-tech > summary {
+    cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+  }
+  .pub-tech > summary::-webkit-details-marker { display: none; }
+  .pub-tech > summary::before { content: '\25B8'; font-size: 11px; transition: transform 0.15s; }
+  .pub-tech[open] > summary::before { transform: rotate(90deg); }
+  .pub-tech > summary:hover { color: var(--accent-ink); }
+  .pub-tech > .pub-desc { margin-top: 6px; }
+  .pub-pill.pub-explain { background: var(--accent); color: var(--bg-elev); }
+  .pub-pill.pub-explain:hover { background: var(--accent-ink); }
 </style>
+<link rel="stylesheet" href="/assets/explainers/explainers.css?v=4" />
 </head>
 <body>
 
@@ -2116,9 +2205,10 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="#about">About</a>
+      <a href="#explainers">Explainers</a>
+      <a href="#publications">Publications</a>
       <a href="#collaborators">Collaborators</a>
       <a href="/cv/Elias_CV.pdf?v=20261003" target="_blank">CV</a>
-      <a href="#publications">Publications</a>
       <a href="/live/">See It Work</a>
       <a href="/notes.html">Notes</a>
       <a href="/oss.html">Open Source</a>
@@ -2129,10 +2219,10 @@
         </button>
         <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
           <a href="#moments" role="menuitem">Conferences</a>
-          <a href="#certificates" role="menuitem">Certificate</a>
-          <a href="#recognition" role="menuitem">Reviewer Recognition</a>
           <a href="#projects" role="menuitem">Projects</a>
           <a href="#awards" role="menuitem">Awards / Recognition</a>
+          <a href="#recognition" role="menuitem">Reviewer Recognition</a>
+          <a href="#certificates" role="menuitem">Certificate</a>
         </div>
       </div>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
@@ -2322,32 +2412,48 @@
           I am a <strong>Doctoral researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when judges share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? All three assume a model I cannot retrain, the access most deployed systems allow. So the work is <strong>inference-time or training-free</strong>, tested under adversarial input and distribution shift. I also build language models from scratch. My applied vertical is <strong>clinical and biomedical AI</strong>, where confident errors cost patient harm, not benchmark points. I write on <a href="https://medium.com/@eliashossain9111" target="_blank" rel="noopener">Medium</a> as well.
         </p>
 
-        <ol class="research-list">
-          <li>
-            <strong>Test-Time Uncertainty in Pretrained Transformers</strong>
-            <ul>
-              <li>Uncertainty-aware attention at inference time, without retraining.</li>
-              <li>Confidence calibrated enough to route clinical cases to a human.</li>
-              <li>Abstain under a fixed risk budget rather than answer every input.</li>
-            </ul>
-          </li>
-          <li>
-            <strong>Reliable AI Supervision</strong>
-            <ul>
-              <li><a href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">Independent agents verify preference labels before RLHF or DPO.</a></li>
-              <li>What judge agreement is worth when the judges are not independent.</li>
-              <li>Oversight that still holds when the supervisor is itself a model.</li>
-            </ul>
-          </li>
-          <li>
-            <strong>Runtime Safety and Evaluation for LLM Agents</strong>
-            <ul>
-              <li>Inspect an agent's plan, then allow, block, confirm, or revise.</li>
-              <li>Gate inter-agent channels so poisoned output carries no instructions.</li>
-              <li>Score the trajectory a clinical agent takes, not just its answer.</li>
-            </ul>
-          </li>
-        </ol>
+        <div class="rmap" aria-label="Research map">
+          <div class="rmap-root">
+            <span class="rmap-k">The common setting</span>
+            <strong>An AI model that is already trained and cannot be retrained</strong>
+            <span class="rmap-sub">the only access most deployed systems allow, so every method works at inference time</span>
+            <a class="rmap-chip" href="/poe-steering/"><span class="v">NeurIPS 2026</span>Steering a frozen policy toward a new goal</a>
+          </div>
+          <div class="rmap-branches">
+            <div class="rmap-b">
+              <div class="rmap-ico" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 27 C9 27 11 7 17 7 S25 27 31 27"/><path d="M8 27 C12 27 13 16 17 16 S22 27 26 27" opacity="0.45" stroke-dasharray="2 2.5"/><line x1="17" y1="4" x2="17" y2="30" opacity="0.35"/></svg></div>
+              <h3>Does the model know when it is unsure?</h3>
+              <p>Confidence scores honest enough to send uncertain cases to a person.</p>
+              <div class="rmap-chips">
+                <a class="rmap-chip" href="/uat-lite/"><span class="v">EACL 2027</span>UAT-LITE</a>
+                <a class="rmap-chip" href="/tas/"><span class="v">Preprint</span>Right Knowledge, Wrong Answer</a>
+              </div>
+            </div>
+            <div class="rmap-b">
+              <div class="rmap-ico" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="10" r="3.5"/><circle cx="17" cy="10" r="3.5"/><circle cx="26" cy="10" r="3.5"/><path d="M8 14 L17 25 L26 14 M17 14 L17 25" stroke-linecap="round" opacity="0.55"/><circle cx="17" cy="27.5" r="2.6" fill="currentColor" stroke="none"/></svg></div>
+              <h3>Can we trust AI that checks AI?</h3>
+              <p>AI judges now grade most AI output. What is their agreement worth when they share blind spots?</p>
+              <div class="rmap-chips">
+                <a class="rmap-chip" href="/Automatic-Jury-Consensus/#idea"><span class="v">Interactive explainer</span>Agreement Overstates Evidence</a>
+                <a class="rmap-chip" href="/mpv/"><span class="v">ICLR 2026 Workshop</span>Multi-Agent Verification</a>
+              </div>
+            </div>
+            <div class="rmap-b">
+              <div class="rmap-ico" aria-hidden="true"><svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="9" height="10" rx="2"/><path d="M12 17 H18"/><path d="M18 9 L25 9 L25 25 L18 25 Z" opacity="0.55"/><path d="M25 17 H31"/><path d="M19.5 14.5 L23.5 19.5 M23.5 14.5 L19.5 19.5"/></svg></div>
+              <h3>Can we stop an AI agent before it acts?</h3>
+              <p>Check what an agent is about to do, and step in on the action, not just the final answer.</p>
+              <div class="rmap-chips">
+                <a class="rmap-chip" href="/nexus/"><span class="v">AACL 2026</span>NEXUS</a>
+                <a class="rmap-chip" href="/channelguard/"><span class="v">Preprint</span>ChannelGuard</a>
+              </div>
+            </div>
+          </div>
+          <div class="rmap-applied">
+            <span class="rmap-k">Applied in</span>
+            <span>clinical and biomedical AI, where a confident error costs patient harm</span>
+            <a class="rmap-chip" href="/biogen/"><span class="v">Frontiers</span>BIOGEN</a>
+          </div>
+        </div>
 
         <div class="talks" id="talks">
           <button class="talks-nav talks-prev" type="button" aria-label="Previous talk">
@@ -2396,6 +2502,317 @@
           <button class="talks-dot" type="button" aria-label="Talk 2"></button>
           <button class="talks-dot" type="button" aria-label="Talk 3"></button>
           </div>
+        </div>
+      </section>
+
+      <section class="reveal" id="explainers">
+        <div class="section-label">Explainers</div>
+        <h2>My research in one-minute animations</h2>
+        <p class="pubs-sub">Each animation explains one paper for any scientist, not only people in my area. Pick a paper and press play; the captions carry the story, no sound needed.</p>
+        <div class="xpl-tabs" role="tablist" data-for="xplTheatre">
+          <button type="button" class="xpl-tab" role="tab" data-key="poe" aria-selected="true">Steering frozen robots <small>NeurIPS 2026</small></button>
+          <button type="button" class="xpl-tab" role="tab" data-key="uat" aria-selected="false">Honest confidence <small>EACL 2027</small></button>
+          <button type="button" class="xpl-tab" role="tab" data-key="ajc" aria-selected="false">When AI judges agree <small>Preprint</small></button>
+          <button type="button" class="xpl-tab" role="tab" data-key="nexus" aria-selected="false">Safe AI agents <small>AACL 2026</small></button>
+        </div>
+        <div id="xplTheatre" data-explainer="poe"></div>
+        <p class="xpl-more">Want the details? <a data-xpl-link="xplTheatre" href="/poe-steering/">Read the full project page &rarr;</a></p>
+      </section>
+
+      <section class="reveal" id="publications">
+        <div class="section-label">Selected Work</div>
+        <h2>Featured Publications</h2>
+        <p class="pubs-sub">Check out <a href="https://scholar.google.com/citations?user=fkXc4dgAAAAJ" target="_blank" rel="noopener">Google Scholar</a> for a full list of my publications.</p>
+
+        <div class="filters" id="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="trust">Trustworthy LLMs</button>
+          <button class="filter-btn" data-filter="agentic">Agentic Safety</button>
+        </div>
+
+        <div class="pubs-cards" id="pubs">
+
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb t-poe">
+              <span class="pub-status s-pub">NeurIPS 2026</span>
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line class="poe-axis" x1="10" y1="120" x2="190" y2="120"/>
+                <path class="poe-post" d="M10.0 120.0 L16.0 120.0 L22.0 120.0 L28.0 119.9 L34.0 119.7 L40.0 119.0 L46.0 117.2 L52.0 113.1 L58.0 105.3 L64.0 93.3 L70.0 78.7 L76.0 65.4 L82.0 58.3 L88.0 60.6 L94.0 71.1 L100.0 85.6 L106.0 99.4 L112.0 109.4 L118.0 115.4 L124.0 118.3 L130.0 119.4 L136.0 119.8 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0 L190 120.0 L10 120.0 Z"/>
+                <g class="poe-prior-g"><path class="poe-prior" d="M-24.0 119.9 L-17.0 119.8 L-10.0 119.7 L-3.0 119.5 L4.0 119.2 L11.0 118.8 L18.0 118.3 L25.0 117.5 L32.0 116.5 L39.0 115.2 L46.0 113.5 L53.0 111.5 L60.0 109.1 L67.0 106.4 L74.0 103.5 L81.0 100.3 L88.0 97.1 L95.0 94.0 L102.0 91.2 L109.0 88.9 L116.0 87.2 L123.0 86.2 L130.0 86.0 L137.0 86.7 L144.0 88.1 L151.0 90.2 L158.0 92.8 L165.0 95.8 L172.0 98.9 L179.0 102.1 L186.0 105.2 L193.0 108.0 L200.0 110.5 L207.0 112.7 L214.0 114.5"/></g>
+                <path class="poe-actor" d="M10.0 120.0 L16.0 120.0 L22.0 119.9 L28.0 119.5 L34.0 118.6 L40.0 116.4 L46.0 111.9 L52.0 104.0 L58.0 92.5 L64.0 79.1 L70.0 67.1 L76.0 60.5 L82.0 61.8 L88.0 70.6 L94.0 83.6 L100.0 96.7 L106.0 107.0 L112.0 113.7 L118.0 117.4 L124.0 119.0 L130.0 119.7 L136.0 119.9 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0"/>
+                <line class="poe-anchor" x1="78" y1="120" x2="78" y2="50"/>
+                <circle class="poe-ring" cx="78" cy="60" r="3.6"/>
+                <circle class="poe-peak" cx="83.6" cy="58" r="3.2"/>
+              </svg>
+            </div>
+            <div class="pub-info">
+              <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">NeurIPS 2026, Main Track <span class="pub-rank r-top" title="CORE conference ranking">CORE A*</span></div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>A robot's control policy is often frozen once trained. We show how to steer it toward a new goal without retraining. When the new guidance is poor, the policy falls back on its original behaviour instead of collapsing; when the guidance is good, how much it helps depends on how capable the original policy was.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse, and across D4RL MuJoCo, AntMaze, and Adroit its effect is bounded by actor competence (HELP/FROZEN/HURT 4/4/4 over ten seeds).</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="poe">&#9654; WATCH 1 MIN</a>
+                <a class="pub-pill" href="/poe-steering/">PROJECT</a>
+                <a class="pub-pill" href="https://github.com/eliashossain001/poe_composition" target="_blank" rel="noopener">CODE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026policies,
+  title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
+  author={Hossain, Elias and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Garibay, Ozlem and Yousefi, Niloofar},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <span class="pub-status s-pub">EACL 2027</span>
+              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">EACL 2027, Main Conference <span class="pub-rank" title="CORE conference ranking">CORE A</span></div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>Language models are often confidently wrong. Running an already-trained model about ten times with small random perturbations shows where its answers disagree, and using that disagreement makes its confidence scores more honest, with no retraining.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="uat">&#9654; WATCH 1 MIN</a>
+                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2027uatlite,
+  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
+  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
+  booktitle={Proceedings of the 2027 Conference of the European Chapter of the Association for Computational Linguistics (EACL)},
+  year={2027}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/ajc-teaser.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/ajc-teaser-thumb.png" alt="Ten LLM judges vote 8-of-10 for response A, but three of the agreeing judges share the same blind spot; ignoring shared errors declares system A significantly better, while accounting for them finds no difference" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, N. Yousefi, S.-N. Lim</div>
+              <div class="pub-venue-line">Submitted to ICLR 2027 &middot; with Prof. Ser-Nam Lim</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>When several AI models grade the same answers, their agreement looks like strong evidence. But they tend to make the same mistakes, so ten AI judges carry roughly the information of three or four independent ones, and ignoring this can change a study's conclusions.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Consensus among LLM judges assumes they fail independently. They do not: in a ten-judge bank the mean error correlation is 0.21, so the votes carry the evidence of about 3.5 independent judges, frontier judges from different providers are even more correlated (0.56), and ignoring the dependence flips significance conclusions in up to 28% of comparisons. Changing the voting rule is not a reliable fix, even when the error pattern is known, so the correction belongs in the statistical inference.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="ajc">&#9654; WATCH 1 MIN</a>
+                <a class="pub-pill pub-explain" href="/Automatic-Jury-Consensus/#idea">TRY IT</a>
+                <a class="pub-pill" href="/Automatic-Jury-Consensus/">PROJECT</a>
+                <a class="pub-pill" href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener">CODE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026agreement,
+  title={Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus},
+  author={Hossain, Elias and Yousefi, Niloofar and Lim, Ser-Nam},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Findings of AACL-IJCNLP 2026 <span class="pub-rank" title="CORE conference ranking (IJCNLP)">CORE B</span></div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>Before an AI assistant runs a tool, such as sending an email or deleting a file, a fast checker reads its plan and decides: let it run, block it, ask the user, or ask the AI to revise.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="nexus">&#9654; WATCH 1 MIN</a>
+                <a class="pub-pill" href="/nexus/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026nexus,
+  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
+  booktitle={Findings of the Association for Computational Linguistics: AACL-IJCNLP 2026},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/mpv-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/mpv-architecture-thumb.png" alt="MPV pipeline: raw preference data passes through four verifier agents, a k-of-n consensus filter, and into a verified preference dataset used for DPO training" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Fault-Tolerant Preference Alignment via Multi-Agent Verification</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. Rahimimovassagh, S. Neupane, M. J. I. Basher, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">ICLR 2026 Workshop on Principled Design for Trustworthy AI</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>AI models learn from examples of better and worse answers, and some of those examples are wrong. Four independent checker agents vote on every example, and only the ones they agree on are used for training.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">RLHF and DPO both assume the preference data is trustworthy. MPV drops that assumption: four verifier agents check every preference pair for factuality, safety, ethics, and trust, and only pairs clearing a <em>k</em>-of-<em>n</em> vote reach training. Consensus provably suppresses corrupted supervision at an exponential rate, and on Qwen2-7B it cuts the summarization refusal rate from 0.148 to <strong>0.005</strong> while holding win-rate at parity.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">OPENREVIEW</a>
+                <a class="pub-pill" href="/mpv/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026mpv,
+  title={Fault-Tolerant Preference Alignment via Multi-Agent Verification},
+  author={Hossain, Elias and Rahimimovassagh, Maryam and Neupane, Subash and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Yousefi, Niloofar},
+  booktitle={ICLR 2026 Workshop on Principled Design for Trustworthy AI},
+  year={2026},
+  url={https://openreview.net/forum?id=u73knIzvbY}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/ptc-overview.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/ptc-overview-thumb.png" alt="Parametric temporal conflict overview: a frozen LLM baseline returning the outdated fact, conflict localization by comparing standard and date-prefixed prompts, and residual-stream steering that recovers the newer fact" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, S. Saha, T. N. Ornee, S. S. Jennifer, U. C. Biswas, S. R. Dipta, R. Rana, N. Yousefi</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>A language model can store an up-to-date fact, such as who holds an office now, yet still answer with the outdated one. We show the newer fact is present and locate where inside the model the old answer wins.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Introduces Parametric Temporal Conflict, where a model holds the newer fact but its default forward pass still prefers the outdated one. On a verified benchmark of 8,746 Wikidata transitions, a date-prefix prompt recovers the newer fact in 61&ndash;81% of cases and activation patching flips 72&ndash;85%, localizing the preference to model-specific upper layers rather than missing knowledge.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2606.20959" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/tas/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026rightknowledge,
+  title={Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models},
+  author={Hossain, Elias and Saha, Sourav and Ornee, Tasfia Nuzhat and Jennifer, Sanjeda Sara and Biswas, Umesh Chandra and Dipta, Shubhashis Roy and Rana, Rajib and Yousefi, Niloofar},
+  journal={arXiv preprint arXiv:2606.20959},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, F. T. J. Faria, T. N. Ornee, M. Sheikh</div>
+              <div class="pub-venue-line">Preprint, 2026</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>AI systems built from several cooperating models pass messages to each other. Many such pipelines look safe only because the cloud provider filters content; we add checks on every hand-off that the application controls itself.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Across 2,100 test cases and eight attack families, the apparent safety of multi-agent LLM pipelines often rests on opaque provider filters rather than the system itself. ChannelGuard places training-free information-bottleneck gates on every inter-agent channel, blocking tool-output poisoning outright and halving prompt-injection success while holding task accuracy at 0.867.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">ARXIV</a>
+                <a class="pub-pill" href="/channelguard/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026channelguard,
+  title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
+  journal={arXiv preprint arXiv:2607.19430},
+  year={2026}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb t-survey" aria-hidden="true">
+              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                <circle class="sv-ring" cx="100" cy="75" r="42"/>
+                <g>
+                  <line class="sv-edge" x1="142.0" y1="75.0" x2="121.0" y2="111.4"/>
+                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="111.4"/>
+                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="58.0" y2="75.0"/>
+                  <line class="sv-edge" x1="58.0" y1="75.0" x2="79.0" y2="38.6"/>
+                  <line class="sv-edge e2" x1="79.0" y1="38.6" x2="121.0" y2="38.6"/>
+                  <line class="sv-edge e3" x1="121.0" y1="38.6" x2="142.0" y2="75.0"/>
+                  <line class="sv-edge" x1="142.0" y1="75.0" x2="58.0" y2="75.0"/>
+                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="38.6"/>
+                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="121.0" y2="38.6"/>
+                </g>
+                <g class="sv-sweep">
+                  <path d="M100 75 L100 30 A45 45 0 0 1 131 43 Z" fill="#ffffff" opacity="0.16"/>
+                  <line x1="100" y1="75" x2="100" y2="30" stroke="#ffffff" stroke-width="1.4" opacity="0.7" stroke-linecap="round"/>
+                </g>
+                <circle class="sv-node" cx="142.0" cy="75.0" r="4"/>
+                <circle class="sv-node n2" cx="121.0" cy="111.4" r="4"/>
+                <circle class="sv-node n3" cx="79.0" cy="111.4" r="4"/>
+                <circle class="sv-node n4" cx="58.0" cy="75.0" r="4"/>
+                <circle class="sv-node n5" cx="79.0" cy="38.6" r="4"/>
+                <circle class="sv-node n6" cx="121.0" cy="38.6" r="4"/>
+                <circle class="sv-core" cx="100" cy="75" r="6.5"/>
+              </svg>
+            </div>
+            <div class="pub-info">
+              <h3>Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. B. Nipu, M. S. Mahmood, M. J. Hossen, M. F. Mridha</div>
+              <div class="pub-venue-line">IEEE Transactions on Systems, Man, and Cybernetics: Systems, 2026 <span class="pub-rank" title="Journal quartile (SJR)">Q1</span></div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>A map of how teams of AI agents coordinate, communicate, and reason together, and where safety and scale break down.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">A review of large language model based multiagent ecosystems, covering how agents coordinate, communicate, and reason across distributed settings, and what fails as those systems scale. Organized around four foundational pillars of multiagent LLM design, it maps the safety and scalability gaps that separate working demonstrations from deployable systems.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://doi.org/10.1109/TSMC.2026.3704902" target="_blank" rel="noopener">IEEE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026safescalable,
+  title={Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review},
+  author={Hossain, Elias and Nipu, Md. Mehedi Hasan Bhuiyan and Mahmood, Mohammad Sakib and Hossen, Md. Jakir and Mridha, M. F.},
+  journal={IEEE Transactions on Systems, Man, and Cybernetics: Systems},
+  pages={1--17},
+  year={2026},
+  doi={10.1109/TSMC.2026.3704902}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust agentic">
+            <div class="pub-thumb has-fig">
+              <a class="pub-fig-link" href="/assets/figs/biogen-architecture.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/biogen-architecture-thumb.png" alt="BIOGEN architecture: RNA-seq gene clusters pass through a retrieval layer over PubMed and UniProt, an interpreter agent, a critic ensemble with a consensus layer, and a persistent context memory before biological interpretation is produced" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>BIOGEN: Evidence-Grounded Multi-Agent Reasoning for Transcriptomic Interpretation in Antimicrobial Resistance</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. Shoeibi, I. Garibay, N. Yousefi</div>
+              <div class="pub-venue-line">Frontiers in Bioinformatics, vol. 6, 2026 <span class="pub-rank" title="Journal quartile (SJR)">Q1</span></div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>An AI system that explains which genes help bacteria resist antibiotics, where every claim must cite a real, checkable database entry.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">A multi-agent framework that interprets RNA-seq gene clusters by pairing retrieval over PubMed and UniProt with an interpreter agent and a three-way critic ensemble. Every claim carries a verifiable identifier: the non-verifiable identifier rate is 0.000 against 0.100 for an LLM-only baseline, and BIOGEN is the only system holding that rate at zero across all five bacterial datasets, including under cross-organism and cross-condition shift.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://doi.org/10.3389/fbinf.2026.1846404" target="_blank" rel="noopener">PAPER</a>
+                <a class="pub-pill" href="/biogen/">PROJECT</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026biogen,
+  title={BIOGEN: evidence-grounded multi-agent reasoning framework for transcriptomic interpretation in antimicrobial resistance},
+  author={Hossain, Elias and Shoeibi, Mehrdad and Garibay, Ivan and Yousefi, Niloofar},
+  journal={Frontiers in Bioinformatics},
+  volume={6},
+  pages={1846404},
+  year={2026},
+  doi={10.3389/fbinf.2026.1846404}
+}</pre>
+              </div>
+            </div>
+          </article>
+
         </div>
       </section>
 
@@ -2504,288 +2921,6 @@
         </div>
       </section>
 
-      <section class="reveal" id="publications">
-        <div class="section-label">Selected Work</div>
-        <h2>Featured Publications</h2>
-        <p class="pubs-sub">Check out <a href="https://scholar.google.com/citations?user=fkXc4dgAAAAJ" target="_blank" rel="noopener">Google Scholar</a> for a full list of my publications.</p>
-
-        <div class="filters" id="filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="trust">Trustworthy LLMs</button>
-          <button class="filter-btn" data-filter="agentic">Agentic Safety</button>
-        </div>
-
-        <div class="pubs-cards" id="pubs">
-
-          <article class="pub pub-card" data-tag="agentic">
-            <div class="pub-thumb t-poe">
-              <span class="pub-status s-pub">NeurIPS 2026</span>
-              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <line class="poe-axis" x1="10" y1="120" x2="190" y2="120"/>
-                <path class="poe-post" d="M10.0 120.0 L16.0 120.0 L22.0 120.0 L28.0 119.9 L34.0 119.7 L40.0 119.0 L46.0 117.2 L52.0 113.1 L58.0 105.3 L64.0 93.3 L70.0 78.7 L76.0 65.4 L82.0 58.3 L88.0 60.6 L94.0 71.1 L100.0 85.6 L106.0 99.4 L112.0 109.4 L118.0 115.4 L124.0 118.3 L130.0 119.4 L136.0 119.8 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0 L190 120.0 L10 120.0 Z"/>
-                <g class="poe-prior-g"><path class="poe-prior" d="M-24.0 119.9 L-17.0 119.8 L-10.0 119.7 L-3.0 119.5 L4.0 119.2 L11.0 118.8 L18.0 118.3 L25.0 117.5 L32.0 116.5 L39.0 115.2 L46.0 113.5 L53.0 111.5 L60.0 109.1 L67.0 106.4 L74.0 103.5 L81.0 100.3 L88.0 97.1 L95.0 94.0 L102.0 91.2 L109.0 88.9 L116.0 87.2 L123.0 86.2 L130.0 86.0 L137.0 86.7 L144.0 88.1 L151.0 90.2 L158.0 92.8 L165.0 95.8 L172.0 98.9 L179.0 102.1 L186.0 105.2 L193.0 108.0 L200.0 110.5 L207.0 112.7 L214.0 114.5"/></g>
-                <path class="poe-actor" d="M10.0 120.0 L16.0 120.0 L22.0 119.9 L28.0 119.5 L34.0 118.6 L40.0 116.4 L46.0 111.9 L52.0 104.0 L58.0 92.5 L64.0 79.1 L70.0 67.1 L76.0 60.5 L82.0 61.8 L88.0 70.6 L94.0 83.6 L100.0 96.7 L106.0 107.0 L112.0 113.7 L118.0 117.4 L124.0 119.0 L130.0 119.7 L136.0 119.9 L142.0 120.0 L148.0 120.0 L154.0 120.0 L160.0 120.0 L166.0 120.0 L172.0 120.0 L178.0 120.0 L184.0 120.0 L190.0 120.0"/>
-                <line class="poe-anchor" x1="78" y1="120" x2="78" y2="50"/>
-                <circle class="poe-ring" cx="78" cy="60" r="3.6"/>
-                <circle class="poe-peak" cx="83.6" cy="58" r="3.2"/>
-              </svg>
-            </div>
-            <div class="pub-info">
-              <h3>When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. J. I. Basher, I. Garibay, O. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">NeurIPS 2026, Main Track <span class="pub-rank r-top" title="CORE conference ranking">CORE A*</span></div>
-              <p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse, and across D4RL MuJoCo, AntMaze, and Adroit its effect is bounded by actor competence (HELP/FROZEN/HURT 4/4/4 over ten seeds).</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/poe-steering/">PROJECT</a>
-                <a class="pub-pill" href="https://github.com/eliashossain001/poe_composition" target="_blank" rel="noopener">CODE</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026policies,
-  title={When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline Reinforcement Learning},
-  author={Hossain, Elias and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Garibay, Ozlem and Yousefi, Niloofar},
-  booktitle={Advances in Neural Information Processing Systems},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
-              <span class="pub-status s-pub">EACL 2027</span>
-              <a class="pub-fig-link" href="/assets/figs/uatlite-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/uatlite-architecture-thumb.png" alt="UAT-LITE architecture: Bayesian embedding calibration, uncertainty-weighted attention, MC-dropout uncertainty estimation, and a confidence-guided decision module" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. R. Dipta, S. Neupane, R. Rana, R. Shwartz-Ziv, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">EACL 2027, Main Conference <span class="pub-rank" title="CORE conference ranking">CORE A</span></div>
-              <p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/uat-lite/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2027uatlite,
-  title={UAT-LITE: Inference-Time Uncertainty-Aware Attention for Pretrained Transformers},
-  author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
-  booktitle={Proceedings of the 2027 Conference of the European Chapter of the Association for Computational Linguistics (EACL)},
-  year={2027}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/ajc-teaser.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/ajc-teaser-thumb.png" alt="Ten LLM judges vote 8-of-10 for response A, but three of the agreeing judges share the same blind spot; ignoring shared errors declares system A significantly better, while accounting for them finds no difference" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, N. Yousefi, S.-N. Lim</div>
-              <div class="pub-venue-line">Submitted to ICLR 2027 &middot; with Prof. Ser-Nam Lim</div>
-              <p class="pub-desc">Consensus among LLM judges assumes they fail independently. They do not: in a ten-judge bank the mean error correlation is 0.21, so the votes carry the evidence of about 3.5 independent judges, frontier judges from different providers are even more correlated (0.56), and ignoring the dependence flips significance conclusions in up to 28% of comparisons. A small trusted set is enough to estimate the dependence and choose the voting rule.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="/Automatic-Jury-Consensus/">PROJECT</a>
-                <a class="pub-pill" href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener">CODE</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026agreement,
-  title={Agreement Overstates Evidence: Error Dependence in LLM Judge Consensus},
-  author={Hossain, Elias and Yousefi, Niloofar and Lim, Ser-Nam},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/nexus-architecture-thumb.png" alt="NEXUS architecture: tool-using LLM agents emit a structured plan that a runtime safety monitor screens with deterministic rules, argument inspection, a learned risk score, and a session manager before issuing one of four graded interventions" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, T. N. Ornee, R. Rana, N. Yousefi</div>
-              <div class="pub-venue-line">Findings of AACL-IJCNLP 2026 <span class="pub-rank" title="CORE conference ranking (IJCNLP)">CORE B</span></div>
-              <p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/nexus/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026nexus,
-  title={NEXUS: Structured Runtime Safety for Tool-Using LLM Agents},
-  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Ornee, Tasfia Nuzhat and Rana, Rajib and Yousefi, Niloofar},
-  booktitle={Findings of the Association for Computational Linguistics: AACL-IJCNLP 2026},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/mpv-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/mpv-architecture-thumb.png" alt="MPV pipeline: raw preference data passes through four verifier agents, a k-of-n consensus filter, and into a verified preference dataset used for DPO training" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>Fault-Tolerant Preference Alignment via Multi-Agent Verification</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. Rahimimovassagh, S. Neupane, M. J. I. Basher, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">ICLR 2026 Workshop on Principled Design for Trustworthy AI</div>
-              <p class="pub-desc">RLHF and DPO both assume the preference data is trustworthy. MPV drops that assumption: four verifier agents check every preference pair for factuality, safety, ethics, and trust, and only pairs clearing a <em>k</em>-of-<em>n</em> vote reach training. Consensus provably suppresses corrupted supervision at an exponential rate, and on Qwen2-7B it cuts the summarization refusal rate from 0.148 to <strong>0.005</strong> while holding win-rate at parity.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://openreview.net/forum?id=u73knIzvbY" target="_blank" rel="noopener">OPENREVIEW</a>
-                <a class="pub-pill" href="/mpv/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026mpv,
-  title={Fault-Tolerant Preference Alignment via Multi-Agent Verification},
-  author={Hossain, Elias and Rahimimovassagh, Maryam and Neupane, Subash and Basher, Mohammad Jahid Ibna and Garibay, Ivan and Yousefi, Niloofar},
-  booktitle={ICLR 2026 Workshop on Principled Design for Trustworthy AI},
-  year={2026},
-  url={https://openreview.net/forum?id=u73knIzvbY}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/ptc-overview.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/ptc-overview-thumb.png" alt="Parametric temporal conflict overview: a frozen LLM baseline returning the outdated fact, conflict localization by comparing standard and date-prefixed prompts, and residual-stream steering that recovers the newer fact" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, S. Saha, T. N. Ornee, S. S. Jennifer, U. C. Biswas, S. R. Dipta, R. Rana, N. Yousefi</div>
-              <div class="pub-venue-line">Preprint, 2026</div>
-              <p class="pub-desc">Introduces Parametric Temporal Conflict, where a model holds the newer fact but its default forward pass still prefers the outdated one. On a verified benchmark of 8,746 Wikidata transitions, a date-prefix prompt recovers the newer fact in 61&ndash;81% of cases and activation patching flips 72&ndash;85%, localizing the preference to model-specific upper layers rather than missing knowledge.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2606.20959" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/tas/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026rightknowledge,
-  title={Right Knowledge, Wrong Answer: Characterizing Parametric Temporal Conflict in Open-Weight Language Models},
-  author={Hossain, Elias and Saha, Sourav and Ornee, Tasfia Nuzhat and Jennifer, Sanjeda Sara and Biswas, Umesh Chandra and Dipta, Shubhashis Roy and Rana, Rajib and Yousefi, Niloofar},
-  journal={arXiv preprint arXiv:2606.20959},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/channelguard-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/channelguard-architecture-thumb.png" alt="ChannelGuard system diagram: the threat surface, a multi-agent pipeline with six information-bottleneck gates, and the pass, compress, or block decision made at each gate" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, F. T. J. Faria, T. N. Ornee, M. Sheikh</div>
-              <div class="pub-venue-line">Preprint, 2026</div>
-              <p class="pub-desc">Across 2,100 test cases and eight attack families, the apparent safety of multi-agent LLM pipelines often rests on opaque provider filters rather than the system itself. ChannelGuard places training-free information-bottleneck gates on every inter-agent channel, blocking tool-output poisoning outright and halving prompt-injection success while holding task accuracy at 0.867.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://arxiv.org/abs/2607.19430" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill" href="/channelguard/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026channelguard,
-  title={ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems},
-  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Faria, Fatema Tuj Johora and Ornee, Tasfia Nuzhat and Sheikh, Maleeha},
-  journal={arXiv preprint arXiv:2607.19430},
-  year={2026}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb t-survey" aria-hidden="true">
-              <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
-                <circle class="sv-ring" cx="100" cy="75" r="42"/>
-                <g>
-                  <line class="sv-edge" x1="142.0" y1="75.0" x2="121.0" y2="111.4"/>
-                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="111.4"/>
-                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="58.0" y2="75.0"/>
-                  <line class="sv-edge" x1="58.0" y1="75.0" x2="79.0" y2="38.6"/>
-                  <line class="sv-edge e2" x1="79.0" y1="38.6" x2="121.0" y2="38.6"/>
-                  <line class="sv-edge e3" x1="121.0" y1="38.6" x2="142.0" y2="75.0"/>
-                  <line class="sv-edge" x1="142.0" y1="75.0" x2="58.0" y2="75.0"/>
-                  <line class="sv-edge e2" x1="121.0" y1="111.4" x2="79.0" y2="38.6"/>
-                  <line class="sv-edge e3" x1="79.0" y1="111.4" x2="121.0" y2="38.6"/>
-                </g>
-                <g class="sv-sweep">
-                  <path d="M100 75 L100 30 A45 45 0 0 1 131 43 Z" fill="#ffffff" opacity="0.16"/>
-                  <line x1="100" y1="75" x2="100" y2="30" stroke="#ffffff" stroke-width="1.4" opacity="0.7" stroke-linecap="round"/>
-                </g>
-                <circle class="sv-node" cx="142.0" cy="75.0" r="4"/>
-                <circle class="sv-node n2" cx="121.0" cy="111.4" r="4"/>
-                <circle class="sv-node n3" cx="79.0" cy="111.4" r="4"/>
-                <circle class="sv-node n4" cx="58.0" cy="75.0" r="4"/>
-                <circle class="sv-node n5" cx="79.0" cy="38.6" r="4"/>
-                <circle class="sv-node n6" cx="121.0" cy="38.6" r="4"/>
-                <circle class="sv-core" cx="100" cy="75" r="6.5"/>
-              </svg>
-            </div>
-            <div class="pub-info">
-              <h3>Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. B. Nipu, M. S. Mahmood, M. J. Hossen, M. F. Mridha</div>
-              <div class="pub-venue-line">IEEE Transactions on Systems, Man, and Cybernetics: Systems, 2026 <span class="pub-rank" title="Journal quartile (SJR)">Q1</span></div>
-              <p class="pub-desc">A review of large language model based multiagent ecosystems, covering how agents coordinate, communicate, and reason across distributed settings, and what fails as those systems scale. Organized around four foundational pillars of multiagent LLM design, it maps the safety and scalability gaps that separate working demonstrations from deployable systems.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://doi.org/10.1109/TSMC.2026.3704902" target="_blank" rel="noopener">IEEE</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026safescalable,
-  title={Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review},
-  author={Hossain, Elias and Nipu, Md. Mehedi Hasan Bhuiyan and Mahmood, Mohammad Sakib and Hossen, Md. Jakir and Mridha, M. F.},
-  journal={IEEE Transactions on Systems, Man, and Cybernetics: Systems},
-  pages={1--17},
-  year={2026},
-  doi={10.1109/TSMC.2026.3704902}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-          <article class="pub pub-card" data-tag="trust agentic">
-            <div class="pub-thumb has-fig">
-              <a class="pub-fig-link" href="/assets/figs/biogen-architecture.png" target="_blank" rel="noopener">
-                <img src="/assets/figs/biogen-architecture-thumb.png" alt="BIOGEN architecture: RNA-seq gene clusters pass through a retrieval layer over PubMed and UniProt, an interpreter agent, a critic ensemble with a consensus layer, and a persistent context memory before biological interpretation is produced" loading="lazy" />
-              </a>
-              <span class="pub-fig-zoom">Full figure</span>
-            </div>
-            <div class="pub-info">
-              <h3>BIOGEN: Evidence-Grounded Multi-Agent Reasoning for Transcriptomic Interpretation in Antimicrobial Resistance</h3>
-              <div class="pub-authors"><strong>E. Hossain</strong>, M. Shoeibi, I. Garibay, N. Yousefi</div>
-              <div class="pub-venue-line">Frontiers in Bioinformatics, vol. 6, 2026 <span class="pub-rank" title="Journal quartile (SJR)">Q1</span></div>
-              <p class="pub-desc">A multi-agent framework that interprets RNA-seq gene clusters by pairing retrieval over PubMed and UniProt with an interpreter agent and a three-way critic ensemble. Every claim carries a verifiable identifier: the non-verifiable identifier rate is 0.000 against 0.100 for an LLM-only baseline, and BIOGEN is the only system holding that rate at zero across all five bacterial datasets, including under cross-organism and cross-condition shift.</p>
-              <div class="pub-links">
-                <a class="pub-pill" href="https://doi.org/10.3389/fbinf.2026.1846404" target="_blank" rel="noopener">PAPER</a>
-                <a class="pub-pill" href="/biogen/">PROJECT</a>
-                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
-                <pre class="pub-bibtex-text" hidden>@article{hossain2026biogen,
-  title={BIOGEN: evidence-grounded multi-agent reasoning framework for transcriptomic interpretation in antimicrobial resistance},
-  author={Hossain, Elias and Shoeibi, Mehrdad and Garibay, Ivan and Yousefi, Niloofar},
-  journal={Frontiers in Bioinformatics},
-  volume={6},
-  pages={1846404},
-  year={2026},
-  doi={10.3389/fbinf.2026.1846404}
-}</pre>
-              </div>
-            </div>
-          </article>
-
-        </div>
-      </section>
 
     </article>
     <!-- RIGHT RAIL: public posts about the work -->
@@ -2905,56 +3040,6 @@
 </div>
 
 
-<section class="full-section reveal" id="certificates">
-  <div class="section-label">Professional Development</div>
-  <h2>Certifications</h2>
-  <div class="awards">
-    <div class="award">
-      <div class="award-year">2023</div>
-      <div><strong>AI for Medicine Specialization</strong> &mdash; DeepLearning.AI on Coursera. Three-course track covering medical diagnosis, prognosis, and treatment-effectiveness prediction with deep learning. <a href="https://www.coursera.org/account/accomplishments/specialization/9MUSRK9VHA8N" target="_blank" rel="noopener">Verify</a></div>
-    </div>
-    <div class="award">
-      <div class="award-year">2022</div>
-      <div><strong>IBM Professional Data Science Certificate</strong> &mdash; Coursera. End-to-end data science workflows: statistical modeling, machine learning with Python, and production pipelines. <a href="https://www.coursera.org/account/accomplishments/specialization/7XUWGHVG9R5C" target="_blank" rel="noopener">Verify</a></div>
-    </div>
-  </div>
-</section>
-
-<section class="full-section reveal" id="recognition">
-  <div class="section-label">Peer Review Service</div>
-  <h2>Reviewer Recognition</h2>
-
-  <div class="recog-feature">
-    <div>
-      <span class="recog-badge">NeurIPS 2026</span>
-      <h3>Reviewer, Workshop on Trustworthy AI for Good (AI4GOOD)</h3>
-      <p>Certified by the AI4GOOD Program Chairs for reviewing submissions to the workshop, co-located with NeurIPS 2026 in Sydney, Australia. Reviewed papers:</p>
-      <ul>
-        <li>Algorithmic Taint Tracking: Attention-Based Provenance Enforcement for Secure Tool-Augmented LLMs</li>
-        <li>Break It to Align It: Annotation-Free Medical Safety Alignment via Preference Inversion</li>
-        <li>Auditing Selective Trust: A Pre-Deployment Benchmark and Mitigation for Trustworthy AI</li>
-      </ul>
-    </div>
-    <a class="recog-btn" href="/review/neurips2026-ai4good-reviewer-letter.pdf" target="_blank" rel="noopener">View letter</a>
-  </div>
-
-  <p class="recog-sub">Journal reviewer letters and certificates</p>
-  <div class="awards">
-    <div class="award">
-      <div class="award-year">2025</div>
-      <div><strong>Computers in Biology and Medicine</strong> (Elsevier). Certificate of Reviewing for 2 reviews, April to July 2025. <a href="/review/elsevier-cbm-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
-    </div>
-    <div class="award">
-      <div class="award-year">2025</div>
-      <div><strong>Scientific Reports</strong> (Springer Nature). Reviewer Certificate, March 2025. <a href="/review/springer-scientific-reports-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
-    </div>
-    <div class="award">
-      <div class="award-year">2024</div>
-      <div><strong>PLOS ONE</strong>. Active-reviewer confirmation letter from the Editor-in-Chief, November 2024. <a href="/review/plos-one-reviewer-letter-2024.pdf" target="_blank" rel="noopener">Letter</a></div>
-    </div>
-  </div>
-</section>
-
 <section class="full-section reveal" id="projects">
   <div class="section-label">Selected Projects</div>
   <h2>Projects</h2>
@@ -3022,6 +3107,56 @@
     <div class="award">
       <div class="award-year">2017</div>
       <div><strong>Divisional Champion &amp; Global Nominee</strong>, NASA Space Apps Challenge, for the Drone for Green Project.</div>
+    </div>
+  </div>
+</section>
+
+<section class="full-section reveal" id="recognition">
+  <div class="section-label">Peer Review Service</div>
+  <h2>Reviewer Recognition</h2>
+
+  <div class="recog-feature">
+    <div>
+      <span class="recog-badge">NeurIPS 2026</span>
+      <h3>Reviewer, Workshop on Trustworthy AI for Good (AI4GOOD)</h3>
+      <p>Certified by the AI4GOOD Program Chairs for reviewing submissions to the workshop, co-located with NeurIPS 2026 in Sydney, Australia. Reviewed papers:</p>
+      <ul>
+        <li>Algorithmic Taint Tracking: Attention-Based Provenance Enforcement for Secure Tool-Augmented LLMs</li>
+        <li>Break It to Align It: Annotation-Free Medical Safety Alignment via Preference Inversion</li>
+        <li>Auditing Selective Trust: A Pre-Deployment Benchmark and Mitigation for Trustworthy AI</li>
+      </ul>
+    </div>
+    <a class="recog-btn" href="/review/neurips2026-ai4good-reviewer-letter.pdf" target="_blank" rel="noopener">View letter</a>
+  </div>
+
+  <p class="recog-sub">Journal reviewer letters and certificates</p>
+  <div class="awards">
+    <div class="award">
+      <div class="award-year">2025</div>
+      <div><strong>Computers in Biology and Medicine</strong> (Elsevier). Certificate of Reviewing for 2 reviews, April to July 2025. <a href="/review/elsevier-cbm-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2025</div>
+      <div><strong>Scientific Reports</strong> (Springer Nature). Reviewer Certificate, March 2025. <a href="/review/springer-scientific-reports-reviewer-certificate-2025.pdf" target="_blank" rel="noopener">Certificate</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2024</div>
+      <div><strong>PLOS ONE</strong>. Active-reviewer confirmation letter from the Editor-in-Chief, November 2024. <a href="/review/plos-one-reviewer-letter-2024.pdf" target="_blank" rel="noopener">Letter</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="full-section reveal" id="certificates">
+  <div class="section-label">Professional Development</div>
+  <h2>Certifications</h2>
+  <div class="awards">
+    <div class="award">
+      <div class="award-year">2023</div>
+      <div><strong>AI for Medicine Specialization</strong> &mdash; DeepLearning.AI on Coursera. Three-course track covering medical diagnosis, prognosis, and treatment-effectiveness prediction with deep learning. <a href="https://www.coursera.org/account/accomplishments/specialization/9MUSRK9VHA8N" target="_blank" rel="noopener">Verify</a></div>
+    </div>
+    <div class="award">
+      <div class="award-year">2022</div>
+      <div><strong>IBM Professional Data Science Certificate</strong> &mdash; Coursera. End-to-end data science workflows: statistical modeling, machine learning with Python, and production pipelines. <a href="https://www.coursera.org/account/accomplishments/specialization/7XUWGHVG9R5C" target="_blank" rel="noopener">Verify</a></div>
     </div>
   </div>
 </section>
@@ -3321,5 +3456,6 @@
   })();
 </script>
 
+<script src="/assets/explainers/explainers.js?v=4" defer></script>
 </body>
 </html>

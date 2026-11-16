@@ -1,0 +1,92 @@
+{
+ "v": "b52c8e51a7",
+ "voice": "Kokoro af_heart",
+ "poe": [
+  {
+   "file": "poe-1.mp3",
+   "ms": 15322
+  },
+  {
+   "file": "poe-2.mp3",
+   "ms": 13201
+  },
+  {
+   "file": "poe-3.mp3",
+   "ms": 19439
+  },
+  {
+   "file": "poe-4.mp3",
+   "ms": 16495
+  },
+  {
+   "file": "poe-5.mp3",
+   "ms": 17638
+  }
+ ],
+ "uat": [
+  {
+   "file": "uat-1.mp3",
+   "ms": 14042
+  },
+  {
+   "file": "uat-2.mp3",
+   "ms": 17412
+  },
+  {
+   "file": "uat-3.mp3",
+   "ms": 12838
+  },
+  {
+   "file": "uat-4.mp3",
+   "ms": 14618
+  },
+  {
+   "file": "uat-5.mp3",
+   "ms": 25344
+  }
+ ],
+ "ajc": [
+  {
+   "file": "ajc-1.mp3",
+   "ms": 13308
+  },
+  {
+   "file": "ajc-2.mp3",
+   "ms": 16251
+  },
+  {
+   "file": "ajc-3.mp3",
+   "ms": 18543
+  },
+  {
+   "file": "ajc-4.mp3",
+   "ms": 19055
+  },
+  {
+   "file": "ajc-5.mp3",
+   "ms": 18458
+  }
+ ],
+ "nexus": [
+  {
+   "file": "nexus-1.mp3",
+   "ms": 14042
+  },
+  {
+   "file": "nexus-2.mp3",
+   "ms": 15590
+  },
+  {
+   "file": "nexus-3.mp3",
+   "ms": 17617
+  },
+  {
+   "file": "nexus-4.mp3",
+   "ms": 15364
+  },
+  {
+   "file": "nexus-5.mp3",
+   "ms": 19004
+  }
+ ]
+}

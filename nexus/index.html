@@ -502,6 +502,7 @@
     .step { flex-direction: column; gap: 0.8rem; }
   }
 </style>
+<link rel="stylesheet" href="/assets/explainers/explainers.css?v=4" />
 </head>
 <body>
 
@@ -577,6 +578,14 @@
 <div class="divider"><hr></div>
 
 <!-- METHOD -->
+<section id="explainer" class="content">
+  <div class="section-label">Explainer</div>
+  <h2 class="section-title">The paper in one minute</h2>
+  <div data-explainer="nexus"></div>
+</section>
+
+<div class="divider"><hr></div>
+
 <section id="method" class="content">
   <div class="section-label fade-in">Method</div>
   <h2 class="section-title fade-in">How NEXUS works</h2>
@@ -844,5 +853,6 @@ huggingface-cli download \
   }
 </script>
 
+<script src="/assets/explainers/explainers.js?v=4" defer></script>
 </body>
 </html>

@@ -1,0 +1,130 @@
+/* Animated paper explainers: a small "video-like" player driven by explainers.js.
+   Colours come from the host page's tokens, so the player follows each page's
+   accent colour and its light/dark theme. */
+.xpl {
+  max-width: 880px;
+  --xg: #2e8b57; --xa: #c98a1b; --xr: #c8433a;
+  background: var(--bg-elev, #fdfaf3);
+  border: 1px solid var(--line, #e3dccd);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow, none);
+  color: var(--ink, #1b1d1a);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+[data-theme="dark"] .xpl { --xg: #5cc78a; --xa: #e8b04f; --xr: #ff7a6b; }
+
+.xpl-stage { position: relative; background: var(--bg, #f7f3eb); border-bottom: 1px solid var(--line, #e3dccd); }
+.xpl-stage svg { display: block; width: 100%; height: auto; }
+.xpl-tag {
+  position: absolute; top: 10px; right: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-muted, #7a7d76);
+}
+.xpl-big-play {
+  position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%;
+  border: none; cursor: pointer; background: var(--accent, #0e7c66); color: var(--bg-elev, #fff);
+  display: grid; place-items: center; box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  transition: transform 0.15s;
+}
+.xpl-big-play:hover { transform: scale(1.06); }
+.xpl-big-play svg { width: 26px; height: 26px; margin-left: 3px; }
+.xpl-big-play[hidden] { display: none; }
+
+.xpl-cap { padding: 14px 18px 6px; min-height: 104px; }
+.xpl-step {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--accent-ink, #0a5c4c); margin-bottom: 3px;
+}
+.xpl-cap h4 {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 19px;
+  line-height: 1.3; margin: 0 0 4px; color: var(--ink, #1b1d1a);
+}
+.xpl-cap p { font-size: 14.5px; line-height: 1.6; color: var(--ink-soft, #4a4d47); margin: 0; }
+.xpl-cap p b { color: var(--ink, #1b1d1a); font-weight: 600; }
+
+.xpl-ctl { display: flex; align-items: center; gap: 10px; padding: 8px 18px 14px; }
+.xpl-btn {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--line, #e3dccd); background: transparent; color: var(--ink, #1b1d1a);
+  display: grid; place-items: center; transition: border-color 0.15s, color 0.15s;
+}
+.xpl-btn:hover { border-color: var(--accent, #0e7c66); color: var(--accent-ink, #0a5c4c); }
+.xpl-btn svg { width: 15px; height: 15px; }
+.xpl-segs { flex: 1; display: flex; gap: 4px; min-width: 0; }
+.xpl-seg {
+  flex: 1; height: 22px; padding: 9px 0; border: none; background: none; cursor: pointer;
+}
+.xpl-seg span {
+  display: block; height: 4px; border-radius: 2px; overflow: hidden;
+  background: var(--line, #e3dccd);
+}
+.xpl-seg i { display: block; height: 100%; width: 0; background: var(--accent, #0e7c66); }
+.xpl-seg:hover span { background: color-mix(in srgb, var(--accent, #0e7c66) 30%, var(--line, #e3dccd)); }
+.xpl-time {
+  flex: none; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--ink-muted, #7a7d76); min-width: 4.4em; text-align: right;
+}
+
+/* SVG vocabulary */
+.xpl svg text { font-family: 'Inter', system-ui, sans-serif; fill: var(--ink, #1b1d1a); }
+.xpl svg .t-soft { fill: var(--ink-soft, #4a4d47); }
+.xpl svg .t-mute { fill: var(--ink-muted, #7a7d76); }
+.xpl svg .t-acc { fill: var(--accent-ink, #0a5c4c); }
+.xpl svg .t-mono { font-family: 'JetBrains Mono', monospace; }
+.xpl svg .t-serif { font-family: 'Fraunces', Georgia, serif; }
+.xpl svg .s-ink { stroke: var(--ink, #1b1d1a); }
+.xpl svg .s-soft { stroke: var(--ink-soft, #4a4d47); }
+.xpl svg .s-line { stroke: var(--line, #e3dccd); }
+.xpl svg .s-acc { stroke: var(--accent, #0e7c66); }
+.xpl svg .f-acc { fill: var(--accent, #0e7c66); }
+.xpl svg .f-accs { fill: var(--accent-soft, #d6efe7); }
+.xpl svg .f-elev { fill: var(--bg-elev, #fdfaf3); }
+.xpl svg .f-line { fill: var(--line, #e3dccd); }
+.xpl svg .f-ink { fill: var(--ink, #1b1d1a); }
+.xpl svg .f-soft { fill: var(--ink-soft, #4a4d47); }
+.xpl svg .f-g { fill: var(--xg); } .xpl svg .s-g { stroke: var(--xg); }
+.xpl svg .f-a { fill: var(--xa); } .xpl svg .s-a { stroke: var(--xa); }
+.xpl svg .f-r { fill: var(--xr); } .xpl svg .s-r { stroke: var(--xr); }
+.xpl svg .t-g { fill: var(--xg); } .xpl svg .t-a { fill: var(--xa); } .xpl svg .t-r { fill: var(--xr); }
+
+/* Homepage theatre: tabs above one player */
+.xpl-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.xpl-tab {
+  font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line, #e3dccd);
+  background: transparent; color: var(--ink-soft, #4a4d47); transition: all 0.15s;
+  display: inline-flex; align-items: baseline; gap: 6px;
+}
+.xpl-tab small {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; opacity: 0.8;
+}
+.xpl-tab:hover { border-color: var(--accent, #0e7c66); color: var(--accent-ink, #0a5c4c); }
+.xpl-tab[aria-selected="true"] { background: var(--accent, #0e7c66); border-color: var(--accent, #0e7c66); color: var(--bg-elev, #fff); }
+.xpl-more { font-size: 13.5px; margin: 10px 2px 0; color: var(--ink-soft, #4a4d47); }
+.xpl-more a { font-weight: 600; }
+
+@media (max-width: 560px) {
+  .xpl-cap { padding: 12px 14px 4px; min-height: 0; }
+  .xpl-cap h4 { font-size: 17px; }
+  .xpl-cap p { font-size: 14px; }
+  .xpl-ctl { padding: 6px 14px 12px; gap: 8px; }
+  .xpl-time { display: none; }
+}
+
+/* Narration controls */
+.xpl-snd.on { background: var(--accent, #0e7c66); border-color: var(--accent, #0e7c66); color: var(--bg-elev, #fff); }
+.xpl-narr {
+  position: absolute; left: 12px; bottom: 12px;
+  display: inline-flex; align-items: center; gap: 7px;
+  font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  padding: 7px 13px 7px 11px; border-radius: 999px; border: none;
+  background: var(--accent, #0e7c66); color: var(--bg-elev, #fff);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  animation: xplNudge 2.4s ease-in-out infinite;
+}
+.xpl-narr svg { width: 17px; height: 17px; }
+.xpl-narr[hidden] { display: none; }
+@keyframes xplNudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .xpl-narr { animation: none; } }

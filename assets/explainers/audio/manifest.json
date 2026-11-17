@@ -1,5 +1,5 @@
 {
- "v": "b52c8e51a7",
+ "v": "a55cab0752",
  "voice": "Kokoro af_heart",
  "poe": [
   {
@@ -87,6 +87,28 @@
   {
    "file": "nexus-5.mp3",
    "ms": 19004
+  }
+ ],
+ "vlm": [
+  {
+   "file": "vlm-1.mp3",
+   "ms": 17946
+  },
+  {
+   "file": "vlm-2.mp3",
+   "ms": 21184
+  },
+  {
+   "file": "vlm-3.mp3",
+   "ms": 20591
+  },
+  {
+   "file": "vlm-4.mp3",
+   "ms": 19926
+  },
+  {
+   "file": "vlm-5.mp3",
+   "ms": 23706
   }
  ]
 }

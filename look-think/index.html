@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>When Does Extra Compute Help? · Adaptive Test-Time Compute for VLMs</title>
+<meta name="description" content="Adaptive LOOK/THINK compute for vision-language models, re-measured against an equal-cost random allocation of the same actions. Oracles show 4.8 to 9.8 points of headroom, but trained routers gain at most 2.1: confidence detects wrong answers, not fixable ones." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #1f6f78;
+    --accent-soft: #e3f0f0;
+    --accent-ink: #17545b;
+    --accent-glow: rgba(31, 111, 120, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #121114;
+    --bg-elev: #1a181d;
+    --bg-code: #0c0b0d;
+    --ink: #eceaef;
+    --ink-soft: #b7b4bd;
+    --ink-muted: #82808a;
+    --line: #29262e;
+    --accent: #6cc3c9;
+    --accent-soft: #14282a;
+    --accent-ink: #9fdade;
+    --accent-glow: rgba(108, 195, 201, 0.25);
+    --pill-bg: #211e26;
+    --pill-ink: #c3c0c9;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .uat-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 860px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 800px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 800px; margin: 0 auto 1.6rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .code-pending {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.4rem;
+  }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.2rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 780px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* EQUATION */
+  .equation {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    margin: 0 0 2.4rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.02rem;
+    color: var(--accent-ink);
+    overflow-x: auto;
+  }
+  .equation .eq-note {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 0.7rem;
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: #ffffff;
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .method-figure { background: #f2f0ea; }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* TABLES */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  table.results tr.baseline td { color: var(--ink-soft); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(109, 76, 159, 0.24);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+  .citation-block .copy-btn { color: #cdb8ec; }
+
+  /* NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+
+  /* ANIMATED FIGURE */
+  .anim-figure { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 0.8rem; line-height: 0; }
+  .anim-figure img { width: 100%; display: block; }
+  details.paper-fig { margin: 0 auto 2.6rem; max-width: 1080px; }
+  details.paper-fig > summary {
+    cursor: pointer; list-style: none; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-ink);
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 0 18px;
+  }
+  details.paper-fig > summary::-webkit-details-marker { display: none; }
+  details.paper-fig > summary::before { content: '\25B8  '; }
+  details.paper-fig[open] > summary::before { content: '\25BE  '; }
+
+  /* CODE SECTION */
+  .code-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+  @media (max-width: 860px) { .code-grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; box-shadow: var(--shadow); }
+  .panel h3 { font-family: 'Inter', sans-serif; font-size: 0.98rem; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+  .panel p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+  .code-block {
+    background: var(--bg-code); border-radius: 10px; padding: 16px 18px; margin: 0.4rem 0 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.7; color: #d4d4d4;
+    white-space: pre; overflow-x: auto; position: relative;
+  }
+  .code-block:last-child { margin-bottom: 0; }
+  .code-block .c { color: #8a8f87; }
+  .code-block .k { color: #c4a7ef; }
+  .code-block .s { color: #a5d6a7; }
+  .code-block { padding-top: 40px; }
+  .code-block .copy-btn { top: 8px; right: 8px; color: #cdb8ec; background: rgba(183,156,224,0.16); border-color: rgba(183,156,224,0.5); }
+  .code-block .copy-btn:hover { background: #b79ce0; color: #1b1d1a; }
+  .ckpt-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .ckpt-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  .ckpt-table tr:last-child td { border-bottom: none; }
+  .ckpt-table a { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .ckpt-table .muted { color: var(--ink-muted); font-size: 0.78rem; text-align: right; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.4rem; }
+  .chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; padding: 5px 11px; border-radius: 100px;
+    background: var(--pill-bg); color: var(--pill-ink); border: 1px solid var(--line); transition: all 0.18s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .chip b { color: var(--accent-ink); font-weight: 600; }
+  .maintainer { display: flex; gap: 16px; align-items: center; margin-top: 18px; }
+  .maintainer img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); flex-shrink: 0; }
+  .maintainer .who { font-size: 0.9rem; line-height: 1.5; }
+  .maintainer .who strong { font-size: 1rem; }
+  .maintainer .who span { color: var(--ink-soft); font-size: 0.84rem; }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .equation { font-size: 0.88rem; }
+  }
+</style>
+<link rel="stylesheet" href="/assets/explainers/explainers.css?v=5" />
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons">
+      <a href="mailto:elias.hossain191@gmail.com" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>
+      <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener" title="Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg></a>
+      <a href="https://github.com/eliashossain001" target="_blank" rel="noopener" title="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.870a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.910 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></a>
+      <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.790v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg></a>
+    </div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="#explainer">Explainer</a>
+      <a href="#problem">Problem</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#results">Results</a>
+      <a href="#takeaways">Takeaways</a>
+      <a href="#limitations">Limitations</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="uat-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="0" cy="0" r="1.45" fill="none" stroke="#1f6f78" stroke-width="0.10"/>
+      <!-- magnifier (LOOK) -->
+      <circle cx="-0.42" cy="-0.30" r="0.48" fill="#e6f1f1" stroke="#6d4c9f" stroke-width="0.12"/>
+      <line x1="-0.08" y1="0.04" x2="0.22" y2="0.34" stroke="#6d4c9f" stroke-width="0.14" stroke-linecap="round"/>
+      <!-- speech bubble (THINK) -->
+      <rect x="0.18" y="-0.88" width="0.86" height="0.62" rx="0.14" fill="#fbf0cf" stroke="#c99a06" stroke-width="0.09"/>
+      <line x1="0.34" y1="-0.68" x2="0.88" y2="-0.68" stroke="#c99a06" stroke-width="0.07" stroke-linecap="round"/>
+      <line x1="0.34" y1="-0.48" x2="0.72" y2="-0.48" stroke="#c99a06" stroke-width="0.07" stroke-linecap="round"/>
+      <!-- check vs cross -->
+      <circle cx="-0.55" cy="0.82" r="0.27" fill="#2e9e6a"/>
+      <polyline points="-0.68,0.82 -0.58,0.92 -0.42,0.72" fill="none" stroke="#fff" stroke-width="0.07" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="0.62" cy="0.70" r="0.27" fill="#d64545"/>
+      <line x1="0.52" y1="0.60" x2="0.72" y2="0.80" stroke="#fff" stroke-width="0.07" stroke-linecap="round"/>
+      <line x1="0.72" y1="0.60" x2="0.52" y2="0.80" stroke="#fff" stroke-width="0.07" stroke-linecap="round"/>
+      <text x="0.06" y="0.92" text-anchor="middle" font-family="Fraunces, serif" font-size="0.36" font-weight="700" fill="#1f6f78">≠</text>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">Preprint · Under Review · 2026</div>
+  <h1 class="fade-in">Knowing When a VLM Is Wrong Is Not Enough:<br><span class="brand-text">When Does Extra Compute Help?</span></h1>
+  <!-- TODO: replace with the full author list once the paper is public -->
+  <p class="authors fade-in">Elias Hossain <span style="color:var(--ink-muted);font-weight:400">et&nbsp;al.</span></p>
+  <p class="affils fade-in">University of Central Florida</p>
+  <p class="subtitle fade-in">Adaptive test-time compute methods let a vision-language model decide, per question, whether to look closer or to reason first. We ask how much of the reported gain comes from that per-question decision itself. Measured against an equal-cost random allocation of the same actions, very little: confidence tells a router that an answer is wrong, not whether extra compute will fix it.</p>
+  <div class="cta-row fade-in">
+    <a href="#findings" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Key findings
+    </a>
+    <a href="#protocol" class="btn btn-outline">🧪 Evaluation protocol</a>
+    <a href="#takeaways" class="btn btn-outline">🧭 Takeaways</a>
+  </div>
+  <p class="code-pending fade-in">Paper, code, and per-sample outcome records will be released after review</p>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">5</div><div class="stat-label">Small VLMs</div></div>
+    <div class="stat"><div class="stat-value">600</div><div class="stat-label">Questions</div></div>
+    <div class="stat"><div class="stat-value">4.8–9.8</div><div class="stat-label">Oracle Headroom (pts)</div></div>
+    <div class="stat"><div class="stat-value">≤ 2.1</div><div class="stat-label">Router Gain (pts)</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<section id="explainer" class="content">
+  <div class="section-label">Explainer</div>
+  <h2 class="section-title">The paper in one minute</h2>
+  <div data-explainer="vlm"></div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- OVERVIEW -->
+<section id="findings" class="content">
+  <div class="section-label fade-in">At a Glance</div>
+  <h2 class="section-title fade-in">Wrong is not the same as fixable</h2>
+  <p class="section-desc fade-in">A VLM can spend extra inference compute by encoding the image with more visual tokens (<strong>LOOK</strong>), by reasoning step by step before answering (<strong>THINK</strong>), or both. Neither helps every question. The best action depends on the question, some questions stay wrong under every action, and the signal a router has at inference time identifies errors far better than it identifies <em>fixable</em> errors.</p>
+  <div class="method-figure fade-in"><img src="assets/teaser.png" alt="Four panels: (a) four inference actions B, LOOK, THINK, LOOK+THINK; (b) example HR-Bench questions where a different action is the cheapest fix, and one where nothing fixes it; (c) confidence detects wrong answers with AUROC 0.77 to 0.84 but fixable ones only at 0.55 to 0.64; (d) trained routers gain at most 2.1 points over the equal-cost random mix while the oracle gains 7.6 to 14.9."></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> (a) Four inference actions. (b) The best action varies by question; some questions remain wrong under every action. (c) Confidence detects incorrect answers more reliably than it identifies errors another action will correct. (d) Trained routers recover only a small part of the improvement available to an oracle that knows which action works for each question.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">1</div>
+      <h3>The choice has real headroom</h3>
+      <p>LOOK and THINK fix different questions. A held-out oracle that picks each question's action gains <strong>4.8–9.8 points</strong> over the best fixed action, or matches baseline accuracy at <strong>0.44–0.51×</strong> its FLOPs.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">2</div>
+      <h3>Routers recover little of it</h3>
+      <p>Trained routers gain at most <strong>2.1 points</strong> over the equal-cost random mix, under one-fifth of the oracle's gain. The published VisionThink does not beat an equal-FLOPs mixture of its own fixed configurations.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">3</div>
+      <h3>Because confidence predicts error, not fixability</h3>
+      <p>Confidence detects wrong answers (AUROC <strong>0.77–0.84</strong>) but barely predicts fixable ones (<strong>0.55–0.64</strong>). Knowing which errors an action fixes is worth <strong>8.0–9.5 points</strong> more than knowing which answers are wrong.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section id="problem" class="content">
+  <div class="section-label fade-in">The Problem</div>
+  <h2 class="section-title fade-in">Reported gains mix three effects</h2>
+  <p class="section-desc fade-in">When an adaptive method beats a fixed setting, the gain may come from the actions themselves, from the training that produced the policy, or from the per-question decision. An audit of the seven most closely related papers (VisionThink, AVR, AVIS, SPARC, DIRECT, Thinkless, VL-RouterBench) finds that published comparisons do not separate them, for three reasons.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⚖</div>
+      <h3>Baseline</h3>
+      <p>An adaptive policy is usually compared with one fixed setting, so it may win simply by spending more compute on average. The baseline that isolates the decision is a random allocation of the same fixed actions at the same measured cost. None of the seven papers reports it.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">W</div>
+      <h3>Weights</h3>
+      <p>Fixed baselines often use the untrained base model or a separately trained one, so a gain may come from training rather than from the choice. Fixed actions should use the adaptive policy's own trained weights.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">↑</div>
+      <h3>Headroom</h3>
+      <p>Oracle estimates that select an action because one sampled answer is correct, and then score that same answer, reward lucky draws. With one sample per action this overstates the headroom by 10–20 points.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROTOCOL -->
+<section id="protocol" class="content">
+  <div class="section-label fade-in">Protocol</div>
+  <h2 class="section-title fade-in">Isolating the value of the decision</h2>
+  <p class="section-desc fade-in">For every question and action we draw <em>K</em>&nbsp;=&nbsp;20 independent samples (10 for DeepSeek-VL2-Small). A sample's correctness is never counted as an extra question; the fraction of correct samples estimates the action's success rate on that question. A policy must beat the cost-matched random mix below to show that its question-specific decisions add anything.</p>
+  <div class="equation fade-in">
+    max<sub>w</sub> &sum;<sub>a</sub> w<sub>a</sub> p<sub>a</sub> &nbsp; s.t. &nbsp; &sum;<sub>a</sub> w<sub>a</sub> = 1, &nbsp; &sum;<sub>a</sub> w<sub>a</sub> c<sub>a</sub> &le; C
+    <span class="eq-note">The random mix assigns fixed action <em>a</em> (accuracy p<sub>a</sub>, measured cost c<sub>a</sub>) to a fraction w<sub>a</sub> of questions, independently of their content. Its value traces the upper hull of the fixed actions' cost and accuracy, and is evaluated at each router's measured average cost.</span>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">A</div>
+      <h3>Actions</h3>
+      <p><strong>B</strong>: direct answer, ≤256 visual tokens, ≤32 generated tokens. <strong>LOOK</strong>: 1280 visual tokens (2.6–2.8× FLOPs). <strong>THINK</strong>: step-by-step reasoning, ≤512 tokens (1.3–1.5× FLOPs). <strong>LOOK+THINK</strong>: both (3.0–3.2×). B64 and B128 use fewer visual tokens.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">½</div>
+      <h3>Disjoint selection and scoring</h3>
+      <p>Whenever samples inform a decision (picking an oracle action, training a router) each question's samples are split into a selection half and a scoring half. A decision is never scored on a sample that informed it; results average over up to 200 random splits.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">R</div>
+      <h3>Routers</h3>
+      <p>Pre-routers pick an action from question and image features before any answer exists. Cascades run a cheap action first and use its answer and confidence (token log-probabilities, entropy, margin, optional hidden-state probe) to keep it or escalate. Cost includes both actions.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">$</div>
+      <h3>Costs and intervals</h3>
+      <p>Costs are reported in both FLOPs and latency (batch size 1 on a T4, R² ≥ 0.994 linear fit), relative to B. Confidence intervals resample whole images, since several questions can share one image.</p>
+    </div>
+  </div>
+  <p class="section-desc fade-in" style="margin-top:2.2rem;margin-bottom:0">
+    <strong>Models.</strong> Three dense VLMs (Qwen2.5-VL-3B, Qwen3-VL-2B, LFM2.5-VL-3B) and two mixture-of-experts VLMs (DeepSeek-VL2-Tiny and -Small).
+    <strong>Data.</strong> 600 questions from 364 images: 200 each from ChartQA (exact chart values), MMStar (small images), and the 4K split of HR-Bench (median 4032&nbsp;×&nbsp;4032 pixels).
+    <strong>Case study.</strong> The published VisionThink, re-run with its released weights and a token-exact port of its two-turn inference code.
+  </p>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Large headroom, small realized gain</h2>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin-bottom:0.6rem">Finding 1 · THINK helps hard questions and hurts easy ones</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">THINK's average effect ranges from &minus;8.4 to +7.2 points across models, but on all five models it helps where the baseline usually fails (+7.2 to +27.9 points on the hardest questions) and hurts where it usually succeeds (&minus;8.2 to &minus;36.1 on the easiest). LOOK also helps most on hard questions but rarely hurts. THINK costs only 1.3–1.5× the FLOPs yet takes 13–19× longer, because it generates many tokens one at a time.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Action</th><th>Qwen2.5-VL-3B</th><th>FLOPs</th><th>Qwen3-VL-2B</th><th>FLOPs</th><th>LFM2.5-VL-3B</th><th>FLOPs</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>B64</td><td class="num">36.4</td><td class="num">0.35×</td><td class="num">34.3</td><td class="num">0.36×</td><td class="num">45.7</td><td class="num">0.36×</td></tr>
+        <tr class="baseline"><td>B128</td><td class="num">49.1</td><td class="num">0.57×</td><td class="num">49.2</td><td class="num">0.58×</td><td class="num">60.3</td><td class="num">0.59×</td></tr>
+        <tr><td>B (baseline)</td><td class="num">59.3</td><td class="num">1.00×</td><td class="num">53.9</td><td class="num">1.00×</td><td class="num">64.2</td><td class="num">1.00×</td></tr>
+        <tr><td>LOOK</td><td class="num"><strong>63.4</strong></td><td class="num">2.75×</td><td class="num">56.7</td><td class="num">2.64×</td><td class="num">68.9</td><td class="num">2.62×</td></tr>
+        <tr><td>THINK</td><td class="num">50.9</td><td class="num">1.32×</td><td class="num">61.2</td><td class="num">1.51×</td><td class="num">65.9</td><td class="num">1.37×</td></tr>
+        <tr><td>LOOK+THINK</td><td class="num">56.0</td><td class="num">3.07×</td><td class="num"><strong>65.1</strong></td><td class="num">3.15×</td><td class="num"><strong>69.1</strong></td><td class="num">2.99×</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> Accuracy (%) on 600 questions, 20 samples per question; FLOPs relative to each model's baseline B. No single fixed action is best across models.</p>
+  </div>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin:2.6rem 0 0.6rem">Same-sample oracles overstate the headroom</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">With one sample per action, scoring the oracle on its own selection sample gives 85.2%, 78.9%, and 85.3% on the three dense models, 10 to 20 points above the held-out estimate. On Qwen2.5-VL-3B it claims +20.8 points over the best fixed action where the held-out oracle finds +1.2. Selecting on 10 samples and scoring on 10 others, most of the real gain comes from adding THINK to the menu.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Policy</th><th>Qwen2.5-VL-3B</th><th>Qwen3-VL-2B</th><th>LFM2.5-VL-3B</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>Best fixed action</td><td class="num">64.4 (2.62×)</td><td class="num">65.1 (3.15×)</td><td class="num">69.1 (2.99×)</td></tr>
+        <tr><td>Oracle over {B, LOOK}</td><td class="num">64.7 (1.55×)</td><td class="num">58.6 (1.40×)</td><td class="num">70.8 (1.40×)</td></tr>
+        <tr class="highlight"><td>Oracle over all four</td><td class="num">69.2 (1.69×)</td><td class="num">71.1 (1.78×)</td><td class="num">78.9 (1.60×)</td></tr>
+        <tr><td>Oracle &minus; best fixed (pts)</td><td class="num">+4.8 [3.5, 6.3]</td><td class="num">+6.0 [4.4, 7.9]</td><td class="num">+9.8 [7.7, 12.2]</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 2.</strong> Held-out oracles: accuracy (%) and relative FLOPs. The oracle uses ground-truth answers, so it is an upper bound on what routing can add, not a deployable policy. A cost-aware oracle matches baseline accuracy at 0.44–0.51× its FLOPs, almost entirely by giving fewer visual tokens to questions that do not need them.</p>
+  </div>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin:2.6rem 0 0.6rem">Finding 2 · Trained routers and VisionThink recover little</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">At 1.25–2× the baseline FLOPs, trained cascades (logistic regression and gradient-boosted trees) beat the best random mix by 1.1–1.5 points on Qwen2.5-VL-3B, against 7.6–9.2 for the oracle, and by at most 1.4 and 2.1 points on the other two models, against 10.5–14.9. The gain is consistent across five repeats but small. Under the same protocol, VisionThink's decision carries signal against a random choice between its own two resolutions, but not against a mixture of all its fixed configurations.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>VisionThink routing gain vs. equal-cost random mix of…</th><th>at equal FLOPs</th><th>at equal latency</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>its two resolutions (low, low→full)</td><td class="num">+2.4 [1.1, 3.8]</td><td class="num">+1.7 [0.6, 2.9]</td></tr>
+        <tr class="highlight"><td>all of its fixed configurations</td><td class="num">+0.7 [&minus;2.0, 3.1]</td><td class="num">&minus;4.5 [&minus;8.3, &minus;0.7]</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 3.</strong> VisionThink (RL-trained Qwen2.5-VL-7B) re-run on our 600 questions with its released weights. Giving the model the full image first is 4.8 points more accurate at the same latency, because escalation pays for a second decoding phase. Comparisons with the untrained base model cannot reveal this.</p>
+  </div>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin:2.6rem 0 0.6rem">Finding 3 · Confidence finds errors, not fixable errors</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">LOOK, THINK, and LOOK+THINK correct a wrong baseline answer only 17–42% of the time, and among questions the baseline almost always gets wrong, 35–44% stay wrong under every other action. Holding the escalation action (LOOK+THINK) and budget (1.5× FLOPs) fixed and changing only <em>which</em> answers are escalated isolates what each kind of knowledge is worth.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Escalate… (gain in pts over the row above)</th><th>Qwen2.5-VL-3B</th><th>Qwen3-VL-2B</th><th>LFM2.5-VL-3B</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>at random (equal-cost mix)</td><td class="num">reference</td><td class="num">reference</td><td class="num">reference</td></tr>
+        <tr><td>least confident answers (deployable)</td><td class="num">+0.7 to +1.6</td><td class="num">below the mix</td><td class="num">&minus;0.2 to +1.7</td></tr>
+        <tr><td>all wrong answers (perfect error detection)</td><td class="num">+3.4</td><td class="num">+2.6</td><td class="num">+4.3</td></tr>
+        <tr class="highlight"><td>fixable errors only (perfect fixability)</td><td class="num">+8.3</td><td class="num">+9.5</td><td class="num">+8.0</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 4.</strong> Escalation rules at 1.5× baseline FLOPs. The last two rows use true outcomes and are diagnostic upper bounds. A question-level version that knows only each question's success rate from the other 19 samples still adds 4.4–7.4 points over perfect error detection: half to four-fifths of the fixability gain is a property of the question, not of a lucky sample.</p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- TAKEAWAYS -->
+<section id="takeaways" class="content">
+  <div class="section-label fade-in">Takeaways</div>
+  <h2 class="section-title fade-in">What to do differently</h2>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⚙</div>
+      <h3>For practitioners deploying VLMs</h3>
+      <p>Before deploying a router, compare it with a random mixture of the same fixed actions, using the same weights and the router's measured average cost. Report both FLOPs and latency: saving FLOPs does not imply lower latency when a policy generates long answers or decodes twice. When the gain is small or uncertain, prefer a fixed action or a validated fixed-action mixture.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">✎</div>
+      <h3>For researchers building adaptive systems</h3>
+      <p>Evaluate whether an action corrects an error separately from whether a policy predicts that correction. Select and score oracles on separate samples. Train routers to predict whether a given action will correct an answer, not whether the answer is uncertain; an action's held-out success rate per question is a natural training target.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITATIONS -->
+<section id="limitations" class="content">
+  <div class="section-label fade-in">Limitations</div>
+  <h2 class="section-title fade-in">What this does not claim</h2>
+  <p class="section-desc fade-in">The results do not show that adaptive computation cannot help. They show that its benefit has to be measured against the same actions allocated without looking at the question.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">S</div>
+      <h3>Scope</h3>
+      <p>Five small VLMs (at most 3.75B dense parameters), three benchmarks, one prompted reasoning style with a 512-token limit, and the routers tested here. Larger models or other signals may behave differently.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">V</div>
+      <h3>VisionThink re-run</h3>
+      <p>One greedy sample per question, float16, full images capped at 1280 visual tokens, and our own scorer; only the within-model comparison is meaningful.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">∑</div>
+      <h3>Upper bounds and costs</h3>
+      <p>The oracle and fixability rules use ground-truth outcomes and are not deployable; predicting fixability is the open problem. FLOP counts omit attention, and the dense versus MoE comparison is confounded by model family and quantization.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>When Does Extra Compute Help?</strong> &mdash; adaptive test-time compute for VLMs &nbsp;·&nbsp;
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../uat-lite/">UAT-LITE</a> ·
+    <a href="../tas/">TAS</a> ·
+    <a href="../channelguard/">ChannelGuard</a>
+  </p>
+  <p style="margin-top: 8px; color: var(--ink-muted);">© 2026 Elias Hossain · <a href="/">eliashossain001.github.io</a></p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch (e) {}
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+</script>
+<script src="/assets/explainers/explainers.js?v=5" defer></script>
+</body>
+</html>

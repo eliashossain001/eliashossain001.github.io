@@ -521,7 +521,182 @@
     }
   };
 
-  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus };
+  // ======================================================================
+  // 5. When does extra compute help? (adaptive LOOK/THINK for VLMs)
+  // ======================================================================
+  var vlm = {
+    tag: 'Explainer · Preprint · examples from the paper',
+    link: '/look-think/',
+    scenes: [
+      { h: 'Four ways to answer', d: 11000,
+        p: 'A vision-language model can answer directly, <b>look</b> closer by encoding the image with five times more visual tokens, <b>think</b> step by step before answering, or do both. Each extra step costs compute. Adaptive methods try to pick the right one for every question.' },
+      { h: 'The best choice depends on the question', d: 12000,
+        p: 'One question is easy and only needs a direct answer. Another needs fine detail, so looking closer fixes it. A third needs reasoning, so thinking fixes it. And some questions stay wrong <b>whatever</b> the model does. An oracle that knew the right action per question would gain 5 to 10 accuracy points.' },
+      { h: 'The fair test: a random mix at equal cost', d: 12000,
+        p: 'To see whether a router really chooses well, compare it with the same actions handed out <b>at random</b>, at the same average cost. No prior paper we audited reports this. Against it, trained routers gain at most 2.1 points, under one fifth of what the oracle shows is possible.' },
+      { h: 'Wrong is not the same as fixable', d: 12000,
+        p: 'Why? A router sees the model\'s confidence. Confidence spots <b>wrong</b> answers fairly well. But it barely tells which wrong answers looking or thinking would actually <b>fix</b>, its signal is barely above chance. Many errors stay wrong under every action, and thinking can even break right answers.' },
+      { h: 'Predict fixability, not error', d: 13000,
+        p: 'At one and a half times the baseline compute, perfectly detecting wrong answers adds only 2.6 to 4.3 points over confidence. Knowing which errors an action fixes adds <b>8 to 9.5 more</b>. So: test adaptive compute against an equal-cost random mix, and train routers to predict what extra compute can fix.' }
+    ],
+    build: function (svg) {
+      // ---- scene 1: question + four actions ----
+      var s1 = mk(svg, 'g', {});
+      var qc = mk(s1, 'g', {});
+      mk(qc, 'rect', { x: 150, y: 22, width: 340, height: 48, rx: 10, 'class': 'f-elev s-ink', 'stroke-width': 1.5 });
+      mk(qc, 'text', { x: 320, y: 52, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600 }, 'Q: What colour is the motorcycle?');
+      var ACT = [['B', 'answer directly', '1×'], ['LOOK', 'more visual tokens', '2.7×'], ['THINK', 'reason first', '1.3×'], ['LOOK+THINK', 'both', '3.1×']];
+      var AX = [40, 190, 340, 490];
+      var acts = ACT.map(function (a, i) {
+        var g = mk(s1, 'g', {});
+        mk(g, 'path', { d: 'M320 70 Q ' + ((320 + AX[i] + 55) / 2) + ' 100 ' + (AX[i] + 55) + ' 120', fill: 'none', 'class': 's-soft', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' });
+        var pl = pill(g, AX[i], 122, 110, 44, i === 0 ? 'f-line' : 'f-accs', a[0], '', 15);
+        pl.text.setAttribute('font-weight', 700);
+        mk(g, 'text', { x: AX[i] + 55, y: 190, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-soft' }, a[1]);
+        g.cost = mk(g, 'text', { x: AX[i] + 55, y: 214, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, 'class': 't-mono t-acc' }, a[2] + ' compute');
+        return g;
+      });
+      var s1q = mk(s1, 'text', { x: 320, y: 262, 'text-anchor': 'middle', 'font-size': 16, 'font-style': 'italic', 'class': 't-serif t-soft' }, 'Which one should each question get?');
+
+      // ---- scene 2: per-question outcome grid ----
+      var s2 = mk(svg, 'g', {});
+      var CX = [300, 380, 460, 550];
+      ['B', 'LOOK', 'THINK', 'LOOK+THINK'].forEach(function (h, i) {
+        mk(s2, 'text', { x: CX[i], y: 34, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, 'class': i === 0 ? '' : 't-acc' }, h);
+      });
+      var ROWS = [['Easy', 'colour of the dog?', 't-g', [1, 1, 0, 0], 0], ['Needs fine detail', 'colour of the motorcycle?', 't-acc', [0, 1, 0, 1], 1],
+                  ['Needs reasoning', 'truck left or right of trams?', 't-a', [0, 0, 1, 0], 2], ['Out of reach', 'arrows on the black sign?', 't-r', [0, 0, 0, 0], -1]];
+      var grid = ROWS.map(function (r, k) {
+        var y = 70 + k * 56, g = mk(s2, 'g', {});
+        mk(g, 'line', { x1: 30, x2: 610, y1: y - 26, y2: y - 26, 'class': 's-line', 'stroke-width': 1 });
+        mk(g, 'text', { x: 34, y: y - 3, 'font-size': 14, 'font-weight': 700, 'class': r[2] }, r[0]);
+        mk(g, 'text', { x: 34, y: y + 15, 'font-size': 12.5, 'class': 't-soft' }, r[1]);
+        g.marks = r[3].map(function (ok, i) {
+          var m = mk(g, 'g', { transform: 'translate(' + CX[i] + ' ' + (y + 2) + ')' });
+          mk(m, 'circle', { r: 13, 'class': ok ? 'f-g' : 'f-r' });
+          if (ok) mk(m, 'path', { d: CHECK, fill: 'none', stroke: '#fff', 'stroke-width': 2.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+          else mk(m, 'path', { d: 'M-5 -5 L5 5 M5 -5 L-5 5', stroke: '#fff', 'stroke-width': 2.6, 'stroke-linecap': 'round' });
+          return m;
+        });
+        g.box = r[4] >= 0 ? mk(g, 'rect', { x: CX[r[4]] - 24, y: y - 22, width: 48, height: 48, rx: 8, fill: 'none', 'class': 's-g', 'stroke-width': 2, 'stroke-dasharray': '4 3' }) : null;
+        return g;
+      });
+      var s2n = mk(s2, 'text', { x: 320, y: 290, 'text-anchor': 'middle', 'font-size': 12.5, 'class': 't-mute' }, 'Qwen2.5-VL-3B · HR-Bench 4K · dashed box = cheapest action that fixes it');
+
+      // ---- scene 3: gain over the equal-cost random mix ----
+      var s3 = mk(svg, 'g', {});
+      var BASE = 236, SC = 11.5;
+      mk(s3, 'text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-size': 14, 'class': 't-soft' }, 'Accuracy gain over the equal-cost random mix (points)');
+      mk(s3, 'line', { x1: 90, x2: 560, y1: BASE, y2: BASE, 'class': 's-ink', 'stroke-width': 1.5 });
+      var BARS = [['random mix', 'of fixed actions', 0, 0, 'f-line'], ['trained', 'routers', 2.1, 2.1, 'f-ink'], ['oracle', '(upper bound)', 7.6, 14.9, 'f-a']];
+      var bars = BARS.map(function (b, i) {
+        var x = 120 + i * 150, g = mk(s3, 'g', {});
+        g.lo = mk(g, 'rect', { x: x, y: BASE, width: 90, height: 0, 'class': b[4] });
+        g.hi = mk(g, 'rect', { x: x, y: BASE, width: 90, height: 0, 'class': b[4], opacity: 0.4 });
+        g.val = mk(g, 'text', { x: x + 45, y: BASE - 8, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, 'class': 't-mono' }, '');
+        mk(g, 'text', { x: x + 45, y: BASE + 20, 'text-anchor': 'middle', 'font-size': 13.5, 'font-weight': 600 }, b[0]);
+        mk(g, 'text', { x: x + 45, y: BASE + 37, 'text-anchor': 'middle', 'font-size': 12, 'class': i === 2 ? 't-r' : 't-soft' }, b[1]);
+        g.d = b; g.x = x;
+        return g;
+      });
+      var s3n = mk(s3, 'text', { x: 168, y: 110, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, 'class': 't-r' }, 'under one fifth');
+      var s3n2 = mk(s3, 'text', { x: 168, y: 128, 'text-anchor': 'middle', 'font-size': 12.5, 'class': 't-soft' }, 'of the oracle’s gain');
+
+      // ---- scene 4: detect error vs detect fixable ----
+      var s4 = mk(svg, 'g', {});
+      var hdr = mk(s4, 'g', {});
+      mk(hdr, 'rect', { x: 180, y: 18, width: 280, height: 40, rx: 8, 'class': 'f-line' });
+      mk(hdr, 'text', { x: 320, y: 44, 'text-anchor': 'middle', 'font-size': 15 }, 'Direct answer: “Yellow” ✗');
+      var RX = 230, RW = 340;
+      function ax(v) { return RX + (v - 0.5) / 0.5 * RW; }
+      var DET = [['Is this answer wrong?', 'confidence: yes', 0.77, 0.84, 'f-g', 't-g'], ['Will LOOK or THINK fix it?', 'barely above chance', 0.55, 0.64, 'f-r', 't-r']];
+      var det = DET.map(function (d, k) {
+        var y = 110 + k * 82, g = mk(s4, 'g', {});
+        mk(g, 'text', { x: 30, y: y + 6, 'font-size': 14.5, 'font-weight': 600 }, d[0]);
+        mk(g, 'rect', { x: RX, y: y - 12, width: RW, height: 24, rx: 5, 'class': 'f-line' });
+        g.lo = mk(g, 'rect', { x: RX, y: y - 12, width: 0, height: 24, rx: 5, 'class': d[4] });
+        g.hi = mk(g, 'rect', { x: RX, y: y - 12, width: 0, height: 24, 'class': d[4], opacity: 0.4 });
+        g.lab = mk(g, 'text', { x: RX + 6, y: y + 34, 'font-size': 13.5, 'font-weight': 700, 'class': d[5] }, d[1] + ' · AUROC ' + d[2].toFixed(2) + '–' + d[3].toFixed(2));
+        g.d = d;
+        return g;
+      });
+      var chance = mk(s4, 'g', {});
+      mk(chance, 'line', { x1: RX, x2: RX, y1: 84, y2: 220, 'class': 's-ink', 'stroke-width': 1.5, 'stroke-dasharray': '3 3' });
+      mk(chance, 'text', { x: RX, y: 80, 'text-anchor': 'middle', 'font-size': 11.5, 'class': 't-mute' }, 'chance 0.5');
+      mk(chance, 'text', { x: RX + RW, y: 80, 'text-anchor': 'end', 'font-size': 11.5, 'class': 't-mute' }, 'perfect 1.0');
+      var s4n = mk(s4, 'text', { x: 320, y: 276, 'text-anchor': 'middle', 'font-size': 14.5, 'font-style': 'italic', 'class': 't-serif t-soft' }, 'A wrong answer is not necessarily a fixable one.');
+
+      // ---- scene 5: escalation ladder ----
+      var s5 = mk(svg, 'g', {});
+      var LB = 210, LS = 10;
+      mk(s5, 'text', { x: 320, y: 28, 'text-anchor': 'middle', 'font-size': 13.5, 'class': 't-soft' }, 'Same extra compute (1.5×), different choice of which answers to escalate');
+      mk(s5, 'line', { x1: 80, x2: 560, y1: LB, y2: LB, 'class': 's-ink', 'stroke-width': 1.5 });
+      var STEPS = [['least confident', 'what routers do', 0, 1.2, 'f-ink', ''], ['every wrong answer', 'perfect error detection', 1.2, 4.6, 'f-acc', '+2.6 to +4.3'], ['only fixable errors', 'perfect fixability', 4.6, 13.4, 'f-a', '+8.0 to +9.5']];
+      var steps = STEPS.map(function (st, i) {
+        var x = 110 + i * 150, g = mk(s5, 'g', {});
+        g.base = mk(g, 'rect', { x: x, y: LB, width: 100, height: 0, 'class': 'f-line' });
+        g.add = mk(g, 'rect', { x: x, y: LB, width: 100, height: 0, 'class': st[4] });
+        g.val = mk(g, 'text', { x: x + 50, y: LB, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, 'class': 't-mono' }, st[5]);
+        mk(g, 'text', { x: x + 50, y: LB + 20, 'text-anchor': 'middle', 'font-size': 13.5, 'font-weight': 600 }, st[0]);
+        mk(g, 'text', { x: x + 50, y: LB + 37, 'text-anchor': 'middle', 'font-size': 12, 'class': 't-soft' }, st[1]);
+        g.d = st;
+        return g;
+      });
+      var take = pill(s5, 130, 258, 380, 34, 'f-accs s-acc', 'Routers should predict fixability, not error', 't-acc', 14.5);
+      take.text.setAttribute('font-weight', 700);
+
+      return function (s, p) {
+        hideAll([s1, s2, s3, s4, s5]);
+        if (s === 0) {
+          show(s1, 1); show(qc, win(p, 0, 0.1));
+          acts.forEach(function (a, i) { show(a, win(p, 0.12 + i * 0.1, 0.22 + i * 0.1)); show(a.cost, win(p, 0.5 + i * 0.05, 0.6 + i * 0.05)); });
+          show(s1q, win(p, 0.75, 0.85));
+          return;
+        }
+        if (s === 1) {
+          show(s2, 1); show(s2n, win(p, 0.05, 0.15));
+          grid.forEach(function (g, k) {
+            show(g, win(p, 0.04 + k * 0.17, 0.12 + k * 0.17));
+            g.marks.forEach(function (m, i) { show(m, win(p, 0.08 + k * 0.17 + i * 0.025, 0.12 + k * 0.17 + i * 0.025)); });
+            if (g.box) show(g.box, win(p, 0.16 + k * 0.17, 0.2 + k * 0.17));
+          });
+          return;
+        }
+        if (s === 2) {
+          show(s3, 1);
+          bars.forEach(function (b, i) {
+            var g = win(p, 0.1 + i * 0.2, 0.3 + i * 0.2), lo = b.d[2] * SC * g, hi = (b.d[3] - b.d[2]) * SC * g;
+            set(b.lo, { y: BASE - lo, height: lo }); set(b.hi, { y: BASE - lo - hi, height: hi });
+            set(b.val, { y: BASE - lo - hi - 8 }); show(b.val, g);
+            b.val.textContent = i === 0 ? '0' : i === 1 ? '≤ +2.1' : '+7.6 to +14.9';
+          });
+          show(s3n, win(p, 0.75, 0.85)); show(s3n2, win(p, 0.78, 0.88));
+          return;
+        }
+        if (s === 3) {
+          show(s4, 1); show(hdr, win(p, 0, 0.1)); show(chance, win(p, 0.1, 0.2));
+          det.forEach(function (d, k) {
+            var g = win(p, 0.2 + k * 0.25, 0.4 + k * 0.25);
+            show(d, win(p, 0.12 + k * 0.25, 0.2 + k * 0.25));
+            set(d.lo, { width: (ax(d.d[2]) - RX) * g }); set(d.hi, { x: ax(d.d[2]), width: (ax(d.d[3]) - ax(d.d[2])) * g });
+            show(d.hi, g); show(d.lab, win(p, 0.35 + k * 0.25, 0.45 + k * 0.25));
+          });
+          show(s4n, win(p, 0.8, 0.9));
+          return;
+        }
+        show(s5, 1);
+        steps.forEach(function (st, i) {
+          var g = win(p, 0.08 + i * 0.22, 0.28 + i * 0.22), b = st.d[2] * LS, a = (st.d[3] - st.d[2]) * LS * g;
+          show(st, win(p, 0.04 + i * 0.22, 0.12 + i * 0.22));
+          set(st.base, { y: LB - b, height: b }); set(st.add, { y: LB - b - a, height: a });
+          set(st.val, { y: LB - b - a - 8 }); show(st.val, g);
+        });
+        show(take, win(p, 0.75, 0.85));
+      };
+    }
+  };
+
+  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm };
 
   // ---------- player ----------
   var IC = {
@@ -559,7 +734,7 @@
     var txt = d.textContent;
     // Spoken forms, shared by the browser voice and the pre-generated audio.
     [[/α/g, 'alpha'], [/yes\/no/g, 'yes-or-no'], [/UAT-LITE/g, 'U-A-T Lite'], [/\bNEXUS\b/g, 'Nexus'],
-     [/\bKL\b/g, 'K-L'], [/\bF1\b/g, 'F-one'], [/\+(\d)/g, 'plus $1'], [/(\d)%/g, '$1 percent']
+     [/\bKL\b/g, 'K-L'], [/\bAUROC\b/g, 'A-U-ROC'], [/\bVLMs?\b/g, function (m) { return m === 'VLM' ? 'V-L-M' : 'V-L-Ms'; }], [/\bF1\b/g, 'F-one'], [/\+(\d)/g, 'plus $1'], [/(\d)%/g, '$1 percent']
     ].forEach(function (r) { txt = txt.replace(r[0], r[1]); });
     return txt.replace(/\s+/g, ' ').trim();
   }

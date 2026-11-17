@@ -2172,8 +2172,8 @@
   .pub-tech[open] > summary::before { transform: rotate(90deg); }
   .pub-tech > summary:hover { color: var(--accent-ink); }
   .pub-tech > .pub-desc { margin-top: 6px; }
-  .pub-pill.pub-explain { background: var(--accent); color: var(--bg-elev); }
-  .pub-pill.pub-explain:hover { background: var(--accent-ink); }
+  .pub-pill.pub-explain { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+  .pub-pill.pub-explain:hover { background: var(--accent); color: var(--bg-elev); }
 
   /* Announcement strip: NeurIPS 2026 (compact: thumbnail + title + small links) */
   .announce {
@@ -2274,10 +2274,7 @@
   .tk-link { font-size: 13px; font-weight: 600; color: var(--accent-ink); white-space: nowrap; margin-left: 4px; }
   @media (max-width: 640px) { .talks-list li { grid-template-columns: 1fr; gap: 2px; } }
   /* Video pop-up */
-  button.pub-pill { font: inherit; cursor: pointer; border: none; }
-  .announce-vid { font: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px;
-    font-size: 12.5px; font-weight: 600; color: var(--news-ink); background: var(--bg-elev); border: 1px solid var(--line); }
-  .announce-vid:hover { border-color: var(--news-dot); }
+  button.pub-pill { font-family: inherit; line-height: inherit; cursor: pointer; border: none; }
   .vmodal[hidden] { display: none; }
   .vmodal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; }
   .vmodal-back { position: absolute; inset: 0; background: rgba(10, 12, 10, 0.62); backdrop-filter: blur(3px); }
@@ -2350,25 +2347,25 @@
 
 <main>
 <div class="wrap solo">
-  <div class="announce">
-    <button type="button" class="announce-thumb" data-video="poe" aria-label="Play the one-minute video">
-      <img src="/poe-steering/assets/poster_preview.jpg" alt="" width="1200" height="771" />
-      <span class="announce-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-    </button>
-    <div class="announce-body">
-      <span class="announce-k">NeurIPS 2026 &middot; Main Track</span>
-      <a class="announce-title" href="/poe-steering/">When Policies Cannot Be Retrained</a>
-    </div>
-    <div class="announce-links">
-      <button type="button" class="announce-link" data-video="poe">&#9654; Watch 1 min</button>
-      <a class="announce-link" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Poster</a>
-      <a class="announce-link" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Slides</a>
-    </div>
-  </div>
 
   <article class="content">
 
     <section class="first-section" id="about">
+      <div class="announce">
+        <button type="button" class="announce-thumb" data-video="poe" aria-label="Play the one-minute video">
+          <img src="/poe-steering/assets/poster_preview.jpg" alt="" width="1200" height="771" />
+          <span class="announce-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <div class="announce-body">
+          <span class="announce-k">NeurIPS 2026 &middot; Main Track</span>
+          <a class="announce-title" href="/poe-steering/">When Policies Cannot Be Retrained</a>
+        </div>
+        <div class="announce-links">
+          <button type="button" class="announce-link" data-video="poe">&#9654; Watch 1 min</button>
+          <a class="announce-link" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Poster</a>
+          <a class="announce-link" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Slides</a>
+        </div>
+      </div>
       <div class="hero-id">
         <div class="avatar"><img id="avatarImg" alt="Elias Hossain" /></div>
         <div>

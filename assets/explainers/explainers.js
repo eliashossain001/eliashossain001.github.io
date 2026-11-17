@@ -696,7 +696,150 @@
     }
   };
 
-  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm };
+  // ======================================================================
+  // 6. Right Knowledge, Wrong Answer (parametric temporal conflict)
+  // ======================================================================
+  var tas = {
+    tag: 'Explainer · Preprint · illustrative example',
+    link: '/tas/',
+    scenes: [
+      { h: 'The model knows, but answers wrong', d: 10000,
+        p: 'Ask an open-weight language model who runs a company today, and it often names the <b>former</b> chief executive. The natural guess is that it never learned about the change. Often that guess is wrong.' },
+      { h: 'Add a date, and the right answer appears', d: 11000,
+        p: 'Ask the same question starting with "As of 2024", and the model names the <b>new</b> chief executive. On cases like this, a date cue recovers the newer fact 61 to 81 percent of the time. The knowledge was there all along; the default answer simply prefers the older one.' },
+      { h: 'Separating conflict from ignorance', d: 11000,
+        p: 'We built a verified benchmark of 8,746 real changes from Wikidata: heads of state and government, chief executives, head coaches, and chairs. A recovery check keeps only cases where the model is shown to hold both facts, so a conflict is never confused with missing knowledge.' },
+      { h: 'Finding where the old answer wins', d: 12000,
+        p: 'Copying the internal state from the dated question into a <b>single upper layer</b> of the plain question flips the answer in 72 to 85 percent of verified cases. The preference for the outdated fact is localized, and the layer differs from model to model.' },
+      { h: 'Bigger models, more conflict', d: 12000,
+        p: 'Across four open-weight models, the rate of this conflict rises with size, from 4.1 to 10.3 percent of questions. Scaling up does not remove outdated answers. They are a <b>preference inside the model</b> that can be measured, located, and corrected at inference time.' }
+    ],
+    build: function (svg) {
+      // ---- scenes 1-2: question + two candidate answers ----
+      var qa = mk(svg, 'g', {});
+      var qbox = mk(qa, 'rect', { x: 90, y: 26, width: 460, height: 48, rx: 10, 'class': 'f-elev s-ink', 'stroke-width': 1.5 });
+      var qPre = mk(qa, 'text', { x: 320, y: 56, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 600 }, '');
+      var CX = 150, CW = 340;
+      function cand(y, label, sub) {
+        var g = mk(qa, 'g', {});
+        mk(g, 'text', { x: CX - 14, y: y + 16, 'text-anchor': 'end', 'font-size': 15, 'font-weight': 600 }, label);
+        mk(g, 'text', { x: CX - 14, y: y + 33, 'text-anchor': 'end', 'font-size': 11.5, 'class': 't-mute' }, sub);
+        mk(g, 'rect', { x: CX, y: y, width: CW, height: 26, rx: 6, 'class': 'f-line' });
+        g.bar = mk(g, 'rect', { x: CX, y: y, width: 0, height: 26, rx: 6, 'class': 'f-a' });
+        g.mark = mk(g, 'text', { x: CX + CW + 14, y: y + 19, 'font-size': 17, 'font-weight': 700 }, '');
+        return g;
+      }
+      var oldC = cand(110, 'Former CEO', 'held the role until 2022');
+      var newC = cand(166, 'Current CEO', 'in the role since 2023');
+      var prefT = mk(qa, 'text', { x: CX + CW / 2, y: 100, 'text-anchor': 'middle', 'font-size': 12, 'class': 't-mute' }, 'how strongly the model prefers each answer');
+      var verdict = mk(qa, 'text', { x: 320, y: 248, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 700 }, '');
+      var stat = mk(qa, 'text', { x: 320, y: 276, 'text-anchor': 'middle', 'font-size': 14, 'class': 't-mono t-acc' }, '');
+
+      // ---- scene 3: benchmark funnel ----
+      var bench = mk(svg, 'g', {});
+      var tiles = [['8,746', 'verified changes'], ['5', 'kinds of role'], ['4', 'open-weight models']].map(function (t, i) {
+        var g = mk(bench, 'g', {}), x = 70 + i * 175;
+        mk(g, 'rect', { x: x, y: 30, width: 150, height: 86, rx: 12, 'class': 'f-elev s-line', 'stroke-width': 1.5 });
+        mk(g, 'text', { x: x + 75, y: 76, 'text-anchor': 'middle', 'font-size': 30, 'font-weight': 600, 'class': 't-serif t-acc' }, t[0]);
+        mk(g, 'text', { x: x + 75, y: 100, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-soft' }, t[1]);
+        return g;
+      });
+      var roles = mk(bench, 'text', { x: 320, y: 146, 'text-anchor': 'middle', 'font-size': 13.5, 'class': 't-soft' }, 'head of state · head of government · CEO · head coach · chair');
+      var fil = mk(bench, 'g', {});
+      pill(fil, 70, 176, 210, 40, 'f-line', 'old answer by default', '', 14);
+      mk(fil, 'path', { d: 'M286 196 L346 196', 'class': 's-ink', 'stroke-width': 2, 'marker-end': '' });
+      mk(fil, 'path', { d: 'M338 189 L348 196 L338 203', fill: 'none', 'class': 's-ink', 'stroke-width': 2 });
+      var keep = pill(fil, 356, 176, 214, 40, 'f-accs s-acc', 'new answer recoverable?', 't-acc', 14);
+      keep.text.setAttribute('font-weight', 700);
+      var filT = mk(bench, 'text', { x: 320, y: 254, 'text-anchor': 'middle', 'font-size': 14.5, 'font-weight': 600 }, 'Kept only if the model holds both facts');
+
+      // ---- scene 4: layer patching ----
+      var lay = mk(svg, 'g', {});
+      var NL = 28, LX = 70, LW = 500, LB = 220;
+      var AFR = []; for (var k = 0; k < NL; k++) { var x = k / (NL - 1); AFR.push(0.05 + 0.75 * Math.exp(-Math.pow((x - 0.83) / 0.1, 2)) + 0.04 * Math.sin(k * 1.7)); }
+      var PEAK = AFR.indexOf(Math.max.apply(null, AFR));
+      var lbars = AFR.map(function (v, k) {
+        return mk(lay, 'rect', { x: LX + k * (LW / NL) + 2, y: LB, width: LW / NL - 4, height: 0, rx: 2, 'class': 'f-line' });
+      });
+      mk(lay, 'line', { x1: LX, x2: LX + LW, y1: LB, y2: LB, 'class': 's-ink', 'stroke-width': 1.5 });
+      mk(lay, 'text', { x: LX, y: LB + 20, 'font-size': 12, 'class': 't-mute' }, 'first layer');
+      mk(lay, 'text', { x: LX + LW, y: LB + 20, 'text-anchor': 'end', 'font-size': 12, 'class': 't-mute' }, 'last layer');
+      mk(lay, 'text', { x: 320, y: 34, 'text-anchor': 'middle', 'font-size': 13.5, 'class': 't-soft' }, 'answers flipped by patching one layer from the dated question');
+      var peakT = mk(lay, 'text', { x: LX + LW * 0.83, y: 62, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 700, 'class': 't-a' }, '72–85% flipped');
+      var layN = mk(lay, 'text', { x: 320, y: 268, 'text-anchor': 'middle', 'font-size': 14.5, 'font-style': 'italic', 'class': 't-serif t-soft' }, 'One upper layer decides between the old and the new fact.');
+
+      // ---- scene 5: scaling ----
+      var sc = mk(svg, 'g', {});
+      var MODS = [['Qwen 1.5B', 0.041], ['Qwen 7B', 0.071], ['Mistral 7B', 0.085], ['Llama 8B', 0.103]];
+      var SB = 214;
+      mk(sc, 'text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-size': 13.5, 'class': 't-soft' }, 'share of questions with a verified conflict');
+      mk(sc, 'line', { x1: 90, x2: 550, y1: SB, y2: SB, 'class': 's-ink', 'stroke-width': 1.5 });
+      var sbars = MODS.map(function (m, i) {
+        var g = mk(sc, 'g', {}), x = 110 + i * 112;
+        g.b = mk(g, 'rect', { x: x, y: SB, width: 76, height: 0, rx: 4, 'class': 'f-acc' });
+        g.v = mk(g, 'text', { x: x + 38, y: SB, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, 'class': 't-mono' }, (m[1] * 100).toFixed(1) + '%');
+        mk(g, 'text', { x: x + 38, y: SB + 20, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 600 }, m[0]);
+        g.val = m[1];
+        return g;
+      });
+      var scN = pill(sc, 150, 252, 340, 34, 'f-accs s-acc', 'A preference inside the model, not a gap', 't-acc', 14.5);
+      scN.text.setAttribute('font-weight', 700);
+
+      function setBars(oldV, newV) {
+        set(oldC.bar, { width: CW * oldV }); set(newC.bar, { width: CW * newV });
+        oldC.bar.setAttribute('class', oldV >= newV ? 'f-a' : 'f-soft');
+        newC.bar.setAttribute('class', newV > oldV ? 'f-g' : 'f-soft');
+      }
+
+      return function (s, p) {
+        hideAll([qa, bench, lay, sc]);
+        if (s <= 1) {
+          show(qa, 1);
+          var dated = s === 1;
+          qPre.textContent = dated ? '“As of 2024, who is the CEO of the company?”' : '“Who is the CEO of the company?”';
+          qbox.setAttribute('class', dated ? 'f-accs s-acc' : 'f-elev s-ink');
+          show(prefT, win(p, 0.1, 0.2));
+          var g = dated ? win(p, 0.15, 0.45) : 0;
+          var grow = dated ? 1 : win(p, 0.15, 0.45);
+          setBars(lerp(0.78, 0.3, g) * grow, lerp(0.42, 0.82, g) * grow);
+          oldC.mark.textContent = dated ? '' : '← answered';
+          newC.mark.textContent = dated ? '← answered' : '';
+          oldC.mark.setAttribute('class', 't-r'); newC.mark.setAttribute('class', 't-g');
+          show(oldC.mark, dated ? 0 : win(p, 0.45, 0.55)); show(newC.mark, dated ? win(p, 0.45, 0.55) : 0);
+          verdict.textContent = dated ? '✓ The newer fact was stored all along' : '✗ Outdated answer, yet the new one is stored';
+          verdict.setAttribute('class', dated ? 't-g' : 't-r');
+          show(verdict, win(p, 0.6, 0.72));
+          stat.textContent = dated ? 'a date cue recovers it in 61–81% of cases' : '';
+          show(stat, dated ? win(p, 0.72, 0.84) : 0);
+          return;
+        }
+        if (s === 2) {
+          show(bench, 1);
+          tiles.forEach(function (t, i) { show(t, win(p, 0.04 + i * 0.1, 0.14 + i * 0.1)); });
+          show(roles, win(p, 0.35, 0.45)); show(fil, win(p, 0.5, 0.62)); show(filT, win(p, 0.68, 0.78));
+          return;
+        }
+        if (s === 3) {
+          show(lay, 1);
+          lbars.forEach(function (b, k) {
+            var g = win(p, 0.05 + k * 0.012, 0.25 + k * 0.012), h = AFR[k] * 150 * g;
+            set(b, { y: LB - h, height: h });
+            b.setAttribute('class', k === PEAK ? 'f-a' : 'f-line');
+          });
+          show(peakT, win(p, 0.6, 0.7)); show(layN, win(p, 0.75, 0.85));
+          return;
+        }
+        show(sc, 1);
+        sbars.forEach(function (b, i) {
+          var g = win(p, 0.06 + i * 0.12, 0.26 + i * 0.12), h = b.val * 1500 * g;
+          set(b.b, { y: SB - h, height: h }); set(b.v, { y: SB - h - 8 }); show(b.v, g);
+        });
+        show(scN, win(p, 0.72, 0.84));
+      };
+    }
+  };
+
+  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm, tas: tas };
 
   // ---------- player ----------
   var IC = {

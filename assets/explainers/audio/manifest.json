@@ -1,5 +1,5 @@
 {
- "v": "a55cab0752",
+ "v": "3de9cf47e0",
  "voice": "Kokoro af_heart",
  "poe": [
   {
@@ -109,6 +109,28 @@
   {
    "file": "vlm-5.mp3",
    "ms": 23706
+  }
+ ],
+ "tas": [
+  {
+   "file": "tas-1.mp3",
+   "ms": 13786
+  },
+  {
+   "file": "tas-2.mp3",
+   "ms": 20834
+  },
+  {
+   "file": "tas-3.mp3",
+   "ms": 21777
+  },
+  {
+   "file": "tas-4.mp3",
+   "ms": 18449
+  },
+  {
+   "file": "tas-5.mp3",
+   "ms": 19503
   }
  ]
 }

@@ -2404,13 +2404,25 @@
   }
 
   /* Lower half: sticky table of contents + reference-style press and mentorship */
-  .df-lower { display: grid; grid-template-columns: 160px minmax(0, 980px); gap: 28px; justify-content: center; margin-top: 52px; }
+  .df-lower { display: grid; grid-template-columns: 405px minmax(0, 1fr); gap: 30px; margin-top: 52px; align-items: start; }
   .df-lower .df-sec { margin: 0 0 52px; max-width: none; }
-  .toc { position: sticky; top: 340px; align-self: start; display: flex; flex-direction: column; border-left: 1px solid var(--line); }
-  .toc a { font-size: .82rem; line-height: 1.3; color: var(--ink-soft); padding: 8px 0 8px 13px; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; }
+  .lower-side { position: sticky; top: 92px; align-self: start; }
+  .toc { display: flex; flex-direction: column; border-left: 1px solid var(--line); margin: 6px 0 22px 2px; }
+  .toc a { font-size: .86rem; line-height: 1.3; color: var(--ink-soft); padding: 7px 0 7px 13px; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; }
   .toc a:hover { color: var(--accent); }
   .toc a.on { color: var(--accent); border-left-color: var(--accent); }
-  @media (max-width: 1199px) { .df-lower { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+  .collab { background: var(--bg-elev); border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,.14), 0 2px 10px rgba(0,0,0,.10); padding: 14px 14px 16px; }
+  .collab h3 { font-family: 'Lora', serif; font-weight: 600; font-size: 1.05rem; margin: 0 0 10px; }
+  .collab-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .co { border: 1px solid var(--line); border-radius: 6px; padding: 10px 6px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; background: var(--bg-elev); }
+  .co img { height: 40px; width: 100%; object-fit: contain; }
+  [data-theme="dark"] .co img { background: #fff; border-radius: 4px; padding: 2px; }
+  .co span { font-family: 'Roboto', sans-serif; font-size: .72rem; line-height: 1.25; color: var(--ink); }
+  @media (max-width: 1199px) {
+    .df-lower { grid-template-columns: minmax(0, 1fr); }
+    .lower-side { position: static; order: 2; }
+    .toc { display: none; }
+  }
   .press2 { list-style: none; margin: 0; padding: 0; }
   .press2 li { margin-bottom: 18px; }
   .press2 a { font-size: 1.05rem; text-decoration: none; }
@@ -2598,6 +2610,7 @@
   </div>
 
   <div class="df-lower">
+    <div class="lower-side">
     <nav class="toc" aria-label="On this page">
       <a href="#publications">Featured Publications</a>
       <a href="#talks-sec">Talks</a>
@@ -2605,6 +2618,23 @@
       <a href="#mentorship">Research Mentorship</a>
       <a href="#review">Peer Review</a>
     </nav>
+      <div class="collab">
+        <h3>Collaborations</h3>
+        <div class="collab-grid">
+          <div class="co"><img src="/assets/logos/ucf.png" alt="" loading="lazy" /><span>University of Central Florida</span></div>
+          <div class="co"><img src="/assets/logos/nyu.png" alt="" loading="lazy" /><span>New York University</span></div>
+          <div class="co"><img src="/assets/logos/umbc.png" alt="" loading="lazy" /><span>UMBC</span></div>
+          <div class="co"><img src="/assets/logos/msstate.png" alt="" loading="lazy" /><span>Mississippi State University</span></div>
+          <div class="co"><img src="/assets/logos/unisq.png" alt="" loading="lazy" /><span>Univ. of Southern Queensland</span></div>
+          <div class="co"><img src="/assets/logos/qut.png" alt="" loading="lazy" /><span>Queensland Univ. of Technology</span></div>
+          <div class="co"><img src="/assets/logos/pfw.png" alt="" loading="lazy" /><span>Purdue Fort Wayne</span></div>
+          <div class="co"><img src="/assets/logos/meharry.png" alt="" loading="lazy" /><span>Meharry Medical College</span></div>
+          <div class="co"><img src="/assets/logos/nemours.png" alt="" loading="lazy" /><span>Nemours Children&rsquo;s Health</span></div>
+          <div class="co"><img src="/assets/logos/nsu.png" alt="" loading="lazy" /><span>North South University</span></div>
+          <div class="co"><img src="/assets/logos/aust.png" alt="" loading="lazy" /><span>Ahsanullah Univ. of Sci. &amp; Tech.</span></div>
+        </div>
+      </div>
+    </div>
     <div class="df-lower-main">
   <section class="df-sec" id="publications">
     <h2 class="sec">Featured Publications</h2>

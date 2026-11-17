@@ -2284,6 +2284,23 @@
     background: var(--bg-elev); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; box-shadow: var(--shadow); }
   .vmodal-more { margin: 10px 4px 0; font-size: 14px; }
   .vmodal-more a { color: #fff; font-weight: 600; }
+
+  /* Wide screens: main column + sticky News sidebar (fills the side space) */
+  .side-rail { display: none; }
+  @media (min-width: 1180px) {
+    .wrap.solo { max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 52px; align-items: start; }
+    .side-rail { display: block; position: sticky; top: 92px; }
+    #news { display: none; }
+  }
+  .side-box { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .side-box .section-label { margin-bottom: 8px; }
+  .news-side li { grid-template-columns: 1fr; gap: 1px; padding: 9px 0; font-size: 14px; }
+  .news-side .when { font-size: 11px; padding-top: 0; }
+  .side-up p { font-size: 14px; line-height: 1.55; margin: 0 0 6px; color: var(--ink); }
+  .side-up a { color: var(--accent-ink); font-weight: 600; }
+  .side-up .side-meet { font-size: 13px; color: var(--ink-soft); margin: 0; }
+  .side-box.flash { animation: sideFlash 1.4s ease; }
+  @keyframes sideFlash { 0%, 40% { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } 100% { box-shadow: var(--shadow); } }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=7" />
 <!-- Link previews and search metadata -->
@@ -2759,6 +2776,17 @@
     </section>
 
   </article>
+  <aside class="side-rail" aria-label="News and upcoming">
+    <div class="side-box">
+      <div class="section-label">News</div>
+      <ul class="news-solo news-side" id="newsSide"></ul>
+    </div>
+    <div class="side-box side-up">
+      <div class="section-label">Upcoming</div>
+      <p><strong>NeurIPS 2026</strong>, Atlanta, Dec 9&ndash;13. Presenting <a href="/poe-steering/">When Policies Cannot Be Retrained</a> as a poster.</p>
+      <p class="side-meet">In Atlanta and open to meeting. <a href="mailto:elias.hossain191@gmail.com?subject=NeurIPS%202026">Email me</a></p>
+    </div>
+  </aside>
 </div>
 </main>
 
@@ -3113,6 +3141,22 @@
     });
     modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', close); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+
+  // News sidebar: copy the inline News list (single source of truth); News nav link targets whichever is visible
+  (function () {
+    var src = document.querySelector('#news .news-solo'), side = document.getElementById('newsSide');
+    if (src && side) side.innerHTML = src.innerHTML;
+    document.querySelectorAll('a[href="#news"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var inline = document.getElementById('news');
+        if (inline && inline.offsetParent === null && side) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          var box = side.closest('.side-box'); box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash');
+        }
+      });
+    });
   })();
 </script>
 

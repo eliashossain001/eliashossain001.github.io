@@ -2262,6 +2262,29 @@
   .tryit-foot { font-size: 12.5px; color: var(--ink-muted); margin-top: 8px; }
   .tryit-foot a { color: var(--accent-ink); font-weight: 600; }
   @media (max-width: 560px) { .tryit-row { grid-template-columns: 1fr; } .tryit-out { text-align: left; } }
+
+  /* Talks list */
+  .talks-list { list-style: none; margin: 0; padding: 0; }
+  .talks-list li { display: grid; grid-template-columns: 82px 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 15px; line-height: 1.5; }
+  .talks-list li:last-child { border-bottom: none; }
+  .talks-list .when { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-muted); padding-top: 3px; }
+  .talks-list strong { font-weight: 600; }
+  .tk-link { font-size: 13px; font-weight: 600; color: var(--accent-ink); white-space: nowrap; margin-left: 4px; }
+  @media (max-width: 640px) { .talks-list li { grid-template-columns: 1fr; gap: 2px; } }
+  /* Video pop-up */
+  button.pub-pill { font: inherit; cursor: pointer; border: none; }
+  .announce-vid { font: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--news-ink); background: var(--bg-elev); border: 1px solid var(--line); }
+  .announce-vid:hover { border-color: var(--news-dot); }
+  .vmodal[hidden] { display: none; }
+  .vmodal { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; }
+  .vmodal-back { position: absolute; inset: 0; background: rgba(10, 12, 10, 0.62); backdrop-filter: blur(3px); }
+  .vmodal-box { position: relative; width: min(880px, 100%); max-height: calc(100vh - 32px); overflow: auto; }
+  .vmodal-box .xpl { max-width: none; }
+  .vmodal-x { position: absolute; top: -6px; right: -6px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--bg-elev); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; box-shadow: var(--shadow); }
+  .vmodal-more { margin: 10px 4px 0; font-size: 14px; }
+  .vmodal-more a { color: #fff; font-weight: 600; }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=5" />
 <!-- Link previews and search metadata -->
@@ -2311,7 +2334,6 @@
       <a href="#news">News</a>
       <a href="#try">Try it</a>
       <a href="#publications">Publications</a>
-      <a href="#explainers">Explainers</a>
       <a href="#talks-sec">Talks</a>
       <a href="/cv/resume.pdf?v=20261116" target="_blank">CV</a>
       <a href="/live/">Demos</a>
@@ -2333,7 +2355,7 @@
     <span class="announce-links">
       <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Poster</a>
       <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Slides</a>
-      <a href="/poe-steering/#explainer">&#9654; 1-min video</a>
+      <button type="button" class="announce-vid" data-video="poe">&#9654; 1-min video</button>
     </span>
   </div>
 
@@ -2359,7 +2381,7 @@
       <div class="bio-solo">
         <p>Most deployed AI systems cannot be retrained by the people who rely on them. My research asks what we can still guarantee at inference time: <strong>whether a model knows when it is wrong</strong>, <strong>whether agreement among AI judges is real evidence</strong>, and <strong>whether an agent can be stopped before an unsafe action</strong>.</p>
         <p>First-author work appears at <strong>NeurIPS 2026</strong> (steering a frozen policy toward a new goal, in closed form) and <strong>EACL 2027</strong> (uncertainty-aware attention for pretrained transformers). I also show where common practice overstates reliability: ten LLM judges carry the evidence of about 3.5 independent ones, and models that are individually safe stop being safe once chained into a pipeline.</p>
-        <p>I am advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Niloofar Yousefi</a> and Ivan Garibay. Before UCF I completed an M.S. in Computer Science at Mississippi State. Every paper below has code, a project page, and a one-minute narrated explainer.</p>
+        <p>I am advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Niloofar Yousefi</a> and Ivan Garibay. Before UCF I completed an M.S. in Computer Science at Mississippi State. Each paper below has a project page and a one-minute narrated video.</p>
       </div>
     </section>
 
@@ -2367,7 +2389,6 @@
       <div class="section-label">News</div>
       <ul class="news-solo">
         <li><span class="when">Nov 2026</span><span><a href="/uat-lite/">UAT-LITE</a> accepted to <strong>EACL 2027</strong> (main conference).</span></li>
-        <li><span class="when">Nov 2026</span><span>Poster and talk slides for the NeurIPS paper are out: <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download>poster</a>, <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download>slides</a>.</span></li>
         <li><span class="when">Sep 2026</span><span><a href="/poe-steering/">When Policies Cannot Be Retrained</a> accepted to the <strong>NeurIPS 2026</strong> main track.</span></li>
         <li><span class="when">Sep 2026</span><span><a href="/nexus/">NEXUS</a>, runtime safety for tool-using agents, accepted to Findings of AACL-IJCNLP 2026.</span></li>
         <li><span class="when">Jan 2026</span><span>Presented multi-agent alignment verification at the Amazon Trusted AI Symposium, New York.</span></li>
@@ -2428,7 +2449,7 @@
               <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Deployment objectives change after training, but the actor often cannot be retrained. Composing a frozen offline RL actor with a goal-conditioned prior as a product of experts yields the same policy as KL-regularized adaptation, with &beta; = &alpha;/(1&minus;&alpha;) for diagonal-Gaussian actors. The result is graceful degradation rather than universal gain: under a degraded prior the composition stays anchored to the frozen actor while additive and prior-only adaptation collapse, and across D4RL MuJoCo, AntMaze, and Adroit its effect is bounded by actor competence (HELP/FROZEN/HURT 4/4/4 over ten seeds).</p></details>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="poe">&#9654; WATCH 1 MIN</a>
+                <button type="button" class="pub-pill pub-explain" data-video="poe">&#9654; 1-MIN VIDEO</button>
                 <a class="pub-pill" href="/poe-steering/">PROJECT</a>
                 <a class="pub-pill" href="https://github.com/eliashossain001/poe_composition" target="_blank" rel="noopener">CODE</a>
                 <a class="pub-pill" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png">POSTER</a>
@@ -2460,7 +2481,7 @@
               <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Inference-time method that uses Monte-Carlo dropout to make pretrained transformer attention uncertainty-aware. Improves calibration, selective prediction, and robustness without retraining.</p></details>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2602.02952" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="uat">&#9654; WATCH 1 MIN</a>
+                <button type="button" class="pub-pill pub-explain" data-video="uat">&#9654; 1-MIN VIDEO</button>
                 <a class="pub-pill" href="/uat-lite/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
                 <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2027uatlite,
@@ -2487,7 +2508,7 @@
               <p class="pub-plain"><span class="pub-plain-k">In short</span>When several AI models grade the same answers, their agreement looks like strong evidence. But they tend to make the same mistakes, so ten AI judges carry roughly the information of three or four independent ones, and ignoring this can change a study's conclusions.</p>
               <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">Consensus among LLM judges assumes they fail independently. They do not: in a ten-judge bank the mean error correlation is 0.21, so the votes carry the evidence of about 3.5 independent judges, frontier judges from different providers are even more correlated (0.56), and ignoring the dependence flips significance conclusions in up to 28% of comparisons. Changing the voting rule is not a reliable fix, even when the error pattern is known, so the correction belongs in the statistical inference.</p></details>
               <div class="pub-links">
-                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="ajc">&#9654; WATCH 1 MIN</a>
+                <button type="button" class="pub-pill pub-explain" data-video="ajc">&#9654; 1-MIN VIDEO</button>
                 <a class="pub-pill pub-explain" href="/Automatic-Jury-Consensus/#idea">TRY IT</a>
                 <a class="pub-pill" href="/Automatic-Jury-Consensus/">PROJECT</a>
                 <a class="pub-pill" href="https://github.com/eliashossain001/Automatic-Jury-Consensus" target="_blank" rel="noopener">CODE</a>
@@ -2516,7 +2537,7 @@
               <p class="pub-plain"><span class="pub-plain-k">In short</span>Vision-language models can look closer at an image or reason step by step, and adaptive methods pick one per question. Compared fairly against handing out the same actions at random at equal cost, trained routers gain at most 2.1 points, because confidence tells a router that an answer is wrong, not whether extra compute will fix it.</p>
               <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">An evaluation protocol that isolates the value of the per-question decision: an equal-cost random allocation of the same fixed actions, same-weight baselines, and disjoint samples for selecting and scoring the oracle. On five small VLMs and 600 questions, held-out oracles gain 4.8&ndash;9.8 points over the best fixed action, yet trained routers recover under one-fifth of that, and VisionThink does not beat an equal-FLOPs mixture of its own fixed configurations. Confidence detects wrong answers (AUROC 0.77&ndash;0.84) but not fixable ones (0.55&ndash;0.64).</p></details>
               <div class="pub-links">
-                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="vlm">&#9654; WATCH 1 MIN</a>
+                <button type="button" class="pub-pill pub-explain" data-video="vlm">&#9654; 1-MIN VIDEO</button>
                 <a class="pub-pill" href="/look-think/">PROJECT</a>
               </div>
             </div>
@@ -2537,7 +2558,7 @@
               <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">A structured-plan safety monitor that chooses among four interventions, allow, block, request confirmation, or request revision, by combining deterministic rules, argument-level inspection, and a calibrated risk score for graded escalation. Reaches 0.949 F1 while adding 0.205 ms median latency, under 0.1% overhead on a typical agent loop.</p></details>
               <div class="pub-links">
                 <a class="pub-pill" href="https://arxiv.org/abs/2607.19356" target="_blank" rel="noopener">ARXIV</a>
-                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="nexus">&#9654; WATCH 1 MIN</a>
+                <button type="button" class="pub-pill pub-explain" data-video="nexus">&#9654; 1-MIN VIDEO</button>
                 <a class="pub-pill" href="/nexus/">PROJECT</a>
                 <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
                 <pre class="pub-bibtex-text" hidden>@inproceedings{hossain2026nexus,
@@ -2720,78 +2741,32 @@
       </details>
     </section>
 
-    <section class="reveal" id="explainers">
-        <div class="section-label">Narrated explainers</div>
-        <h2>Each paper in one minute</h2>
-        <p class="pubs-sub">Select a paper and press play for a short narrated walkthrough.</p>
-        <div class="xpl-tabs" role="tablist" data-for="xplTheatre">
-          <button type="button" class="xpl-tab" role="tab" data-key="poe" aria-selected="true">Steering frozen robots <small>NeurIPS 2026</small></button>
-          <button type="button" class="xpl-tab" role="tab" data-key="uat" aria-selected="false">Honest confidence <small>EACL 2027</small></button>
-          <button type="button" class="xpl-tab" role="tab" data-key="ajc" aria-selected="false">When AI judges agree <small>Preprint</small></button>
-          <button type="button" class="xpl-tab" role="tab" data-key="nexus" aria-selected="false">Safe AI agents <small>AACL 2026</small></button>
-          <button type="button" class="xpl-tab" role="tab" data-key="vlm" aria-selected="false">When extra compute helps <small>Under review</small></button>
-        </div>
-        <div id="xplTheatre" data-explainer="poe"></div>
-        <p class="xpl-more">Want the details? <a data-xpl-link="xplTheatre" href="/poe-steering/">Read the full project page &rarr;</a></p>
-      </section>
-
     <section id="talks-sec">
       <div class="section-label">Talks</div>
-      <h2>Recorded talks</h2>
-        <div class="talks" id="talks">
-          <button class="talks-nav talks-prev" type="button" aria-label="Previous talk">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <div class="talks-track">
-          <a class="talk" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">
-            <span class="talk-thumb">
-              <img src="/assets/figs/talk-rural-care.jpg" alt="" loading="lazy" />
-              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-            </span>
-            <span>
-              <span class="talk-lbl">Recorded talk</span>
-              <span class="talk-title">Using AI for Personalized Care and Nutrition for Rural Americans</span>
-              <span class="talk-meta">On bringing personalized care and nutrition support to rural American communities, walked through end to end.</span>
-            </span>
-          </a>
-          <a class="talk" href="https://www.youtube.com/watch?v=dftil1z8oIE" target="_blank" rel="noopener">
-            <span class="talk-thumb">
-              <img src="/assets/figs/talk-dftil1z8.jpg" alt="" loading="lazy" />
-              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-            </span>
-            <span>
-              <span class="talk-lbl">Recorded talk</span>
-              <span class="talk-title">Analyzing Post-Vaccination Heart Attack Risk Using Machine Learning</span>
-              <span class="talk-meta">Closing lecture of Spring 2025, working through a risk-analysis study end to end with the class.</span>
-            </span>
-          </a>
-          <a class="talk" href="https://www.youtube.com/watch?v=-x6QBaVVvkA" target="_blank" rel="noopener">
-            <span class="talk-thumb">
-              <img src="/assets/figs/talk-x6QBaVVv.jpg" alt="" loading="lazy" />
-              <span class="talk-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
-            </span>
-            <span>
-              <span class="talk-lbl">Recorded talk</span>
-              <span class="talk-title">Analysing and Identifying COVID-19 Risk Factors using Machine Learning</span>
-              <span class="talk-meta">Walking through the modelling and the risk factors the analysis surfaced.</span>
-            </span>
-          </a>
-          </div>
-          <button class="talks-nav talks-next" type="button" aria-label="Next talk">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-          <div class="talks-dots">
-          <button class="talks-dot on" type="button" aria-label="Talk 1"></button>
-          <button class="talks-dot" type="button" aria-label="Talk 2"></button>
-          <button class="talks-dot" type="button" aria-label="Talk 3"></button>
-          </div>
-        </div>
-
+      <h2>Talks and presentations</h2>
+      <ul class="talks-list">
+        <li><span class="when">Jan 2026</span><span><strong>Multi-agent verification for safe preference alignment</strong> (poster). Amazon Trusted AI Symposium, New York.</span></li>
+        <li><span class="when">Oct 2025</span><span><strong>CITE</strong> (presentation). Molecular Machine Learning Conference (MoML), MIT Jameel Clinic, Cambridge. <a class="tk-link" href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">paper</a></span></li>
+        <li><span class="when">2025</span><span><strong>Analyzing post-vaccination heart attack risk using machine learning</strong>. Guest lecture, Spring 2025. <a class="tk-link" href="https://www.youtube.com/watch?v=dftil1z8oIE" target="_blank" rel="noopener">&#9654; video</a></span></li>
+        <li><span class="when">2024</span><span><strong>AI in healthcare and what it can mean for rural America</strong> (invited talk). Mississippi Health &amp; Innovation Conference.</span></li>
+        <li><span class="when">Recorded</span><span><strong>Using AI for personalized care and nutrition for rural Americans</strong>. <a class="tk-link" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">&#9654; video</a></span></li>
+        <li><span class="when">Recorded</span><span><strong>Analysing and identifying COVID-19 risk factors using machine learning</strong>. <a class="tk-link" href="https://www.youtube.com/watch?v=-x6QBaVVvkA" target="_blank" rel="noopener">&#9654; video</a></span></li>
+      </ul>
     </section>
 
   </article>
 </div>
 </main>
+
+
+<div class="vmodal" id="vmodal" hidden>
+  <div class="vmodal-back" data-close></div>
+  <div class="vmodal-box" role="dialog" aria-modal="true" aria-label="One-minute paper video">
+    <button type="button" class="vmodal-x" data-close aria-label="Close video">&times;</button>
+    <div id="vmodalPlayer" data-explainer="poe"></div>
+    <p class="vmodal-more"><a id="vmodalLink" href="/poe-steering/">Read the full project page &rarr;</a></p>
+  </div>
+</div>
 
 <footer class="foot-solo">
   &copy; 2026 Elias Hossain &middot; <a href="/oss.html">Open source</a> &middot; <a href="/notes.html">Notes</a> &middot; Last updated November 2026
@@ -3111,6 +3086,29 @@
     N.addEventListener('input', draw); R.addEventListener('input', draw);
     presets.forEach(function (b) { b.addEventListener('click', function () { N.value = b.dataset.n; R.value = b.dataset.r; draw(); }); });
     draw();
+  })();
+
+  // One-minute paper videos in a pop-up player (explainers.js mounts #vmodalPlayer)
+  (function () {
+    var modal = document.getElementById('vmodal'); if (!modal) return;
+    var host = document.getElementById('vmodalPlayer'), link = document.getElementById('vmodalLink'), last = null;
+    function open(key, from) {
+      if (!host._xpl) return;
+      last = from; modal.hidden = false; document.body.style.overflow = 'hidden';
+      host._xpl.load(key); link.setAttribute('href', host._xpl.link()); host._xpl.play();
+      modal.querySelector('.vmodal-x').focus();
+    }
+    function close() {
+      if (modal.hidden) return;
+      if (host._xpl) host._xpl.pause();
+      modal.hidden = true; document.body.style.overflow = '';
+      if (last) last.focus();
+    }
+    document.querySelectorAll('[data-video]').forEach(function (b) {
+      b.addEventListener('click', function () { open(b.getAttribute('data-video'), b); });
+    });
+    modal.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', close); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   })();
 </script>
 

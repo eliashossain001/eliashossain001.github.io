@@ -2241,8 +2241,44 @@
     .news-solo li { grid-template-columns: 1fr; gap: 2px; }
     .solo .pub-card { grid-template-columns: 1fr; }
   }
+
+  /* Try-it: effective number of judges */
+  .tryit { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow); }
+  .tryit-row { display: grid; grid-template-columns: 1fr 150px; gap: 18px; align-items: center; }
+  .tryit-ctl label { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--ink-soft); margin: 6px 0 2px; }
+  .tryit-ctl label b { font-family: 'JetBrains Mono', monospace; color: var(--ink); font-weight: 600; }
+  .tryit-ctl input[type=range] { width: 100%; accent-color: var(--accent); }
+  .tryit-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tryit-presets button { font: inherit; font-size: 12.5px; padding: 4px 10px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: transparent; color: var(--ink-soft); }
+  .tryit-presets button:hover, .tryit-presets button.on { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .tryit-out { text-align: center; }
+  .tryit-big { font-family: 'Fraunces', Georgia, serif; font-size: 52px; line-height: 1; color: var(--accent-ink); font-weight: 600; }
+  .tryit-unit { font-size: 12.5px; color: var(--ink-muted); margin-top: 4px; }
+  .tryit-dots { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 8px; }
+  .tryit-dots span { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--accent); position: relative; overflow: hidden; }
+  .tryit-dots span i { position: absolute; inset: 0 auto 0 0; background: var(--accent); }
+  .tryit-say { font-size: 14.5px; color: var(--ink); margin: 4px 0 0; line-height: 1.55; }
+  .tryit-foot { font-size: 12.5px; color: var(--ink-muted); margin-top: 8px; }
+  .tryit-foot a { color: var(--accent-ink); font-weight: 600; }
+  @media (max-width: 560px) { .tryit-row { grid-template-columns: 1fr; } .tryit-out { text-align: left; } }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=5" />
+<!-- Link previews and search metadata -->
+<meta property="og:type" content="profile" />
+<meta property="og:site_name" content="Elias Hossain" />
+<meta property="og:title" content="Elias Hossain · Reliable LLMs and Agents" />
+<meta property="og:description" content="Elias Hossain, PhD student at UCF. Inference-time methods that make deployed LLMs, LLM judges, and agents reliable without retraining. NeurIPS 2026, EACL 2027." />
+<meta property="og:url" content="https://eliashossain001.github.io/" />
+<meta property="og:image" content="https://eliashossain001.github.io/assets/og-home.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Elias Hossain · Reliable LLMs and Agents" />
+<meta name="twitter:description" content="Elias Hossain, PhD student at UCF. Inference-time methods that make deployed LLMs, LLM judges, and agents reliable without retraining. NeurIPS 2026, EACL 2027." />
+<meta name="twitter:image" content="https://eliashossain001.github.io/assets/og-home.png" />
+<link rel="canonical" href="https://eliashossain001.github.io/" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Elias Hossain", "url": "https://eliashossain001.github.io/", "jobTitle": "PhD student", "affiliation": {"@type": "CollegeOrUniversity", "name": "University of Central Florida"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "Mississippi State University"}, "knowsAbout": ["LLM reliability", "uncertainty quantification", "LLM-as-judge evaluation", "AI agent safety", "offline reinforcement learning"], "sameAs": ["https://scholar.google.com/citations?user=l0L1NPAAAAAJ", "https://github.com/eliashossain001", "https://www.linkedin.com/in/elias-hossain-7448a736a/"]}</script>
 </head>
 <body>
 
@@ -2273,6 +2309,7 @@
     <div class="nav-links" id="navLinks">
       <a href="#about">About</a>
       <a href="#news">News</a>
+      <a href="#try">Try it</a>
       <a href="#publications">Publications</a>
       <a href="#explainers">Explainers</a>
       <a href="#talks-sec">Talks</a>
@@ -2292,10 +2329,11 @@
 <div class="wrap solo">
   <div class="announce">
     <span class="announce-k">NeurIPS 2026 &middot; Poster</span>
-    <span class="announce-t"><a href="/poe-steering/">When Policies Cannot Be Retrained</a>: poster and talk slides are now available.</span>
+    <span class="announce-t"><a href="/poe-steering/">When Policies Cannot Be Retrained</a>: poster, talk slides, and a one-minute video are available.</span>
     <span class="announce-links">
       <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Poster</a>
       <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Slides</a>
+      <a href="/poe-steering/#explainer">&#9654; 1-min video</a>
     </span>
   </div>
 
@@ -2334,6 +2372,33 @@
         <li><span class="when">Sep 2026</span><span><a href="/nexus/">NEXUS</a>, runtime safety for tool-using agents, accepted to Findings of AACL-IJCNLP 2026.</span></li>
         <li><span class="when">Jan 2026</span><span>Presented multi-agent alignment verification at the Amazon Trusted AI Symposium, New York.</span></li>
       </ul>
+    </section>
+
+    <section id="try">
+      <div class="section-label">Try it</div>
+      <h2>How much is a panel of AI judges worth?</h2>
+      <div class="tryit">
+        <div class="tryit-row">
+          <div class="tryit-ctl">
+            <label for="tjN">Number of LLM judges <b id="tjNv">10</b></label>
+            <input id="tjN" type="range" min="2" max="20" step="1" value="10" />
+            <label for="tjR">Error correlation between judges, &rho; <b id="tjRv">0.21</b></label>
+            <input id="tjR" type="range" min="0" max="0.9" step="0.01" value="0.21" />
+            <div class="tryit-presets">
+              <button type="button" data-n="10" data-r="0">Independent judges</button>
+              <button type="button" data-n="10" data-r="0.21" class="on">Ten-judge bank (measured)</button>
+              <button type="button" data-n="10" data-r="0.56">Frontier judges, different providers</button>
+            </div>
+          </div>
+          <div class="tryit-out" aria-live="polite">
+            <div class="tryit-big" id="tjOut">3.5</div>
+            <div class="tryit-unit">effective independent judges</div>
+          </div>
+        </div>
+        <div class="tryit-dots" id="tjDots" aria-hidden="true"></div>
+        <p class="tryit-say" id="tjSay"></p>
+        <p class="tryit-foot">Effective judges = n / (1 + (n &minus; 1)&rho;). The &rho; values are measured in <a href="/Automatic-Jury-Consensus/">Agreement Overstates Evidence</a>, which also shows that ignoring this dependence flips up to 28% of significance conclusions.</p>
+      </div>
     </section>
 
     <section id="publications">
@@ -3018,6 +3083,34 @@
         });
       }
     });
+  })();
+
+  // Try-it: effective number of LLM judges, n / (1 + (n-1) rho)
+  (function () {
+    var N = document.getElementById('tjN'), R = document.getElementById('tjR');
+    if (!N || !R) return;
+    var out = document.getElementById('tjOut'), dots = document.getElementById('tjDots'), say = document.getElementById('tjSay');
+    var nv = document.getElementById('tjNv'), rv = document.getElementById('tjRv');
+    var presets = document.querySelectorAll('.tryit-presets button');
+    function draw() {
+      var n = +N.value, r = +R.value, eff = n / (1 + (n - 1) * r);
+      nv.textContent = n; rv.textContent = r.toFixed(2);
+      out.textContent = eff >= 9.95 ? eff.toFixed(0) : eff.toFixed(1);
+      dots.innerHTML = '';
+      for (var k = 0; k < n; k++) {
+        var f = Math.max(0, Math.min(1, eff - k));
+        var d = document.createElement('span'), fill = document.createElement('i');
+        fill.style.width = (f * 100) + '%'; d.appendChild(fill); dots.appendChild(d);
+      }
+      say.textContent = r === 0
+        ? n + ' judges with independent errors carry the evidence of ' + n + ' independent judges.'
+        : n + ' judges whose errors correlate at ρ = ' + r.toFixed(2) + ' carry the evidence of about ' + eff.toFixed(1) +
+          ' independent judges, ' + Math.round(100 * (1 - eff / n)) + '% less than their headcount suggests.';
+      presets.forEach(function (b) { b.classList.toggle('on', +b.dataset.n === n && Math.abs(+b.dataset.r - r) < 1e-9); });
+    }
+    N.addEventListener('input', draw); R.addEventListener('input', draw);
+    presets.forEach(function (b) { b.addEventListener('click', function () { N.value = b.dataset.n; R.value = b.dataset.r; draw(); }); });
+    draw();
   })();
 </script>
 

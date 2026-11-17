@@ -446,6 +446,29 @@
     .project { padding: 12px 14px; }
   }
 </style>
+<!-- homepage theme -->
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  /* Homepage theme (al-folio style), applied over this page's own styles */
+  :root { --bg: #f8f9fa; --bg-elev: #ffffff; --ink: #212529; --ink-soft: #495057; --ink-muted: #6b6b6b;
+    --line: rgba(0,0,0,.14); --accent: #2560B1; --accent-soft: #e4ecf8; --accent-ink: #1f5099;
+    --pill-bg: #eef1f5; --pill-ink: #343a40; --shadow: 0 2px 5px rgba(0,0,0,.10), 0 2px 10px rgba(0,0,0,.08); }
+  [data-theme="dark"] { --bg: #1C1C1D; --bg-elev: #262628; --ink: #e8e8e8; --ink-soft: #c2c2c2; --ink-muted: #9a9a9a;
+    --line: rgba(255,255,255,.16); --accent: #6fa0e8; --accent-soft: #1f2a3a; --accent-ink: #8db4ee;
+    --pill-bg: #2e2f33; --pill-ink: #d6d6d6; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.5); }
+  body { font-family: 'Lora', Georgia, serif !important; background: var(--bg) !important; color: var(--ink); }
+  body::before { display: none !important; }
+  h1, h2, h3, h4, .page-title, .brand { font-family: 'Lora', Georgia, serif !important; letter-spacing: 0 !important; }
+  .nav { background: color-mix(in srgb, var(--bg) 95%, transparent) !important; border-bottom: 1px solid var(--line) !important; }
+  .nav-inner { max-width: 1310px !important; }
+  .nav-links a { font-family: 'Lora', Georgia, serif !important; font-size: 15.5px !important; color: var(--ink) !important; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent) !important; }
+  .nav-links a.active { font-weight: 600; }
+  .nav-icons a { color: var(--ink) !important; }
+  .nav-icons svg { width: 25px !important; height: 25px !important; }
+  .theme-toggle { border: none !important; background: none !important; }
+  a { color: var(--accent); }
+</style>
 </head>
 <body>
 
@@ -463,21 +486,11 @@
     </button>
     <div class="nav-links" id="navLinks">
       <a href="/">About</a>
-      <a href="/cv/resume.pdf?v=20261116b" target="_blank">CV</a>
       <a href="/#publications">Publications</a>
-      <a href="/notes">Notes</a>
-      <a href="/oss" class="active">Open Source</a>
-      <div class="nav-more">
-        <button type="button" class="nav-more-btn" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="moreMenu">
-          More
-          <span class="nav-more-arrow">&#9662;</span>
-        </button>
-        <div class="nav-more-menu" id="moreMenu" role="menu" hidden>
-          <a href="/#certificates" role="menuitem">Certificate</a>
-          <a href="/#projects" role="menuitem">Projects</a>
-          <a href="/#awards" role="menuitem">Awards / Recognition</a>
-        </div>
-      </div>
+      <a href="/#talks-sec">Talks</a>
+      <a href="/cv/resume.pdf?v=20261116b" target="_blank">Resume</a>
+      <a href="/notes.html">Notes</a>
+      <a href="/oss.html" class="active">Open Source</a>
       <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
         <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>

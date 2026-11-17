@@ -2402,6 +2402,30 @@
     .newsT td.d { width: auto; white-space: normal; }
     .ann { max-width: 100%; padding: 12px 16px; }
   }
+
+  /* Lower half: sticky table of contents + reference-style press and mentorship */
+  .df-lower { display: grid; grid-template-columns: 160px minmax(0, 980px); gap: 28px; justify-content: center; margin-top: 52px; }
+  .df-lower .df-sec { margin: 0 0 52px; max-width: none; }
+  .toc { position: sticky; top: 340px; align-self: start; display: flex; flex-direction: column; border-left: 1px solid var(--line); }
+  .toc a { font-size: .82rem; line-height: 1.3; color: var(--ink-soft); padding: 8px 0 8px 13px; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+  .toc a.on { color: var(--accent); border-left-color: var(--accent); }
+  @media (max-width: 1199px) { .df-lower { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } }
+  .press2 { list-style: none; margin: 0; padding: 0; }
+  .press2 li { margin-bottom: 18px; }
+  .press2 a { font-size: 1.05rem; text-decoration: none; }
+  .press2 a:hover { text-decoration: underline; }
+  .press2 .pm { font-size: .88rem; color: var(--ink-muted); margin-top: 2px; }
+  .mentee2 { margin-bottom: 14px; }
+  .mname a { font-weight: 600; color: var(--ink); text-decoration: none; }
+  .mname a:hover { color: var(--accent); }
+  .mname .exti { width: 12px; height: 12px; margin-left: 4px; vertical-align: 0; color: var(--ink-muted); }
+  .mnote { font-size: .86rem; color: var(--ink-muted); }
+  .mp { margin: 4px 0 0; padding-left: 20px; font-size: .95rem; }
+  .mp li { margin: 2px 0; line-height: 1.5; }
+  .mp a { text-decoration: none; }
+  .mp a:hover { text-decoration: underline; }
+  .mv { font-size: .84rem; color: var(--ink-muted); }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=7" />
 <!-- Link previews and search metadata -->
@@ -2574,6 +2598,15 @@
     </div>
   </div>
 
+  <div class="df-lower">
+    <nav class="toc" aria-label="On this page">
+      <a href="#publications">Featured Publications</a>
+      <a href="#talks-sec">Talks</a>
+      <a href="#press">In the Press</a>
+      <a href="#mentorship">Research Mentorship</a>
+      <a href="#review">Peer Review</a>
+    </nav>
+    <div class="df-lower-main">
   <section class="df-sec" id="publications">
     <h2 class="sec">Featured Publications</h2>
     <p class="pubs-sub">Full list on <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">Google Scholar</a>. Each paper has a project page and a one-minute narrated video.</p>
@@ -2913,21 +2946,37 @@
 
   <section class="df-sec" id="press">
     <h2 class="sec">In the Press</h2>
-    <ul class="df-list press-l">
-      <li><span class="when">Jul 2026</span><span><a href="https://www.linkedin.com/pulse/your-ai-agents-only-safe-weakest-handoff-travis-lelle-s7r7e/" target="_blank" rel="noopener">Your AI Agents Are Only as Safe as the Weakest Handoff</a>, feature on ChannelGuard by a security practitioner at GuidePoint Security. <q>The assumption that safety properties of individual components transfer to the composed system is wrong.</q></span></li>
-      <li><span class="when">Jul 2026</span><span>ChannelGuard covered by <a href="https://beyond-desk.com/signal/g-1037" target="_blank" rel="noopener">Beyond Desk</a> and listed in <a href="https://github.com/LLMSecurity/awesome-agent-skills-security" target="_blank" rel="noopener">awesome-agent-skills-security</a>.</span></li>
-      <li><span class="when">2026</span><span>NEXUS discussed by practitioners on <a href="https://www.linkedin.com/posts/asif-alli-954b4324_nexus-structured-runtime-safety-for-tool-using-activity-7486013801515917312-JRnK/" target="_blank" rel="noopener">LinkedIn</a> and summarized in <a href="https://paper.dou.ac/p/2607.19356v1" target="_blank" rel="noopener">Daily Papers</a>.</span></li>
+    <ul class="press2">
+      <li><a href="https://www.linkedin.com/pulse/your-ai-agents-only-safe-weakest-handoff-travis-lelle-s7r7e/" target="_blank" rel="noopener">Your AI Agents Are Only as Safe as the Weakest Handoff</a><div class="pm">Feature on ChannelGuard by Travis Lelle, GuidePoint Security (LinkedIn) &middot; July 2026</div></li>
+      <li><a href="https://beyond-desk.com/signal/g-1037" target="_blank" rel="noopener">ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</a><div class="pm">Beyond Desk research digest &middot; July 2026</div></li>
+      <li><a href="https://github.com/LLMSecurity/awesome-agent-skills-security" target="_blank" rel="noopener">ChannelGuard listed among agent security defenses</a><div class="pm">awesome-agent-skills-security (GitHub reading list)</div></li>
+      <li><a href="https://x.com/FSFG/status/2080198084663890083" target="_blank" rel="noopener">ChannelGuard shared with agent-security practitioners</a><div class="pm">@FSFG on X</div></li>
+      <li><a href="https://www.linkedin.com/posts/asif-alli-954b4324_nexus-structured-runtime-safety-for-tool-using-activity-7486013801515917312-JRnK/" target="_blank" rel="noopener">NEXUS changes how we design systems at the boundary</a><div class="pm">Asif Alli, Canadian Tire Financial Services (LinkedIn)</div></li>
+      <li><a href="https://paper.dou.ac/p/2607.19356v1" target="_blank" rel="noopener">NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</a><div class="pm">Daily Papers (Chinese-language digest)</div></li>
+      <li><a href="https://moltbook.com/post/b26a4958-6a39-44c1-a5e3-56fe24b61854" target="_blank" rel="noopener">Safe models do not make safe pipelines</a><div class="pm">Moltbook community discussion</div></li>
+      <li><a href="https://www.moltbook.com/post/cb6a83de-ea56-486b-b200-bc8937e79dfa" target="_blank" rel="noopener">A runtime safety monitor is not a safety system</a><div class="pm">Moltbook community discussion</div></li>
     </ul>
   </section>
 
   <section class="df-sec" id="mentorship">
     <h2 class="sec">Research Mentorship</h2>
-    <ul class="df-list mentee-l">
-      <li><span><span class="mn"><a href="https://scholar.google.com/citations?user=ToPoa3EAAAAJ&amp;hl=en" target="_blank" rel="noopener">M.H. Bhuiyan Nipu</a></span> <span class="mw">&middot; Graduate Student, North South University &middot; co-author on NEXUS and ChannelGuard</span></span><span class="when">2025 &ndash; Present</span></li>
-      <li><span><span class="mn"><a href="https://scholar.google.com/citations?user=PTNWEXYAAAAJ&amp;hl=en" target="_blank" rel="noopener">Sabila Al Jannat</a></span> <span class="mw">&middot; now PhD Candidate, William &amp; Mary</span></span><span class="when">2021 &ndash; 2022</span></li>
-      <li><span><span class="mn"><a href="https://github.com/Ilmi-Tabassum" target="_blank" rel="noopener">Ilmi Tabassum</a></span> <span class="mw">&middot; Graduate Student, Macquarie University</span></span><span class="when">2022 &ndash; 2023</span></li>
-      <li><span><span class="mn"><a href="https://www.linkedin.com/in/ghoshoishee/" target="_blank" rel="noopener">Oishee Ghosh</a></span> <span class="mw">&middot; Graduate Student, Jahangirnagar University</span></span><span class="when">2020 &ndash; 2022</span></li>
-    </ul>
+    <div class="mentee2"><div class="mname"><a href="https://scholar.google.com/citations?user=ToPoa3EAAAAJ&amp;hl=en" target="_blank" rel="noopener">Md Mehedi Hasan Nipu<svg class="exti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a> <span class="mnote">Graduate Student, North South University &middot; 2025 &ndash; Present</span></div>
+      <ul class="mp">
+        <li><a href="/nexus/" >NEXUS: Structured Runtime Safety for Tool-Using LLM Agents</a> <span class="mv">- Findings of AACL-IJCNLP 2026</span></li>
+        <li><a href="/channelguard/" >ChannelGuard: Safe Models Do Not Compose into Safe Multi-Agent Systems</a> <span class="mv">- Preprint</span></li>
+        <li><a href="#publications" >Safe and Scalable Collaboration in Multiagent LLM Systems: A Comprehensive Review</a> <span class="mv">- IEEE Transactions on Systems, Man, and Cybernetics: Systems 2026</span></li>
+      </ul>
+    </div>
+    <div class="mentee2"><div class="mname"><a href="https://scholar.google.com/citations?user=PTNWEXYAAAAJ&amp;hl=en" target="_blank" rel="noopener">Sabila Al Jannat<svg class="exti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a> <span class="mnote">now PhD Candidate, William &amp; Mary &middot; 2021 &ndash; 2022</span></div>
+      <ul class="mp">
+        <li><a href="https://ieeexplore.ieee.org/abstract/document/10055867" target="_blank" rel="noopener">ADPT</a> <span class="mv">- IEEE</span></li>
+        <li><a href="https://link.springer.com/chapter/10.1007/978-981-19-1012-8_55" target="_blank" rel="noopener">COVID-19 Risk Factors</a> <span class="mv">- Springer</span></li>
+      </ul>
+    </div>
+    <div class="mentee2"><div class="mname"><a href="https://github.com/Ilmi-Tabassum" target="_blank" rel="noopener">Ilmi Tabassum<svg class="exti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a> <span class="mnote">Graduate Student, Macquarie University &middot; 2022 &ndash; 2023</span></div>
+    </div>
+    <div class="mentee2"><div class="mname"><a href="https://www.linkedin.com/in/ghoshoishee/" target="_blank" rel="noopener">Oishee Ghosh<svg class="exti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a> <span class="mnote">Graduate Student, Jahangirnagar University &middot; 2020 &ndash; 2022</span></div>
+    </div>
   </section>
 
   <section class="df-sec" id="review">
@@ -2937,6 +2986,8 @@
       <div class="rev-row"><span class="rev-l">Journals</span><span class="chips2"><span>Scientific Reports</span><span>PLOS ONE</span><span>Computers in Biology and Medicine</span><span>CMBBE</span></span></div>
     </div>
   </section>
+    </div>
+  </div>
 </div>
 </main>
 
@@ -3306,6 +3357,19 @@
       a.textContent = show ? 'Show less' : 'See All';
     });
     document.querySelectorAll('a[data-video]').forEach(function (x) { x.addEventListener('click', function (e) { e.preventDefault(); }); });
+  })();
+
+  // Table of contents: highlight the section in view
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    var map = {}; links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { links.forEach(function (a) { a.classList.remove('on'); }); if (map[e.target.id]) map[e.target.id].classList.add('on'); }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
   })();
 </script>
 <script src="/assets/explainers/explainers.js?v=7" defer></script>

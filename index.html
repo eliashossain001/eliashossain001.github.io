@@ -2436,6 +2436,27 @@
             </div>
           </article>
 
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <span class="pub-status">Under review</span>
+              <a class="pub-fig-link" href="/look-think/assets/teaser.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/lookthink-teaser-thumb.jpg" alt="Four panels: four inference actions, per-question outcomes, confidence detects wrong but not fixable answers, routers recover little of the oracle gain" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>Knowing When a VLM Is Wrong Is Not Enough: When Does Extra Compute Help?</h3>
+              <div class="pub-authors"><em>Authors withheld during double-blind review</em></div>
+              <div class="pub-venue-line">Under review, 2026</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>Vision-language models can look closer at an image or reason step by step, and adaptive methods pick one per question. Compared fairly against handing out the same actions at random at equal cost, trained routers gain at most 2.1 points, because confidence tells a router that an answer is wrong, not whether extra compute will fix it.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">An evaluation protocol that isolates the value of the per-question decision: an equal-cost random allocation of the same fixed actions, same-weight baselines, and disjoint samples for selecting and scoring the oracle. On five small VLMs and 600 questions, held-out oracles gain 4.8&ndash;9.8 points over the best fixed action, yet trained routers recover under one-fifth of that, and VisionThink does not beat an equal-FLOPs mixture of its own fixed configurations. Confidence detects wrong answers (AUROC 0.77&ndash;0.84) but not fixable ones (0.55&ndash;0.64).</p></details>
+              <div class="pub-links">
+                <a class="pub-pill pub-explain" href="#explainers" data-xpl-open="vlm">&#9654; WATCH 1 MIN</a>
+                <a class="pub-pill" href="/look-think/">PROJECT</a>
+              </div>
+            </div>
+          </article>
+
           <article class="pub pub-card" data-tag="agentic">
             <div class="pub-thumb has-fig">
               <a class="pub-fig-link" href="/assets/figs/nexus-architecture.png" target="_blank" rel="noopener">
@@ -2643,6 +2664,7 @@
           <button type="button" class="xpl-tab" role="tab" data-key="uat" aria-selected="false">Honest confidence <small>EACL 2027</small></button>
           <button type="button" class="xpl-tab" role="tab" data-key="ajc" aria-selected="false">When AI judges agree <small>Preprint</small></button>
           <button type="button" class="xpl-tab" role="tab" data-key="nexus" aria-selected="false">Safe AI agents <small>AACL 2026</small></button>
+          <button type="button" class="xpl-tab" role="tab" data-key="vlm" aria-selected="false">When extra compute helps <small>Under review</small></button>
         </div>
         <div id="xplTheatre" data-explainer="poe"></div>
         <p class="xpl-more">Want the details? <a data-xpl-link="xplTheatre" href="/poe-steering/">Read the full project page &rarr;</a></p>

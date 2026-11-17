@@ -8,3 +8,6 @@ Thumbs.db
 node_modules/
 .github-token-tmp
 .env
+
+# CV/resume LaTeX source stays local
+cv/*.tex

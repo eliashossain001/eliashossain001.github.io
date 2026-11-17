@@ -7,7 +7,7 @@
 <meta name="description" content="Elias Hossain, PhD candidate at UCF. Inference-time methods that make deployed LLMs, LLM judges, and agents reliable without retraining. NeurIPS 2026, EACL 2027." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Roboto:wght@300;400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg: #f7f3eb;
@@ -2301,6 +2301,116 @@
   .side-up .side-meet { font-size: 13px; color: var(--ink-soft); margin: 0; }
   .side-box.flash { animation: sideFlash 1.4s ease; }
   @keyframes sideFlash { 0%, 40% { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } 100% { box-shadow: var(--shadow); } }
+
+  /* ===== al-folio style layout (2026-11, modelled on roydipta.com) ===== */
+  :root {
+    --bg: #f8f9fa; --bg-elev: #ffffff; --ink: #212529; --ink-soft: #495057; --ink-muted: #6b6b6b;
+    --line: rgba(0,0,0,.14); --accent: #2560B1; --accent-soft: #e4ecf8; --accent-ink: #1f5099;
+    --pill-bg: #eef1f5; --pill-ink: #343a40; --thesis: #C2391A;
+  }
+  [data-theme="dark"] {
+    --bg: #1C1C1D; --bg-elev: #262628; --ink: #e8e8e8; --ink-soft: #c2c2c2; --ink-muted: #9a9a9a;
+    --line: rgba(255,255,255,.16); --accent: #6fa0e8; --accent-soft: #1f2a3a; --accent-ink: #8db4ee;
+    --pill-bg: #2e2f33; --pill-ink: #d6d6d6; --thesis: #ff8a6b;
+  }
+  body.df { font-family: 'Lora', Georgia, serif; background: var(--bg); color: var(--ink); font-size: 16.5px; }
+  body.df::before { display: none; }
+  .df .nav { background: color-mix(in srgb, var(--bg) 95%, transparent); border-bottom: 1px solid var(--line); }
+  .df .nav-links a { font-family: 'Lora', Georgia, serif; font-size: 15.5px; color: var(--ink); }
+  .df .nav-links a:hover, .df .nav-links a.active { color: var(--accent); }
+  .df .nav-links a.active { font-weight: 600; }
+  .df .nav-icons a { color: var(--ink); }
+  .df a { color: var(--accent); }
+  .df .nav-inner { max-width: 1160px; }
+  .df .nav-icons { gap: 10px; }
+  .df .nav-icons a { width: auto; height: auto; padding: 2px; background: none !important; }
+  .df .nav-icons svg { width: 25px; height: 25px; }
+  .df .nav-links { gap: 34px; }
+  .df .theme-toggle { border: none; background: none; }
+  .df-wrap { max-width: 1160px; margin: 0 auto; padding: 36px 20px 0; }
+  .df-row { display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 34px; align-items: start; }
+  @media (max-width: 991px) { .df-row { grid-template-columns: 1fr; } }
+  .df-card { background: var(--bg-elev); border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,.14), 0 2px 10px rgba(0,0,0,.10); padding: 12px 16px 16px; }
+  .idc { display: flex; align-items: center; gap: 16px; padding: 4px 2px 14px; }
+  .idc .avatar { flex: 0 0 140px; width: 140px; height: 140px; margin: 0; border: none; box-shadow: none; }
+  .idc-name { font-family: 'Lora', serif; font-weight: 400; font-size: 1.5rem; line-height: 1.2; margin: 0 0 2px; }
+  .idc-name b { font-weight: 600; }
+  .idc-role { font-size: .92rem; font-weight: 500; margin: 0; }
+  .idc-mail { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-family: ui-monospace, Menlo, monospace; font-size: .8rem; }
+  .idc-mail a { color: var(--accent); text-decoration: underline; }
+  .idc-act { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .btn-badge { display: inline-block; background: var(--accent); color: #fff !important; font-size: .82rem; padding: 2px 9px; border-radius: 3px; text-decoration: none; }
+  .btn-badge:hover { filter: brightness(1.1); }
+  .aff { display: flex; gap: 11px; margin-bottom: 15px; position: relative; font-family: 'Roboto', Helvetica, Arial, sans-serif; }
+  .aff:not(:last-child)::before { content: ""; position: absolute; left: 12px; top: 28px; bottom: -15px; width: 1px; background: color-mix(in srgb, var(--ink) 14%, transparent); }
+  .aff-mark { flex: 0 0 25px; width: 25px; height: 22px; display: grid; place-items: center; color: var(--ink); z-index: 1; background: var(--bg-elev); }
+  .aff-mark svg { width: 19px; height: 19px; }
+  .aff-body { flex: 1; min-width: 0; }
+  .sb { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .aff-org { font-size: 1rem; font-weight: 500; color: var(--ink); }
+  .aff-meta { font-size: .86rem; color: var(--ink-muted); font-weight: 300; }
+  .aff-sub { font-size: .84rem; color: var(--ink-muted); margin-top: 3px; font-weight: 300; }
+  .aff-sub a { font-weight: 400; }
+  .aff-more[hidden] { display: none; }
+  .aff-toggle { font-family: 'Lora', serif; font-size: .9rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0 0 0 36px; }
+  .travel { margin: 18px 2px 2px; padding: 14px 18px; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 14px; background: color-mix(in srgb, var(--accent) 5%, var(--bg-elev)); }
+  .travel h3 { font-family: 'Lora', serif; font-weight: 500; font-size: 1.3rem; color: var(--accent); margin: 0 0 8px; }
+  .travel ul { margin: 0; padding-left: 18px; font-size: .92rem; line-height: 1.5; }
+  .travel li:first-child { font-weight: 600; }
+  .travel li span { font-weight: 400; color: var(--ink-muted); }
+  .df-main { font-size: 1.04rem; line-height: 1.65; }
+  .df-main > p { text-align: justify; hyphens: auto; margin: 0 0 18px; }
+  .thesis { color: var(--thesis); font-style: italic; }
+  .thesis a { color: var(--thesis); text-decoration: underline; }
+  .ra { padding-left: 20px; margin: 0 0 26px; }
+  .ra li { margin-bottom: 6px; line-height: 1.5; }
+  .ra .h { font-weight: 600; }
+  .ra .h::after { content: ":"; }
+  .ra .p { font-size: .9rem; }
+  .ra .i:not(:last-child)::after { content: "\00b7"; margin: 0 .4rem; font-weight: 700; color: var(--ink); }
+  .ra .v { margin-left: .2rem; font-size: .84em; font-weight: 700; color: var(--ink); white-space: nowrap; }
+  .ra a { text-decoration: underline; text-underline-offset: 2px; }
+  .ann { width: fit-content; max-width: 92%; margin: 34px auto 38px; padding: 14px 26px; border-radius: 20px; text-align: center; font-weight: 500;
+    background: color-mix(in srgb, var(--accent) 16%, var(--bg)); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--accent) 34%, transparent), 0 2px 6px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .ann a { color: var(--accent-ink); text-decoration: underline; }
+  .df h2.sec { font-family: 'Lora', serif; font-weight: 500; font-size: 1.75rem; margin: 0 0 12px; letter-spacing: 0; }
+  .df h2.sec small { font-size: 1rem; font-weight: 400; }
+  .newsT { width: 100%; border-collapse: collapse; font-size: .93rem; }
+  .newsT td { padding: 9px 8px; vertical-align: top; line-height: 1.5; }
+  .newsT tr:nth-child(odd) td { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+  .newsT td.d { width: 116px; white-space: nowrap; font-weight: 600; font-size: .86rem; }
+  .newsT a { text-decoration: underline; text-underline-offset: 2px; }
+  .newsT .more-row[hidden] { display: none; }
+  .df-sec { max-width: 980px; margin: 52px auto 0; }
+  .df-sec .pubs-sub { font-family: 'Lora', serif; }
+  .df .filters { margin: 6px 0 16px; }
+  .df .pub-card { background: var(--bg-elev); border: 1px solid var(--line); box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 3px 7px rgba(0,0,0,.045); }
+  .df .pub-info h3 { font-family: 'Lora', serif; font-weight: 600; }
+  .df .pub-pill { font-family: 'Roboto', sans-serif; }
+  .df-list { list-style: none; margin: 0; padding: 0; }
+  .df-list li { display: grid; grid-template-columns: 96px 1fr; gap: 14px; padding: 9px 0; border-bottom: 1px dashed var(--line); line-height: 1.5; font-size: .97rem; }
+  .df-list li:last-child { border-bottom: none; }
+  .df-list .when { font-family: 'Roboto', sans-serif; font-size: .82rem; color: var(--ink-muted); padding-top: 3px; }
+  .df-list a { text-decoration: underline; text-underline-offset: 2px; }
+  .mentee-l li { grid-template-columns: 1fr auto; }
+  .mentee-l .mn { font-weight: 600; }
+  .mentee-l .mw { color: var(--ink-soft); font-size: .92rem; }
+  .rev { display: grid; gap: 10px; }
+  .rev-row { display: grid; grid-template-columns: 110px 1fr; gap: 12px; align-items: baseline; }
+  .rev-l { font-weight: 600; font-size: .95rem; }
+  .chips2 { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips2 span { font-family: 'Roboto', sans-serif; font-size: .82rem; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg-elev); }
+  .press-l li { grid-template-columns: 110px 1fr; }
+  .press-l q { font-style: italic; color: var(--ink-soft); }
+  .df-foot { margin-top: 60px; background: #1C1C1D; color: #e8e8e8; text-align: center; padding: 18px 16px; font-size: .9rem; font-family: 'Roboto', sans-serif; }
+  .df-foot a { color: #fff; }
+  @media (max-width: 640px) {
+    .idc { flex-direction: row; } .idc .avatar { flex-basis: 104px; width: 104px; height: 104px; }
+    .df-list li, .press-l li, .rev-row { grid-template-columns: 1fr; gap: 2px; }
+    .newsT td.d { width: auto; white-space: normal; }
+    .ann { max-width: 100%; padding: 12px 16px; }
+  }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=7" />
 <!-- Link previews and search metadata -->
@@ -2319,7 +2429,7 @@
 <link rel="canonical" href="https://eliashossain001.github.io/" />
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Elias Hossain", "url": "https://eliashossain001.github.io/", "jobTitle": "PhD candidate", "affiliation": {"@type": "CollegeOrUniversity", "name": "University of Central Florida"}, "alumniOf": {"@type": "CollegeOrUniversity", "name": "Mississippi State University"}, "knowsAbout": ["LLM reliability", "uncertainty quantification", "LLM-as-judge evaluation", "AI agent safety", "offline reinforcement learning"], "sameAs": ["https://scholar.google.com/citations?user=l0L1NPAAAAAJ", "https://github.com/eliashossain001", "https://www.linkedin.com/in/elias-hossain-7448a736a/"]}</script>
 </head>
-<body>
+<body class="df">
 
 <nav class="nav">
   <div class="nav-inner">
@@ -2346,11 +2456,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
     <div class="nav-links" id="navLinks">
-      <a href="#about">About</a>
-      <a href="#news">News</a>
+      <a href="#about" class="active">About</a>
       <a href="#publications">Publications</a>
       <a href="#talks-sec">Talks</a>
-      <a href="/cv/resume.pdf?v=20261116b" target="_blank">CV</a>
+      <a href="/cv/resume.pdf?v=20261116b" target="_blank">Resume</a>
       <a href="/live/">Demos</a>
       <a href="/notes.html">Notes</a>
       <a href="/oss.html">Open Source</a>
@@ -2363,90 +2472,121 @@
 </nav>
 
 <main>
-<div class="wrap solo">
+<div class="df-wrap" id="about">
+  <div class="df-row">
 
-  <article class="content">
-
-    <section class="first-section" id="about">
-      <div class="announce">
-        <button type="button" class="announce-thumb" data-video="poe" aria-label="Play the one-minute video">
-          <img src="/poe-steering/assets/poster_preview.jpg" alt="" width="1200" height="771" />
-          <span class="announce-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <div class="announce-body">
-          <span class="announce-k">NeurIPS 2026 &middot; Main Track</span>
-          <a class="announce-title" href="/poe-steering/">When Policies Cannot Be Retrained</a>
-        </div>
-        <div class="announce-links">
-          <button type="button" class="announce-link" data-video="poe">&#9654; Watch 1 min</button>
-        <a class="announce-link" href="https://neurips.cc/virtual/2026/loc/atlanta/poster/152992" target="_blank" rel="noopener">Poster &amp; slides &#8599;</a>
-        </div>
-      </div>
-      <div class="hero-id">
-        <div class="avatar"><img id="avatarImg" alt="Elias Hossain" /></div>
-        <div>
-          <h1>Elias <span class="accent">Hossain</span></h1>
-          <p class="hero-role">PhD candidate, University of Central Florida &middot; Complex Adaptive Systems Lab</p>
-          <p class="hero-tag">I build inference-time methods that make deployed LLMs, LLM judges, and agents reliable without retraining them.</p>
-          <div class="hero-links">
-            <a href="/cv/resume.pdf?v=20261116b" target="_blank" rel="noopener">CV</a><span class="sep">/</span>
-            <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">Google Scholar</a><span class="sep">/</span>
-            <a href="https://github.com/eliashossain001" target="_blank" rel="noopener">GitHub</a><span class="sep">/</span>
-            <a href="https://www.linkedin.com/in/elias-hossain-7448a736a/" target="_blank" rel="noopener">LinkedIn</a><span class="sep">/</span>
-            <a href="mailto:elias.hossain191@gmail.com">Email</a>
-          </div>
-        </div>
-      </div>
-      <div class="seek-line"><span class="seek-dot"></span>Seeking Summer 2027 research internships in reliable LLMs, LLM evaluation, and agent safety. <a href="mailto:elias.hossain191@gmail.com?subject=Research%20internship">Get in touch</a></div>
-      <div class="bio-solo">
-        <p>Most deployed AI systems cannot be retrained by the people who rely on them. My research asks what we can still guarantee at inference time: <strong>whether a model knows when it is wrong</strong>, <strong>whether agreement among AI judges is real evidence</strong>, and <strong>whether an agent can be stopped before an unsafe action</strong>.</p>
-        <p>First-author work appears at <strong>NeurIPS 2026</strong> (steering a frozen policy toward a new goal, in closed form) and <strong>EACL 2027</strong> (uncertainty-aware attention for pretrained transformers). I also show where common practice overstates reliability: ten LLM judges carry the evidence of about 3.5 independent ones, and models that are individually safe stop being safe once chained into a pipeline.</p>
-        <p>I am advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Niloofar Yousefi</a> and Ivan Garibay. Before UCF I completed an M.S. in Computer Science at Mississippi State. Each paper below has a project page and a one-minute narrated video.</p>
-      </div>
-    </section>
-
-    <section id="news">
-      <div class="section-label">News</div>
-      <ul class="news-solo">
-        <li><span class="when">Nov 2026</span><span><a href="/uat-lite/">UAT-LITE</a> accepted to <strong>EACL 2027</strong> (main conference).</span></li>
-        <li><span class="when">Sep 2026</span><span><a href="/poe-steering/">When Policies Cannot Be Retrained</a> accepted to the <strong>NeurIPS 2026</strong> main track.</span></li>
-        <li><span class="when">Sep 2026</span><span><a href="/nexus/">NEXUS</a>, runtime safety for tool-using agents, accepted to Findings of AACL-IJCNLP 2026.</span></li>
-        <li><span class="when">Jan 2026</span><span>Presented multi-agent alignment verification at the Amazon Trusted AI Symposium, New York.</span></li>
-      </ul>
-    </section>
-
-    <section id="try">
-      <div class="section-label">Try it</div>
-      <h2>How much is a panel of AI judges worth?</h2>
-      <div class="tryit">
-        <div class="tryit-row">
-          <div class="tryit-ctl">
-            <label for="tjN">Number of LLM judges <b id="tjNv">10</b></label>
-            <input id="tjN" type="range" min="2" max="20" step="1" value="10" />
-            <label for="tjR">Error correlation between judges, &rho; <b id="tjRv">0.21</b></label>
-            <input id="tjR" type="range" min="0" max="0.9" step="0.01" value="0.21" />
-            <div class="tryit-presets">
-              <button type="button" data-n="10" data-r="0">Independent judges</button>
-              <button type="button" data-n="10" data-r="0.21" class="on">Ten-judge bank (measured)</button>
-              <button type="button" data-n="10" data-r="0.56">Frontier judges, different providers</button>
+    <aside>
+      <div class="df-card">
+        <div class="idc">
+          <div class="avatar"><img id="avatarImg" alt="Elias Hossain" /></div>
+          <div>
+            <h1 class="idc-name">Elias <b>Hossain</b></h1>
+            <p class="idc-role">PhD Candidate &middot; UCF</p>
+            <p class="idc-mail"><a href="mailto:elias.hossain191@gmail.com">elias.hossain191@gmail.com</a></p>
+            <div class="idc-act">
+              <a class="btn-badge" href="/cv/resume.pdf?v=20261116b" target="_blank" rel="noopener">Resume</a>
+              <a class="btn-badge" href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
             </div>
           </div>
-          <div class="tryit-out" aria-live="polite">
-            <div class="tryit-big" id="tjOut">3.5</div>
-            <div class="tryit-unit">effective independent judges</div>
+        </div>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">Complex Adaptive Systems Lab, UCF</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Orlando, FL</span></div>
+            <div class="sb"><span class="aff-meta">Graduate Research Assistant</span><span class="aff-meta">Aug 2025 - Present</span></div>
+            <div class="aff-sub">&#8618; Papers: <a href="/poe-steering/">NeurIPS 2026</a>, <a href="/uat-lite/">EACL 2027</a>, <a href="/nexus/">AACL 2026</a></div>
           </div>
         </div>
-        <div class="tryit-dots" id="tjDots" aria-hidden="true"></div>
-        <p class="tryit-say" id="tjSay"></p>
-        <p class="tryit-foot">Effective judges = n / (1 + (n &minus; 1)&rho;). The &rho; values are measured in <a href="/Automatic-Jury-Consensus/">Agreement Overstates Evidence</a>, which also shows that ignoring this dependence flips up to 28% of significance conclusions. <a href="/live/">More live demos &rarr;</a></p>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c2 2 10 2 12 0v-5"/><path d="M22 9v6"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">University of Central Florida</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Orlando, FL</span></div>
+            <div class="sb"><span class="aff-meta">Ph.D. in Industrial Engineering (CS)</span><span class="aff-meta">Aug 2025 - May 2028</span></div>
+            <div class="aff-sub">&#8618; Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a> &middot; Qualifying exam passed</div>
+          </div>
+        </div>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">PATENT Lab, Mississippi State</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Starkville, MS</span></div>
+            <div class="sb"><span class="aff-meta">Graduate Research Assistant</span><span class="aff-meta">May 2025 - Jul 2025</span></div>
+            <div class="aff-sub">&#8618; Uncertainty estimation for rare security events; RAG evaluation</div>
+          </div>
+        </div>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c2 2 10 2 12 0v-5"/><path d="M22 9v6"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">Mississippi State University</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Starkville, MS</span></div>
+            <div class="sb"><span class="aff-meta">M.S. in Computer Science (Research)</span><span class="aff-meta">Jan 2024 - Jul 2025</span></div>
+            <div class="aff-sub">&#8618; Thesis: <a href="https://scholarsjunction.msstate.edu/td/6651/" target="_blank" rel="noopener">TopNet R1</a></div>
+          </div>
+        </div>
+        <div class="aff-more" id="affMore" hidden>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">REVE Systems</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Dhaka, Bangladesh</span></div>
+            <div class="sb"><span class="aff-meta">Software Engineer</span><span class="aff-meta">Dec 2022 - Nov 2023</span></div>
+            <div class="aff-sub">&#8618; Production speech recognition, 20% lower word error rate</div>
+          </div>
+        </div>
+        <div class="aff">
+          <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>
+          <div class="aff-body">
+            <div class="sb"><span class="aff-org">Time Research &amp; Innovation</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Remote / UK</span></div>
+            <div class="sb"><span class="aff-meta">AI/ML Researcher</span><span class="aff-meta">Oct 2020 - Nov 2022</span></div>
+            <div class="aff-sub">&#8618; Medical imaging models and a telemedicine platform</div>
+          </div>
+        </div>
+        </div>
+        <button type="button" class="aff-toggle" id="affToggle" aria-expanded="false">See more &#9662;</button>
+        <div class="travel">
+          <h3>Upcoming Travel</h3>
+          <ul>
+            <li>NeurIPS 2026 in Atlanta, GA <span>(Dec 9&ndash;13)</span></li>
+            <li>Presenting <a href="/poe-steering/">When Policies Cannot Be Retrained</a> (poster). <a href="mailto:elias.hossain191@gmail.com?subject=NeurIPS%202026">Happy to meet.</a></li>
+          </ul>
+        </div>
       </div>
-    </section>
+    </aside>
 
-    <section id="publications">
-      <div class="section-label">Selected papers</div>
-      <h2>Publications</h2>
-      <p class="pubs-sub">Full list on <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">Google Scholar</a>.</p>
-      <div class="pubs-cards" id="pubs">
+    <div class="df-main">
+      <p>I&rsquo;m a Ph.D. candidate at the University of Central Florida, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a> in the Complex Adaptive Systems Lab, with three years of industry ML experience before my Ph.D. <span class="thesis">I build inference-time methods that make deployed <a href="#publications">LLMs, LLM judges, and agents</a> reliable without retraining them, and I test when that reliability is real and when it is <a href="/Automatic-Jury-Consensus/">only apparent</a>.</span> My first-author work appears at <strong>NeurIPS 2026</strong> (Main Track) and <strong>EACL 2027</strong> (Main Conference).</p>
+      <ul class="ra">
+        <li><span class="h">Uncertainty &amp; Calibration</span> <span class="p"><span class="i"><a href="/uat-lite/">UAT-LITE</a><span class="v">(EACL 2027)</span></span><span class="i"><a href="/tas/">Right Knowledge, Wrong Answer</a><span class="v">(Preprint)</span></span></span></li>
+        <li><span class="h">LLM Judges &amp; Evaluation</span> <span class="p"><span class="i"><a href="/Automatic-Jury-Consensus/">Agreement Overstates Evidence</a><span class="v">(Under review)</span></span><span class="i"><a href="/mpv/">Multi-Agent Verification</a><span class="v">(ICLR 2026 Workshop)</span></span></span></li>
+        <li><span class="h">Agent Safety</span> <span class="p"><span class="i"><a href="/nexus/">NEXUS</a><span class="v">(AACL 2026)</span></span><span class="i"><a href="/channelguard/">ChannelGuard</a><span class="v">(Preprint)</span></span></span></li>
+        <li><span class="h">Post-Training &amp; RL</span> <span class="p"><span class="i"><a href="/poe-steering/">When Policies Cannot Be Retrained</a><span class="v">(NeurIPS 2026)</span></span></span></li>
+        <li><span class="h">Adaptive Compute for VLMs</span> <span class="p"><span class="i"><a href="/look-think/">When Does Extra Compute Help?</a><span class="v">(Under review)</span></span></span></li>
+        <li><span class="h">Clinical &amp; Biomedical AI</span> <span class="p"><span class="i"><a href="/biogen/">BIOGEN</a><span class="v">(Frontiers 2026)</span></span><span class="i"><a href="/carebench/">CareBench</a><span class="v">(Benchmark)</span></span></span></li>
+      </ul>
+
+      <div class="ann">&#128226; Ph.D. candidate (expected May 2028) &middot; actively seeking <strong>Summer 2027 research internships</strong> in reliable LLMs, LLM evaluation, and agent safety. Please <a href="mailto:elias.hossain191@gmail.com?subject=Research%20internship">reach out</a> if you have an opening.</div>
+
+      <h2 class="sec" id="news">Recent News <small>(<a href="#" id="newsAll">See All</a>)</small></h2>
+      <table class="newsT">
+        <tr><td class="d">Nov 2026</td><td>&#127881; <a href="/uat-lite/">UAT-LITE</a> accepted at <strong>EACL 2027</strong> (Main): inference-time uncertainty-aware attention for pretrained transformers.</td></tr>
+        <tr><td class="d">Nov 2026</td><td>&#127908; NeurIPS 2026 poster and talk slides are on the <a href="https://neurips.cc/virtual/2026/loc/atlanta/poster/152992" target="_blank" rel="noopener">NeurIPS page</a>; watch the <a href="#" data-video="poe">one-minute video</a>.</td></tr>
+        <tr><td class="d">Sep 2026</td><td>&#127881; <a href="/poe-steering/">When Policies Cannot Be Retrained</a> accepted at <strong>NeurIPS 2026</strong> (Main Track): closed-form steering of a frozen offline RL policy.</td></tr>
+        <tr><td class="d">Sep 2026</td><td>&#127881; <a href="/nexus/">NEXUS</a> accepted to <strong>Findings of AACL-IJCNLP 2026</strong>: runtime safety for tool-using LLM agents.</td></tr>
+        <tr class="more-row" hidden><td class="d">Sep 2026</td><td>&#128269; Reviewer for the Trustworthy AI for Good workshop at NeurIPS 2026.</td></tr>
+        <tr class="more-row" hidden><td class="d">Apr 2026</td><td>&#127881; <a href="/mpv/">Fault-Tolerant Preference Alignment</a> at the <strong>ICLR 2026</strong> Trustworthy AI Workshop.</td></tr>
+        <tr class="more-row" hidden><td class="d">Mar 2026</td><td>&#10024; Two papers out in <em>Briefings in Bioinformatics</em> and <em>Frontiers in Bioinformatics</em>.</td></tr>
+        <tr class="more-row" hidden><td class="d">Jan 2026</td><td>&#127908; Presented multi-agent alignment verification at the Amazon Trusted AI Symposium, New York.</td></tr>
+        <tr class="more-row" hidden><td class="d">Oct 2025</td><td>&#127891; Presented <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">CITE</a> at MIT Jameel Clinic&rsquo;s Molecular Machine Learning Conference.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <section class="df-sec" id="publications">
+    <h2 class="sec">Featured Publications</h2>
+    <p class="pubs-sub">Full list on <a href="https://scholar.google.com/citations?user=l0L1NPAAAAAJ" target="_blank" rel="noopener">Google Scholar</a>. Each paper has a project page and a one-minute narrated video.</p>
+    <div class="filters" id="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="trust">Trustworthy LLMs</button>
+      <button class="filter-btn" data-filter="agentic">Agentic Safety</button>
+    </div>
+    <div class="pubs-cards" id="pubs">
 
           <article class="pub pub-card" data-tag="agentic">
             <div class="pub-thumb t-poe">
@@ -2760,36 +2900,49 @@
 
         </div>
       </details>
-    </section>
+  </section>
 
-    <section id="talks-sec">
-      <div class="section-label">Talks</div>
-      <h2>Talks and presentations</h2>
-      <ul class="talks-list">
-        <li><span class="when">Jan 2026</span><span><strong>Multi-agent verification for safe preference alignment</strong> (poster). Amazon Trusted AI Symposium, New York.</span></li>
-        <li><span class="when">Oct 2025</span><span><strong>CITE</strong> (presentation). Molecular Machine Learning Conference (MoML), MIT Jameel Clinic, Cambridge. <a class="tk-link" href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">paper</a></span></li>
-        <li><span class="when">2025</span><span><strong>Analyzing post-vaccination heart attack risk using machine learning</strong>. Guest lecture, Spring 2025. <a class="tk-link" href="https://www.youtube.com/watch?v=dftil1z8oIE" target="_blank" rel="noopener">&#9654; video</a></span></li>
-        <li><span class="when">2024</span><span><strong>AI in healthcare and what it can mean for rural America</strong> (invited talk). Mississippi Health &amp; Innovation Conference.</span></li>
-        <li><span class="when">Recorded</span><span><strong>Using AI for personalized care and nutrition for rural Americans</strong>. <a class="tk-link" href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">&#9654; video</a></span></li>
-        <li><span class="when">Recorded</span><span><strong>Analysing and identifying COVID-19 risk factors using machine learning</strong>. <a class="tk-link" href="https://www.youtube.com/watch?v=-x6QBaVVvkA" target="_blank" rel="noopener">&#9654; video</a></span></li>
-      </ul>
-    </section>
+  <section class="df-sec" id="talks-sec">
+    <h2 class="sec">Talks</h2>
+    <ul class="df-list">
+      <li><span class="when">Dec 2026</span><span><strong>When Policies Cannot Be Retrained</strong> (poster). NeurIPS 2026, Atlanta. <a href="#" data-video="poe">1-min video</a> &middot; <a href="https://neurips.cc/virtual/2026/loc/atlanta/poster/152992" target="_blank" rel="noopener">poster &amp; slides</a></span></li>
+      <li><span class="when">Jan 2026</span><span><strong>Multi-agent verification for safe preference alignment</strong> (poster). Amazon Trusted AI Symposium, New York.</span></li>
+      <li><span class="when">Oct 2025</span><span><strong>CITE</strong> (presentation). Molecular Machine Learning Conference, MIT Jameel Clinic. <a href="https://arxiv.org/abs/2510.16082" target="_blank" rel="noopener">paper</a></span></li>
+      <li><span class="when">2025</span><span><strong>Analyzing post-vaccination heart attack risk using machine learning</strong>. Guest lecture. <a href="https://www.youtube.com/watch?v=dftil1z8oIE" target="_blank" rel="noopener">video</a></span></li>
+      <li><span class="when">2024</span><span><strong>AI in healthcare and what it can mean for rural America</strong> (invited talk). Mississippi Health &amp; Innovation Conference.</span></li>
+      <li><span class="when">Recorded</span><span><strong>Using AI for personalized care and nutrition for rural Americans</strong>. <a href="https://www.youtube.com/watch?v=3LZAbfuRWbU" target="_blank" rel="noopener">video</a></span></li>
+      <li><span class="when">Recorded</span><span><strong>Analysing and identifying COVID-19 risk factors using machine learning</strong>. <a href="https://www.youtube.com/watch?v=-x6QBaVVvkA" target="_blank" rel="noopener">video</a></span></li>
+    </ul>
+  </section>
 
-  </article>
-  <aside class="side-rail" aria-label="News and upcoming">
-    <div class="side-box">
-      <div class="section-label">News</div>
-      <ul class="news-solo news-side" id="newsSide"></ul>
+  <section class="df-sec" id="press">
+    <h2 class="sec">In the Press</h2>
+    <ul class="df-list press-l">
+      <li><span class="when">Jul 2026</span><span><a href="https://www.linkedin.com/pulse/your-ai-agents-only-safe-weakest-handoff-travis-lelle-s7r7e/" target="_blank" rel="noopener">Your AI Agents Are Only as Safe as the Weakest Handoff</a>, feature on ChannelGuard by a security practitioner at GuidePoint Security. <q>The assumption that safety properties of individual components transfer to the composed system is wrong.</q></span></li>
+      <li><span class="when">Jul 2026</span><span>ChannelGuard covered by <a href="https://beyond-desk.com/signal/g-1037" target="_blank" rel="noopener">Beyond Desk</a> and listed in <a href="https://github.com/LLMSecurity/awesome-agent-skills-security" target="_blank" rel="noopener">awesome-agent-skills-security</a>.</span></li>
+      <li><span class="when">2026</span><span>NEXUS discussed by practitioners on <a href="https://www.linkedin.com/posts/asif-alli-954b4324_nexus-structured-runtime-safety-for-tool-using-activity-7486013801515917312-JRnK/" target="_blank" rel="noopener">LinkedIn</a> and summarized in <a href="https://paper.dou.ac/p/2607.19356v1" target="_blank" rel="noopener">Daily Papers</a>.</span></li>
+    </ul>
+  </section>
+
+  <section class="df-sec" id="mentorship">
+    <h2 class="sec">Research Mentorship</h2>
+    <ul class="df-list mentee-l">
+      <li><span><span class="mn"><a href="https://scholar.google.com/citations?user=ToPoa3EAAAAJ&amp;hl=en" target="_blank" rel="noopener">M.H. Bhuiyan Nipu</a></span> <span class="mw">&middot; Graduate Student, North South University &middot; co-author on NEXUS and ChannelGuard</span></span><span class="when">2025 &ndash; Present</span></li>
+      <li><span><span class="mn"><a href="https://scholar.google.com/citations?user=PTNWEXYAAAAJ&amp;hl=en" target="_blank" rel="noopener">Sabila Al Jannat</a></span> <span class="mw">&middot; now PhD Candidate, William &amp; Mary</span></span><span class="when">2021 &ndash; 2022</span></li>
+      <li><span><span class="mn"><a href="https://github.com/Ilmi-Tabassum" target="_blank" rel="noopener">Ilmi Tabassum</a></span> <span class="mw">&middot; Graduate Student, Macquarie University</span></span><span class="when">2022 &ndash; 2023</span></li>
+      <li><span><span class="mn"><a href="https://www.linkedin.com/in/ghoshoishee/" target="_blank" rel="noopener">Oishee Ghosh</a></span> <span class="mw">&middot; Graduate Student, Jahangirnagar University</span></span><span class="when">2020 &ndash; 2022</span></li>
+    </ul>
+  </section>
+
+  <section class="df-sec" id="review">
+    <h2 class="sec">Peer Review</h2>
+    <div class="rev">
+      <div class="rev-row"><span class="rev-l">Workshops</span><span class="chips2"><span>NeurIPS 2026 AI4GOOD</span><span>ICML 2026 GenBio</span><span>ICLR Trustworthy AI</span></span></div>
+      <div class="rev-row"><span class="rev-l">Journals</span><span class="chips2"><span>Scientific Reports</span><span>PLOS ONE</span><span>Computers in Biology and Medicine</span><span>CMBBE</span></span></div>
     </div>
-    <div class="side-box side-up">
-      <div class="section-label">Upcoming</div>
-      <p><strong>NeurIPS 2026</strong>, Atlanta, Dec 9&ndash;13. Presenting <a href="/poe-steering/">When Policies Cannot Be Retrained</a> as a poster.</p>
-      <p class="side-meet">In Atlanta and open to meeting. <a href="mailto:elias.hossain191@gmail.com?subject=NeurIPS%202026">Email me</a></p>
-    </div>
-  </aside>
+  </section>
 </div>
 </main>
-
 
 <div class="vmodal" id="vmodal" hidden>
   <div class="vmodal-back" data-close></div>
@@ -2800,9 +2953,7 @@
   </div>
 </div>
 
-<footer class="foot-solo">
-  &copy; 2026 Elias Hossain &middot; <a href="/oss.html">Open source</a> &middot; <a href="/notes.html">Notes</a> &middot; Last updated November 2026
-</footer>
+<footer class="df-foot">&copy; 2026 Elias Hossain &middot; <a href="/oss.html">Open source</a> &middot; <a href="/notes.html">Notes</a> &middot; Last updated November 2026</footer>
 
 <script>
   // Animated stat counters fed by stats.json (auto-updated weekly by GitHub Action)
@@ -3143,23 +3294,24 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   })();
 
-  // News sidebar: copy the inline News list (single source of truth); News nav link targets whichever is visible
+
+  // Experience "See more" and News "See All"
   (function () {
-    var src = document.querySelector('#news .news-solo'), side = document.getElementById('newsSide');
-    if (src && side) side.innerHTML = src.innerHTML;
-    document.querySelectorAll('a[href="#news"]').forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        var inline = document.getElementById('news');
-        if (inline && inline.offsetParent === null && side) {
-          e.preventDefault();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          var box = side.closest('.side-box'); box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash');
-        }
-      });
+    var t = document.getElementById('affToggle'), m = document.getElementById('affMore');
+    if (t && m) t.addEventListener('click', function () {
+      var open = m.hidden; m.hidden = !open; t.setAttribute('aria-expanded', String(open));
+      t.innerHTML = open ? 'See less &#9652;' : 'See more &#9662;';
     });
+    var a = document.getElementById('newsAll');
+    if (a) a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var rows = document.querySelectorAll('.newsT .more-row'), show = rows.length && rows[0].hidden;
+      rows.forEach(function (r) { r.hidden = !show; });
+      a.textContent = show ? 'Show less' : 'See All';
+    });
+    document.querySelectorAll('a[data-video]').forEach(function (x) { x.addEventListener('click', function (e) { e.preventDefault(); }); });
   })();
 </script>
-
 <script src="/assets/explainers/explainers.js?v=7" defer></script>
 </body>
 </html>

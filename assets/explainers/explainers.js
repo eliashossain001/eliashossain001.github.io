@@ -839,7 +839,139 @@
     }
   };
 
-  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm, tas: tas };
+  // ======================================================================
+  // 7. ChannelGuard: safe models do not compose into safe multi-agent systems
+  // ======================================================================
+  var cg = {
+    tag: 'Explainer · Preprint',
+    link: '/channelguard/',
+    scenes: [
+      { h: 'Every hop is a channel', d: 10000,
+        p: 'A multi-agent system chains a planner, workers, a verifier, and a synthesizer, with tools and memory in between. Existing defenses check only the user\'s input. Every hop after that is an <b>unguarded channel</b> an attacker can use.' },
+      { h: 'Perfectly safe, but whose safety?', d: 11000,
+        p: 'Poison a tool\'s output, and the undefended pipeline still reports zero attack success. Tracing who stopped each attack tells a different story: on Azure GPT-5, <b>24 of 30</b> attacks were stopped by the cloud provider\'s own filter, not by the system.' },
+      { h: 'Same zero, different source', d: 11000,
+        p: 'Move the identical pipeline to a backend without that filter, and the score is still zero, but now every block comes from the model\'s own alignment. The number never moves while the protection changes completely. <b>Outcome-only reporting cannot see this.</b>' },
+      { h: 'Gates the application owns', d: 11000,
+        p: 'ChannelGuard puts a lightweight gate on all six channels. Each gate compares incoming sentences with known attack phrases and passes, compresses, or blocks them, in about 5 milliseconds and with <b>no extra model call</b>.' },
+      { h: 'What it buys, and what it does not', d: 13000,
+        p: 'Its own gate now blocks <b>every</b> tool-poisoning attack on all three backends, prompt-injection success halves from 33 to 17 percent, and math accuracy stays exactly the same. An attacker who paraphrases adaptively still gets through, which the paper reports as an open limit.' }
+    ],
+    build: function (svg) {
+      // ---- pipeline (scenes 1 and 4) ----
+      var pipe = mk(svg, 'g', {});
+      var NODES = [['User', 26], ['Planner', 140], ['Workers', 268], ['Verifier', 396], ['Synthesizer', 516]];
+      var NY = 70, NW = 100, NH = 40;
+      NODES.forEach(function (n, i) {
+        var w = i === 4 ? 112 : NW;
+        pill(pipe, n[1], NY, w, NH, i === 0 ? 'f-line' : 'f-elev s-ink', n[0], '', 14).text.setAttribute('font-weight', 600);
+        if (i === 2) { mk(pipe, 'rect', { x: n[1] + 5, y: NY - 6, width: NW, height: NH, rx: 8, fill: 'none', 'class': 's-soft', 'stroke-width': 1 }); }
+      });
+      var tool = pill(pipe, 210, 176, 90, 36, 'f-line', 'Tool', '', 13.5);
+      var mem = pill(pipe, 336, 176, 96, 36, 'f-line', 'Memory', '', 13.5);
+      // channels: [x1,y1,x2,y2, labelX, labelY]
+      var CH = [[126, 90, 140, 90], [240, 90, 268, 90], [368, 90, 396, 90], [496, 90, 516, 90], [255, 176, 290, 110], [384, 176, 340, 110]];
+      var chans = CH.map(function (c) {
+        return mk(pipe, 'line', { x1: c[0], y1: c[1], x2: c[2], y2: c[3], 'class': 's-ink', 'stroke-width': 2.4, 'stroke-linecap': 'round' });
+      });
+      var MID = CH.map(function (c) { return [(c[0] + c[2]) / 2, (c[1] + c[3]) / 2]; });
+      var holes = MID.map(function (m, i) {
+        var g = mk(pipe, 'g', { transform: 'translate(' + m[0] + ' ' + (m[1] - (i < 4 ? 22 : 0)) + ')' });
+        mk(g, 'circle', { r: 10, 'class': i === 0 ? 'f-g' : 'f-r' });
+        mk(g, 'text', { y: 5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: '#fff' }, i === 0 ? '✓' : '!');
+        return g;
+      });
+      var gates = MID.map(function (m, i) {
+        var g = mk(pipe, 'g', { transform: 'translate(' + m[0] + ' ' + (m[1] - (i < 4 ? 22 : 0)) + ')' });
+        mk(g, 'path', { d: 'M0 -12 L10 -7 L10 2 Q10 10 0 14 Q-10 10 -10 2 L-10 -7 Z', 'class': 'f-acc' });
+        mk(g, 'path', { d: 'M-4 1 L-1 4 L5 -3', fill: 'none', stroke: '#fff', 'stroke-width': 2, 'stroke-linecap': 'round' });
+        return g;
+      });
+      var p1n = mk(pipe, 'text', { x: 320, y: 254, 'text-anchor': 'middle', 'font-size': 14.5, 'font-style': 'italic', 'class': 't-serif t-soft' }, 'Prior defenses guard only the first hop.');
+      var gateBox = mk(pipe, 'g', {});
+      var steps = ['sentence', 'similar to an attack phrase?', 'pass · compress · block'];
+      var sx = [70, 220, 420];
+      steps.forEach(function (t, i) {
+        pill(gateBox, sx[i], 236, i === 1 ? 180 : (i === 2 ? 170 : 120), 34, i === 2 ? 'f-accs s-acc' : 'f-elev s-line', t, i === 2 ? 't-acc' : '', 13);
+        if (i < 2) mk(gateBox, 'path', { d: 'M' + (sx[i] + (i === 0 ? 124 : 184)) + ' 253 l12 0 m-5 -5 l5 5 l-5 5', fill: 'none', 'class': 's-ink', 'stroke-width': 1.8 });
+      });
+      var gateT = mk(pipe, 'text', { x: 320, y: 290, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-mono t-acc' }, '~5 ms per gate · no extra model call');
+
+      // ---- attribution bars (scenes 2, 3, 5) ----
+      var att = mk(svg, 'g', {});
+      var head = mk(att, 'text', { x: 320, y: 30, 'text-anchor': 'middle', 'font-size': 14, 'class': 't-soft' }, '');
+      var BX = 190, BW = 330;
+      var ROWS = ['Azure GPT-5', 'Claude Sonnet 4.5', 'Claude Haiku 4.5'].map(function (name, k) {
+        var y = 64 + k * 62, g = mk(att, 'g', {});
+        mk(g, 'text', { x: BX - 14, y: y + 19, 'text-anchor': 'end', 'font-size': 14, 'font-weight': 600 }, name);
+        mk(g, 'rect', { x: BX, y: y, width: BW, height: 28, rx: 6, 'class': 'f-line' });
+        g.segs = [mk(g, 'rect', { x: BX, y: y, width: 0, height: 28, 'class': 'f-a' }),
+                  mk(g, 'rect', { x: BX, y: y, width: 0, height: 28, fill: '#6b6e68' }),
+                  mk(g, 'rect', { x: BX, y: y, width: 0, height: 28, 'class': 'f-acc' })];
+        g.asr = mk(g, 'text', { x: BX + BW + 14, y: y + 19, 'font-size': 13.5, 'font-weight': 700, 'class': 't-mono' }, 'ASR 0.000');
+        g.lab = mk(g, 'text', { x: BX + 8, y: y + 19, 'font-size': 12.5, 'font-weight': 700, fill: '#fff' }, '');
+        g.y = y;
+        return g;
+      });
+      var legend = mk(att, 'g', {});
+      [['f-a', 'cloud provider filter'], ['', 'model’s own alignment'], ['f-acc', 'ChannelGuard gate']].forEach(function (l, i) {
+        var LX = [92, 262, 452][i], sw = mk(legend, 'rect', { x: LX, y: 262, width: 12, height: 12, rx: 2 });
+        if (l[0]) sw.setAttribute('class', l[0]); else sw.setAttribute('fill', '#6b6e68');
+        mk(legend, 'text', { x: LX + 18, y: 272, 'font-size': 12.5, 'class': 't-soft' }, l[1]);
+      });
+      var callout = mk(att, 'text', { x: 320, y: 254, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, 'class': 't-r' }, '');
+      var chips = mk(att, 'g', {});
+      var c1 = pill(chips, 70, 250, 240, 34, 'f-accs s-acc', 'prompt injection 33% → 17%', 't-acc', 13.5);
+      var c2 = pill(chips, 330, 250, 240, 34, 'f-accs s-acc', 'math accuracy 0.867 → 0.867', 't-acc', 13.5);
+
+      function bars(k, prov, model, gate, g) {
+        var r = ROWS[k], u = BW / 30 * g;
+        set(r.segs[0], { x: BX, width: prov * u });
+        set(r.segs[1], { x: BX + prov * u, width: model * u });
+        set(r.segs[2], { x: BX + (prov + model) * u, width: gate * u });
+        r.lab.textContent = gate ? '30 / 30 own gate' : (prov ? prov + ' / 30 provider' : '30 / 30 model');
+        show(r.lab, g > 0.6 ? 1 : 0);
+      }
+
+      return function (s, p) {
+        hideAll([pipe, att, p1n, gateBox, gateT, callout, legend, chips].concat(holes, gates, ROWS));
+        if (s === 0 || s === 3) {
+          show(pipe, 1);
+          chans.forEach(function (c, i) { show(c, win(p, 0.04 + i * 0.05, 0.12 + i * 0.05)); });
+          if (s === 0) {
+            holes.forEach(function (h, i) { show(h, win(p, 0.35 + i * 0.07, 0.42 + i * 0.07)); });
+            show(p1n, win(p, 0.8, 0.9));
+          } else {
+            gates.forEach(function (g, i) { show(g, win(p, 0.15 + i * 0.06, 0.22 + i * 0.06)); });
+            show(gateBox, win(p, 0.6, 0.72)); show(gateT, win(p, 0.75, 0.85));
+          }
+          return;
+        }
+        show(att, 1); show(legend, 1);
+        if (s === 1) {
+          head.textContent = 'Undefended pipeline · tool poisoning · who stopped each attack';
+          show(ROWS[0], 1); bars(0, 24, 6, 0, win(p, 0.15, 0.5));
+          callout.textContent = '24 of 30 blocks borrowed from the provider'; show(callout, win(p, 0.65, 0.78));
+          hideAll([legend]); show(legend, win(p, 0.5, 0.6));
+          return;
+        }
+        if (s === 2) {
+          head.textContent = 'Same undefended pipeline on three backends';
+          bars(0, 24, 6, 0, 1); show(ROWS[0], 1);
+          show(ROWS[1], win(p, 0.1, 0.2)); bars(1, 0, 30, 0, win(p, 0.15, 0.4));
+          show(ROWS[2], win(p, 0.3, 0.4)); bars(2, 0, 30, 0, win(p, 0.35, 0.6));
+          callout.textContent = 'Same score, completely different protection'; show(callout, win(p, 0.7, 0.82));
+          hideAll([legend]);
+          return;
+        }
+        head.textContent = 'With ChannelGuard · tool poisoning · who stopped each attack';
+        ROWS.forEach(function (r, k) { show(r, 1); bars(k, 0, 0, 30, win(p, 0.06 + k * 0.1, 0.3 + k * 0.1)); });
+        hideAll([legend]); show(chips, 1); show(c1, win(p, 0.55, 0.65)); show(c2, win(p, 0.68, 0.78));
+      };
+    }
+  };
+
+  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm, tas: tas, cg: cg };
 
   // ---------- player ----------
   var IC = {

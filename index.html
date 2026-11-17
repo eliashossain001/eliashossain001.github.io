@@ -2285,22 +2285,6 @@
   .vmodal-more { margin: 10px 4px 0; font-size: 14px; }
   .vmodal-more a { color: #fff; font-weight: 600; }
 
-  /* Wide screens: main column + sticky News sidebar (fills the side space) */
-  .side-rail { display: none; }
-  @media (min-width: 1180px) {
-    .wrap.solo { max-width: 1180px; display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 52px; align-items: start; }
-    .side-rail { display: block; position: sticky; top: 92px; }
-    #news { display: none; }
-  }
-  .side-box { background: var(--bg-elev); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow); }
-  .side-box .section-label { margin-bottom: 8px; }
-  .news-side li { grid-template-columns: 1fr; gap: 1px; padding: 9px 0; font-size: 14px; }
-  .news-side .when { font-size: 11px; padding-top: 0; }
-  .side-up p { font-size: 14px; line-height: 1.55; margin: 0 0 6px; color: var(--ink); }
-  .side-up a { color: var(--accent-ink); font-weight: 600; }
-  .side-up .side-meet { font-size: 13px; color: var(--ink-soft); margin: 0; }
-  .side-box.flash { animation: sideFlash 1.4s ease; }
-  @keyframes sideFlash { 0%, 40% { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } 100% { box-shadow: var(--shadow); } }
 
   /* ===== al-folio style layout (2026-11, modelled on roydipta.com) ===== */
   :root {
@@ -2328,7 +2312,7 @@
   .df .nav-links { gap: 34px; }
   .df .theme-toggle { border: none; background: none; }
   .df-wrap { max-width: 1160px; margin: 0 auto; padding: 36px 20px 0; }
-  .df-row { display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 34px; align-items: start; }
+  .df-row { display: grid; grid-template-columns: 385px minmax(0, 1fr); gap: 34px; align-items: start; }
   @media (max-width: 991px) { .df-row { grid-template-columns: 1fr; } }
   .df-card { background: var(--bg-elev); border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,.14), 0 2px 10px rgba(0,0,0,.10); padding: 12px 16px 16px; }
   .idc { display: flex; align-items: center; gap: 16px; padding: 4px 2px 14px; }
@@ -2336,7 +2320,8 @@
   .idc-name { font-family: 'Lora', serif; font-weight: 400; font-size: 1.5rem; line-height: 1.2; margin: 0 0 2px; }
   .idc-name b { font-weight: 600; }
   .idc-role { font-size: .92rem; font-weight: 500; margin: 0; }
-  .idc-mail { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-family: ui-monospace, Menlo, monospace; font-size: .8rem; }
+  .idc > div { min-width: 0; }
+  .idc-mail { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-family: ui-monospace, Menlo, monospace; font-size: .74rem; overflow-wrap: anywhere; }
   .idc-mail a { color: var(--accent); text-decoration: underline; }
   .idc-act { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
   .btn-badge { display: inline-block; background: var(--accent); color: #fff !important; font-size: .82rem; padding: 2px 9px; border-radius: 3px; text-decoration: none; }
@@ -2347,7 +2332,8 @@
   .aff-mark svg { width: 19px; height: 19px; }
   .aff-body { flex: 1; min-width: 0; }
   .sb { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-  .aff-org { font-size: 1rem; font-weight: 500; color: var(--ink); }
+  .aff-org { font-size: .98rem; font-weight: 500; color: var(--ink); }
+  .aff .sb > .aff-meta:last-child { white-space: nowrap; }
   .aff-meta { font-size: .86rem; color: var(--ink-muted); font-weight: 300; }
   .aff-sub { font-size: .84rem; color: var(--ink-muted); margin-top: 3px; font-weight: 300; }
   .aff-sub a { font-weight: 400; }
@@ -2492,7 +2478,7 @@
         <div class="aff">
           <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/></svg></span>
           <div class="aff-body">
-            <div class="sb"><span class="aff-org">Complex Adaptive Systems Lab, UCF</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Orlando, FL</span></div>
+            <div class="sb"><span class="aff-org">CASL Lab, UCF</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Orlando, FL</span></div>
             <div class="sb"><span class="aff-meta">Graduate Research Assistant</span><span class="aff-meta">Aug 2025 - Present</span></div>
             <div class="aff-sub">&#8618; Papers: <a href="/poe-steering/">NeurIPS 2026</a>, <a href="/uat-lite/">EACL 2027</a>, <a href="/nexus/">AACL 2026</a></div>
           </div>
@@ -2501,14 +2487,14 @@
           <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c2 2 10 2 12 0v-5"/><path d="M22 9v6"/></svg></span>
           <div class="aff-body">
             <div class="sb"><span class="aff-org">University of Central Florida</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Orlando, FL</span></div>
-            <div class="sb"><span class="aff-meta">Ph.D. in Industrial Engineering (CS)</span><span class="aff-meta">Aug 2025 - May 2028</span></div>
+            <div class="sb"><span class="aff-meta">Ph.D. in Industrial Eng. (CS)</span><span class="aff-meta">Aug 2025 - May 2028</span></div>
             <div class="aff-sub">&#8618; Advisor: <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a> &middot; Qualifying exam passed</div>
           </div>
         </div>
         <div class="aff">
           <span class="aff-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7.5 15h9"/></svg></span>
           <div class="aff-body">
-            <div class="sb"><span class="aff-org">PATENT Lab, Mississippi State</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Starkville, MS</span></div>
+            <div class="sb"><span class="aff-org">PATENT Lab, MSU</span><span class="aff-meta"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;margin-right:3px"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Starkville, MS</span></div>
             <div class="sb"><span class="aff-meta">Graduate Research Assistant</span><span class="aff-meta">May 2025 - Jul 2025</span></div>
             <div class="aff-sub">&#8618; Uncertainty estimation for rare security events; RAG evaluation</div>
           </div>

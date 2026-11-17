@@ -2175,49 +2175,29 @@
   .pub-pill.pub-explain { background: var(--accent); color: var(--bg-elev); }
   .pub-pill.pub-explain:hover { background: var(--accent-ink); }
 
-  .feat-mobile { display: none; }
-  @media (max-width: 860px) {
-    .feat-mobile { display: grid; }
-    .feat-desktop { display: none; }
+  /* Announcement strip: NeurIPS 2026 poster + slides */
+  .announce {
+    display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
+    margin: 0 0 28px; padding: 9px 14px; border-radius: 10px;
+    background: var(--news-soft); border: 1px solid color-mix(in srgb, var(--news-dot) 45%, transparent);
+    font-size: 14px; line-height: 1.4; color: var(--ink);
   }
-  /* FEATURED: NeurIPS 2026 poster + slides (top of About) */
-  .feat {
-    display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 20px; align-items: center;
-    margin: 0 0 26px; padding: 16px; border-radius: var(--radius);
-    background: linear-gradient(135deg, var(--news-soft), var(--bg-elev) 60%);
-    border: 1.5px solid var(--news-dot);
-    box-shadow: 0 0 0 4px rgba(var(--news-glow), 0.10), var(--shadow);
-  }
-  .feat-poster { display: block; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); background: #fff; line-height: 0; transition: transform 0.2s ease; }
-  .feat-poster:hover { transform: translateY(-2px); }
-  .feat-poster img { width: 100%; height: auto; display: block; }
-  .feat-k {
-    display: inline-flex; align-items: center; gap: 7px;
+  .announce-k {
     font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 600;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--news-ink); margin-bottom: 7px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--news-ink); white-space: nowrap;
   }
-  .feat-k .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--news-dot); box-shadow: 0 0 0 0 rgba(var(--news-glow), 0.6); animation: featPulse 2s infinite; }
-  @keyframes featPulse { 0% { box-shadow: 0 0 0 0 rgba(var(--news-glow), 0.55); } 70% { box-shadow: 0 0 0 8px rgba(var(--news-glow), 0); } 100% { box-shadow: 0 0 0 0 rgba(var(--news-glow), 0); } }
-  @media (prefers-reduced-motion: reduce) { .feat-k .dot { animation: none; } }
-  .feat h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 19px; line-height: 1.28; margin: 0 0 6px; color: var(--ink); }
-  .feat h3 a { color: inherit; }
-  .feat h3 a:hover { color: var(--accent-ink); }
-  .feat-meta { font-size: 13px; color: var(--ink-soft); margin: 0 0 12px; line-height: 1.5; }
-  .feat-btns { display: flex; flex-wrap: wrap; gap: 8px; }
-  .feat-btn {
-    display: inline-flex; align-items: center; gap: 7px; padding: 8px 13px; border-radius: 9px;
-    font-size: 13px; font-weight: 600; text-decoration: none; border: 1px solid var(--line);
-    background: var(--bg-elev); color: var(--ink); transition: all 0.15s ease;
+  .announce-t { flex: 1 1 260px; min-width: 0; }
+  .announce-t a { color: var(--ink); font-weight: 600; border-bottom: 1px solid color-mix(in srgb, var(--news-dot) 55%, transparent); }
+  .announce-t a:hover { color: var(--news-ink); }
+  .announce-links { display: flex; gap: 6px; flex-wrap: wrap; }
+  .announce-links a {
+    display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--news-ink); background: var(--bg-elev);
+    border: 1px solid color-mix(in srgb, var(--news-dot) 40%, transparent); transition: border-color 0.15s;
   }
-  .feat-btn:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
-  .feat-btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); }
-  .feat-btn.primary:hover { filter: brightness(1.08); color: var(--bg-elev); background: var(--accent); }
-  .feat-btn svg { width: 15px; height: 15px; flex: none; }
-  @media (max-width: 720px) {
-    .feat { grid-template-columns: 1fr; gap: 14px; padding: 14px; }
-    .feat h3 { font-size: 17px; }
-    .feat-btn { flex: 1 1 calc(50% - 8px); justify-content: center; }
-  }
+  .announce-links a:hover { border-color: var(--news-dot); }
+  .announce-links svg { width: 13px; height: 13px; }
+  @media (max-width: 600px) { .announce { font-size: 13px; padding: 9px 12px; margin-bottom: 20px; } }
 </style>
 <link rel="stylesheet" href="/assets/explainers/explainers.css?v=5" />
 </head>
@@ -2280,23 +2260,14 @@
 <main>
 
 <div class="wrap">
-        <div class="feat feat-mobile" aria-label="Featured: NeurIPS 2026 poster and slides">
-    <a class="feat-poster" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" target="_blank" rel="noopener" title="Open the full-size poster">
-      <img src="/poe-steering/assets/poster_preview.jpg" width="1200" height="771" alt="NeurIPS 2026 poster: When Policies Cannot Be Retrained, a unified closed-form view of post-training steering in offline reinforcement learning" loading="lazy">
-    </a>
-    <div>
-      <div class="feat-k"><span class="dot"></span>NeurIPS 2026 &middot; Main Track &middot; Poster</div>
-      <h3><a href="/poe-steering/">When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline RL</a></h3>
-      <p class="feat-meta">Steering a frozen policy toward a new goal without retraining. Get the poster and the talk slides below.</p>
-      <div class="feat-btns">
-        <a class="feat-btn primary" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Poster (PNG)</a>
-        <a class="feat-btn primary" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Slides (PDF)</a>
-        <a class="feat-btn" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">Paper</a>
-        <a class="feat-btn" href="/poe-steering/">Project page</a>
-      </div>
-    </div>
+  <div class="announce">
+    <span class="announce-k">NeurIPS 2026 &middot; Poster</span>
+    <span class="announce-t"><a href="/poe-steering/">When Policies Cannot Be Retrained</a>: poster and talk slides are now available.</span>
+    <span class="announce-links">
+      <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Poster</a>
+      <a href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Slides</a>
+    </span>
   </div>
-
   <div class="layout">
 
     <!-- LEFT SIDEBAR -->
@@ -2469,23 +2440,6 @@
     <article class="content">
 
       <section class="first-section bio" id="about">
-
-        <div class="feat feat-desktop" aria-label="Featured: NeurIPS 2026 poster and slides">
-          <a class="feat-poster" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" target="_blank" rel="noopener" title="Open the full-size poster">
-            <img src="/poe-steering/assets/poster_preview.jpg" width="1200" height="771" alt="NeurIPS 2026 poster: When Policies Cannot Be Retrained, a unified closed-form view of post-training steering in offline reinforcement learning" loading="eager">
-          </a>
-          <div>
-            <div class="feat-k"><span class="dot"></span>NeurIPS 2026 &middot; Main Track &middot; Poster</div>
-            <h3><a href="/poe-steering/">When Policies Cannot Be Retrained: A Unified Closed-Form View of Post-Training Steering in Offline RL</a></h3>
-            <p class="feat-meta">Steering a frozen policy toward a new goal without retraining. Get the poster and the talk slides below.</p>
-            <div class="feat-btns">
-              <a class="feat-btn primary" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_poster.png" download="PoE-Steer_NeurIPS2026_poster.png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Poster (PNG)</a>
-              <a class="feat-btn primary" href="/poe-steering/assets/PoE-Steer_NeurIPS2026_slides.pdf" download="PoE-Steer_NeurIPS2026_slides.pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Slides (PDF)</a>
-              <a class="feat-btn" href="https://arxiv.org/abs/2604.22873" target="_blank" rel="noopener">Paper</a>
-              <a class="feat-btn" href="/poe-steering/">Project page</a>
-            </div>
-          </div>
-        </div>
         <p class="lead">
           I am a <strong>Doctoral researcher</strong> in the <strong>Complex Adaptive Systems Lab</strong> at the <strong>University of Central Florida</strong>, advised by <a href="https://www.cecs.ucf.edu/faculty/niloofar-yousefi/" target="_blank" rel="noopener">Dr. Niloofar Yousefi</a>. My research is about <strong>reliable LLMs when humans can't supervise at scale</strong>. <strong>(1)</strong> Can pretrained transformers report calibrated uncertainty in their own attention? <strong>(2)</strong> Can we verify AI-generated supervision when judges share blind spots? <strong>(3)</strong> Can we monitor tool-using agents and intervene on unsafe trajectories, not just outputs? All three assume a model I cannot retrain, the access most deployed systems allow. So the work is <strong>inference-time or training-free</strong>, tested under adversarial input and distribution shift. I also build language models from scratch. My applied vertical is <strong>clinical and biomedical AI</strong>, where confident errors cost patient harm, not benchmark points. I write on <a href="https://medium.com/@eliashossain9111" target="_blank" rel="noopener">Medium</a> as well.
         </p>

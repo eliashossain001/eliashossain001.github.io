@@ -971,7 +971,179 @@
     }
   };
 
-  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm, tas: tas, cg: cg };
+  // ======================================================================
+  // 8. MedBayes-Lite: clinical uncertainty governance (Frontiers in Digital Health)
+  // ======================================================================
+  var mbl = {
+    tag: 'Explainer · Frontiers 2026 · illustrative example',
+    link: '/medbayes-lite/',
+    scenes: [
+      { h: 'Confident, and wrong, where it matters most', d: 10000,
+        p: 'Clinical language models often give wrong answers with high confidence, and those confident mistakes cluster in <b>high-severity</b> questions about diagnosis, treatment and medication. The model is already trained; MedBayes-Lite adds a safety layer around it instead of retraining it.' },
+      { h: 'Ask several times, then recalibrate', d: 11000,
+        p: 'The layer runs the same model fifteen times with small random changes (<b>Monte Carlo dropout</b>), averages the answers, and recalibrates the confidence so that 70 percent means right about 70 percent of the time. No weights change and no parameters are added.' },
+      { h: 'Answer, or hand it to a clinician', d: 12000,
+        p: 'A gate answers only when the calibrated confidence clears a threshold, and sends every other case to a person. On MedMCQA, accepted answers are right <b>82 percent</b> of the time instead of 57, but the model now answers about 1 question in 10 instead of more than half. The safety is paid for in coverage.' },
+      { h: 'Strongest when the data shifts', d: 11000,
+        p: 'The biggest gain appears when a model trained on one exam is tested on another, here the US medical licensing exam. Unprotected, it is confidently wrong on about <b>21 percent</b> of high-severity questions; with the layer, that falls to near zero.' },
+      { h: 'What it does not do', d: 12000,
+        p: 'The paper reports its limits openly. Temperature scaling alone gets most of the calibration gain at lower cost, deep ensembles rank risky cases better, and a model that is already well calibrated gains nothing. The value is <b>governance</b>: fewer confident high-severity errors, with uncertain cases escalated to clinicians.' }
+    ],
+    build: function (svg) {
+      // ---- scene 1: an overconfident answer (illustrative) ----
+      var q = mk(svg, 'g', {});
+      mk(q, 'rect', { x: 26, y: 42, width: 300, height: 170, rx: 12, 'class': 'f-elev s-line', 'stroke-width': 1.5 });
+      mk(q, 'text', { x: 44, y: 70, 'font-size': 12, 'class': 't-mono t-mute' }, 'CLINICAL EXAM QUESTION');
+      ['A patient on warfarin starts a new', 'antibiotic. Which lab value should', 'be monitored most closely?'].forEach(function (l, i) {
+        mk(q, 'text', { x: 44, y: 102 + i * 26, 'font-size': 16 }, l);
+      });
+      var ans = mk(svg, 'g', {});
+      mk(ans, 'rect', { x: 356, y: 52, width: 258, height: 46, rx: 10, 'class': 'f-accs s-acc', 'stroke-width': 1.5 });
+      mk(ans, 'text', { x: 485, y: 81, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600 }, 'Model: “platelet count”');
+      var cbar = mk(svg, 'g', {});
+      mk(cbar, 'text', { x: 356, y: 128, 'font-size': 13, 'class': 't-soft' }, 'confidence');
+      mk(cbar, 'rect', { x: 356, y: 136, width: 200, height: 16, rx: 8, 'class': 'f-line' });
+      var cfill = mk(cbar, 'rect', { x: 356, y: 136, width: 0, height: 16, rx: 8, 'class': 'f-acc' });
+      var cval = mk(cbar, 'text', { x: 566, y: 149, 'font-size': 15, 'font-weight': 700, 'class': 't-mono' }, '');
+      var wrong = mk(svg, 'text', { x: 356, y: 186, 'font-size': 16, 'font-weight': 700, 'class': 't-r' }, '✗ wrong · the answer is INR');
+      var sev = pill(svg, 356, 204, 230, 32, 'f-r', 'high severity · medication', '', 14);
+      sev.text.setAttribute('fill', '#fff'); sev.text.setAttribute('font-weight', 700);
+      var s1note = mk(svg, 'text', { x: 26, y: 256, 'font-size': 14.5, 'font-style': 'italic', 'class': 't-serif t-soft' }, 'The most confident mistakes are often the most dangerous ones.');
+
+      // ---- scene 2: the governance pipeline ----
+      var pipe = mk(svg, 'g', {});
+      var NODES = [['Question', 18, 92], ['Model × 15', 136, 116], ['Calibrate', 278, 104], ['Gate ≥ 0.70', 408, 108]];
+      var nodes = NODES.map(function (n) {
+        var g = pill(pipe, n[1], 120, n[2], 44, 'f-elev s-ink', n[0], '', 15);
+        g.text.setAttribute('font-weight', 600); g.rect.setAttribute('stroke-width', 1.5);
+        return g;
+      });
+      var arrows = [[110, 136], [252, 278], [382, 408]].map(function (a) {
+        return mk(pipe, 'path', { d: 'M' + a[0] + ' 142 L' + (a[1] - 4) + ' 142 m-6 -6 l6 6 l-6 6', fill: 'none', 'class': 's-ink', 'stroke-width': 1.8 });
+      });
+      var outA = pill(pipe, 540, 82, 88, 38, 'f-elev s-line', 'Answer', 't-g', 15);
+      var outC = pill(pipe, 540, 166, 88, 38, 'f-elev s-line', 'Clinician', 't-a', 15);
+      outA.text.setAttribute('font-weight', 700); outC.text.setAttribute('font-weight', 700);
+      var fork = mk(pipe, 'path', { d: 'M516 142 L528 142 L528 101 L540 101 M528 142 L528 185 L540 185', fill: 'none', 'class': 's-ink', 'stroke-width': 1.8 });
+      var fan = mk(pipe, 'g', {});
+      var FB = [];
+      for (var k = 0; k < 15; k++) FB.push(mk(fan, 'rect', { x: 140 + k * 7.4, y: 110, width: 5, height: 0, rx: 1.5, 'class': 'f-acc' }));
+      var r1 = mk(pipe, 'text', { x: 194, y: 190, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-mono t-soft' }, 'average 0.92');
+      var r2 = mk(pipe, 'text', { x: 330, y: 190, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-mono t-acc' }, '0.92 → 0.58');
+      var r3 = mk(pipe, 'text', { x: 462, y: 190, 'text-anchor': 'middle', 'font-size': 13, 'class': 't-mono t-a' }, '0.58 < 0.70');
+      var p2note = mk(pipe, 'text', { x: 320, y: 262, 'text-anchor': 'middle', 'font-size': 14, 'class': 't-mono t-acc' }, 'no retraining · no new parameters');
+
+      // ---- scene 3: answered vs deferred, per 100 questions ----
+      var waf = mk(svg, 'g', {});
+      mk(waf, 'text', { x: 24, y: 42, 'font-size': 13.5, 'class': 't-soft' }, 'MedMCQA · PubMedBERT · threshold 0.70 · per 100 questions');
+      var PANELS = [{ x: 130, title: 'Base model', ok: 31, bad: 23, line1: 'answers 54 of 100', line2: '57% of those are right' },
+                    { x: 420, title: 'With MedBayes-Lite', ok: 8, bad: 2, line1: 'answers 10 of 100', line2: '82% of those are right' }];
+      var C = 15, G = 3;
+      PANELS.forEach(function (P) {
+        P.g = mk(waf, 'g', {});
+        mk(P.g, 'text', { x: P.x + 88, y: 68, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700 }, P.title);
+        P.cells = [];
+        for (var i = 0; i < 100; i++) {
+          var cx = P.x + (i % 10) * (C + G), cy = 76 + Math.floor(i / 10) * (C + G);
+          P.cells.push(mk(P.g, 'rect', { x: cx, y: cy, width: C, height: C, rx: 3, 'class': 'f-line' }));
+        }
+        P.t1 = mk(P.g, 'text', { x: P.x + 88, y: 271, 'text-anchor': 'middle', 'font-size': 14.5, 'font-weight': 600 }, P.line1);
+        P.t2 = mk(P.g, 'text', { x: P.x + 88, y: 290, 'text-anchor': 'middle', 'font-size': 14, 'class': 't-acc', 'font-weight': 600 }, P.line2);
+      });
+      var leg = mk(waf, 'g', {});
+      [['f-g', 'right'], ['f-r', 'wrong'], ['f-line', 'deferred']].forEach(function (l, i) {
+        mk(leg, 'rect', { x: 326, y: 134 + i * 28, width: 12, height: 12, rx: 2, 'class': l[0] });
+        mk(leg, 'text', { x: 343, y: 144 + i * 28, 'font-size': 12, 'class': 't-soft' }, l[1]);
+      });
+
+      // ---- scene 4: domain shift ----
+      var sh = mk(svg, 'g', {});
+      mk(sh, 'text', { x: 24, y: 42, 'font-size': 14, 'class': 't-soft' }, 'Trained on MedMCQA, tested on the US licensing exam (MedQA-USMLE)');
+      mk(sh, 'text', { x: 24, y: 64, 'font-size': 14, 'font-weight': 600 }, 'Share of high-severity questions answered confidently and wrongly');
+      var BX = 250, BW = 300, MAXV = 25;
+      var SROWS = [['PubMedBERT', 'base model', 21.3, 'f-r'], ['', 'MedBayes-Lite', 0.2, 'f-acc'], ['BioBERT', 'base model', 21.7, 'f-r'], ['', 'MedBayes-Lite', 0.0, 'f-acc']];
+      var sbars = SROWS.map(function (r, i) {
+        var y = 84 + i * 44 + (i >= 2 ? 22 : 0), g = mk(sh, 'g', {});
+        if (r[0]) mk(g, 'text', { x: 24, y: y + 37, 'font-size': 15, 'font-weight': 700 }, r[0]);
+        mk(g, 'text', { x: BX - 12, y: y + 19, 'text-anchor': 'end', 'font-size': 13.5, 'class': 't-soft' }, r[1]);
+        mk(g, 'rect', { x: BX, y: y + 4, width: BW, height: 22, rx: 5, 'class': 'f-line' });
+        g.f = mk(g, 'rect', { x: BX, y: y + 4, width: 0, height: 22, rx: 5, 'class': r[3] });
+        g.t = mk(g, 'text', { x: BX + 8, y: y + 20, 'font-size': 14, 'font-weight': 700, 'class': 't-mono' }, r[2].toFixed(1) + '%');
+        g.v = r[2];
+        return g;
+      });
+
+      // ---- scene 5: honest scorecard ----
+      var card = mk(svg, 'g', {});
+      var ITEMS = [['✓', 't-g', 'Calibration error falls by 0.23 to 0.33'],
+                   ['✓', 't-g', 'Confident high-severity errors drop to near zero'],
+                   ['≈', 't-a', 'Temperature scaling alone gets most of that calibration'],
+                   ['✗', 't-r', 'Does not rank risky cases better; deep ensembles do'],
+                   ['✗', 't-r', 'No benefit when a model is already well calibrated']];
+      var items = ITEMS.map(function (it, i) {
+        var g = mk(card, 'g', {});
+        mk(g, 'text', { x: 64, y: 62 + i * 48, 'font-size': 24, 'font-weight': 700, 'class': it[1] }, it[0]);
+        mk(g, 'text', { x: 104, y: 60 + i * 48, 'font-size': 17.5 }, it[2]);
+        return g;
+      });
+
+      var ALL = [q, ans, cbar, wrong, sev, s1note, pipe, waf, sh, card];
+      return function (s, p) {
+        hideAll(ALL);
+        if (s === 0) {
+          show(q, win(p, 0, 0.12)); show(ans, win(p, 0.22, 0.32)); show(cbar, win(p, 0.3, 0.38));
+          var c = 0.92 * win(p, 0.32, 0.5);
+          set(cfill, { width: 200 * c }); cval.textContent = Math.round(c * 100) + '%';
+          show(wrong, win(p, 0.55, 0.64)); show(sev, win(p, 0.66, 0.75)); show(s1note, win(p, 0.82, 0.92));
+          return;
+        }
+        if (s === 1) {
+          show(pipe, 1);
+          nodes.forEach(function (n, i) { show(n, win(p, 0.02 + i * 0.12, 0.1 + i * 0.12)); });
+          arrows.forEach(function (a, i) { show(a, win(p, 0.08 + i * 0.12, 0.14 + i * 0.12)); });
+          show(fork, win(p, 0.46, 0.52)); show(outA, win(p, 0.48, 0.55)); show(outC, win(p, 0.5, 0.57));
+          show(fan, win(p, 0.14, 0.2));
+          FB.forEach(function (b, k) {
+            var h = 10 + 9 * (1 + Math.sin(p * 40 + k * 1.9)) * (p < 0.6 ? 1 : 0.2);
+            set(b, { y: 114 - h, height: h });
+          });
+          show(r1, win(p, 0.3, 0.38)); show(r2, win(p, 0.4, 0.48)); show(r3, win(p, 0.56, 0.64));
+          var route = win(p, 0.66, 0.74);
+          outC.rect.setAttribute('class', route > 0.5 ? 'f-a' : 'f-elev s-line');
+          outC.text.setAttribute('class', route > 0.5 ? 'f-elev' : 't-a');
+          show(p2note, win(p, 0.8, 0.9));
+          return;
+        }
+        if (s === 2) {
+          show(waf, 1); show(leg, win(p, 0.05, 0.15));
+          PANELS.forEach(function (P, pi) {
+            var g = win(p, 0.08 + pi * 0.32, 0.38 + pi * 0.32), n = Math.round(g * 100);
+            P.cells.forEach(function (cell, i) {
+              var cls = 'f-line';
+              if (i < n) cls = i < P.ok ? 'f-g' : (i < P.ok + P.bad ? 'f-r' : 'f-line');
+              cell.setAttribute('class', cls);
+              show(cell, i < n ? 1 : 0.35);
+            });
+            show(P.t1, win(p, 0.3 + pi * 0.32, 0.38 + pi * 0.32)); show(P.t2, win(p, 0.34 + pi * 0.32, 0.42 + pi * 0.32));
+          });
+          return;
+        }
+        if (s === 3) {
+          show(sh, 1);
+          sbars.forEach(function (b, i) {
+            var g = win(p, 0.08 + i * 0.12, 0.3 + i * 0.12), w = BW * b.v / MAXV * g;
+            set(b.f, { width: w }); set(b.t, { x: BX + Math.max(w, 0) + 8 });
+            show(b, win(p, 0.04 + i * 0.12, 0.1 + i * 0.12));
+          });
+          return;
+        }
+        show(card, 1);
+        items.forEach(function (g, i) { show(g, win(p, 0.04 + i * 0.13, 0.14 + i * 0.13)); });
+      };
+    }
+  };
+
+  var STORIES = { poe: poe, uat: uat, ajc: ajc, nexus: nexus, vlm: vlm, tas: tas, cg: cg, mbl: mbl };
 
   // ---------- player ----------
   var IC = {
@@ -1009,7 +1181,7 @@
     var txt = d.textContent;
     // Spoken forms, shared by the browser voice and the pre-generated audio.
     [[/α/g, 'alpha'], [/yes\/no/g, 'yes-or-no'], [/UAT-LITE/g, 'U-A-T Lite'], [/\bNEXUS\b/g, 'Nexus'],
-     [/\bKL\b/g, 'K-L'], [/\bAUROC\b/g, 'A-U-ROC'], [/\bVLMs?\b/g, function (m) { return m === 'VLM' ? 'V-L-M' : 'V-L-Ms'; }], [/\bF1\b/g, 'F-one'], [/\+(\d)/g, 'plus $1'], [/(\d)%/g, '$1 percent']
+     [/\bKL\b/g, 'K-L'], [/MedBayes-Lite/g, 'Med-Bayes Lite'], [/\bMedMCQA\b/g, 'Med M-C-Q-A'], [/\bMedQA-USMLE\b/g, 'Med Q-A U-S-M-L-E'], [/\bAUROC\b/g, 'A-U-ROC'], [/\bVLMs?\b/g, function (m) { return m === 'VLM' ? 'V-L-M' : 'V-L-Ms'; }], [/\bF1\b/g, 'F-one'], [/\+(\d)/g, 'plus $1'], [/(\d)%/g, '$1 percent']
     ].forEach(function (r) { txt = txt.replace(r[0], r[1]); });
     return txt.replace(/\s+/g, ' ').trim();
   }

@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MedBayes-Lite · Clinical Uncertainty Governance for Medical Decision Support</title>
+<meta name="description" content="A retraining-free layer that measures a clinical language model's uncertainty, recalibrates its confidence, and defers low-confidence cases to clinicians. Confident high-severity errors under domain shift fall from about 21% to near zero. Frontiers in Digital Health, 2026." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f3eb;
+    --bg-elev: #fdfaf3;
+    --bg-code: #1b1d1a;
+    --ink: #1b1d1a;
+    --ink-soft: #4a4d47;
+    --ink-muted: #7a7d76;
+    --line: #e3dccd;
+    --accent: #0f766e;
+    --accent-soft: #e2f2ef;
+    --accent-ink: #0b5952;
+    --accent-glow: rgba(15, 118, 110, 0.18);
+    --pill-bg: #efe9da;
+    --pill-ink: #3a3d36;
+    --warn-bg: #fde4d6;
+    --warn-border: #e85a4f;
+    --warn-ink: #9a2f25;
+    --shadow: 0 1px 2px rgba(20, 24, 18, 0.04), 0 8px 24px rgba(20, 24, 18, 0.05);
+    --radius: 14px;
+  }
+  [data-theme="dark"] {
+    --bg: #121114;
+    --bg-elev: #1a181d;
+    --bg-code: #0c0b0d;
+    --ink: #eceaef;
+    --ink-soft: #b7b4bd;
+    --ink-muted: #82808a;
+    --line: #29262e;
+    --accent: #5fd0c2;
+    --accent-soft: #14282a;
+    --accent-ink: #98e3d8;
+    --accent-glow: rgba(108, 195, 201, 0.25);
+    --pill-bg: #211e26;
+    --pill-ink: #c3c0c9;
+    --warn-bg: #2e1a16;
+    --warn-border: #ff7a6b;
+    --warn-ink: #ffb8a8;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15.5px;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  a { color: var(--accent-ink); text-decoration: none; transition: color 0.15s; }
+  a:hover { color: var(--accent); }
+
+  /* NAV */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-icons { display: flex; gap: 6px; }
+  .nav-icons a {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-soft); transition: all 0.18s ease;
+  }
+  .nav-icons a:hover { color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
+  .nav-icons svg { width: 20px; height: 20px; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a { color: var(--ink-soft); font-size: 14px; font-weight: 500; }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent-ink); }
+  .theme-toggle {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    width: 34px; height: 34px; border-radius: 50%;
+    cursor: pointer; display: grid; place-items: center;
+    color: var(--ink-soft); padding: 0;
+  }
+  .theme-toggle:hover { color: var(--accent-ink); border-color: var(--accent); }
+  .theme-toggle svg { width: 16px; height: 16px; }
+  .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: block; }
+  .nav-toggle {
+    display: none;
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 50%; width: 34px; height: 34px;
+    cursor: pointer; place-items: center; color: var(--ink); padding: 0;
+  }
+  .nav-toggle svg { width: 16px; height: 16px; }
+  @media (max-width: 760px) {
+    .nav-inner { padding: 12px 18px; position: relative; }
+    .nav-toggle { display: grid; }
+    .nav-icons { display: none; }
+    .nav-links {
+      position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: var(--bg-elev); border-bottom: 1px solid var(--line);
+      padding: 8px 0; box-shadow: var(--shadow);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links > a { padding: 12px 24px; width: 100%; display: block; }
+    .nav-links > a:hover { background: var(--accent-soft); color: var(--accent-ink); }
+    .theme-toggle { margin: 10px 24px 4px; }
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 980px; margin: 0 auto;
+    padding: 80px 28px 60px;
+    text-align: center;
+  }
+  .uat-logo {
+    width: 132px; height: 132px;
+    margin: 0 auto 28px;
+    display: grid; place-items: center;
+    filter: drop-shadow(0 8px 28px var(--accent-glow));
+  }
+  .venue-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    font-size: 0.74rem; font-weight: 600;
+    color: var(--accent-ink);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.3rem);
+    font-weight: 600; line-height: 1.1;
+    letter-spacing: -0.02em;
+    max-width: 860px; margin: 0 auto 1rem;
+  }
+  .hero h1 .brand-text {
+    color: var(--accent-ink);
+    font-style: italic;
+  }
+  .hero .authors {
+    font-size: 1rem; color: var(--ink); font-weight: 500;
+    max-width: 800px; margin: 0.6rem auto 0.35rem; line-height: 1.7;
+  }
+  .hero .authors sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .affils {
+    font-size: 0.85rem; color: var(--ink-soft);
+    max-width: 800px; margin: 0 auto 1.6rem; line-height: 1.55;
+  }
+  .hero .affils sup { color: var(--accent-ink); font-weight: 600; }
+  .hero .subtitle {
+    font-family: 'Fraunces', serif;
+    font-size: 1.18rem; color: var(--ink-soft);
+    max-width: 740px; margin: 0 auto 2.2rem;
+    font-style: italic; line-height: 1.5;
+  }
+  .cta-row {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: 0.92rem;
+    transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+    border: 1px solid transparent; cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg-elev);
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+    color: var(--bg-elev);
+  }
+  .btn-outline {
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-outline:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .code-pending {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 1.4rem;
+  }
+  .stats-bar {
+    display: flex; justify-content: center; gap: 2.5rem;
+    flex-wrap: wrap; padding: 1.2rem 0 0;
+  }
+  .stat { text-align: center; }
+  .stat .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+
+  /* SECTIONS */
+  section.content {
+    max-width: 1080px; margin: 0 auto;
+    padding: 70px 28px;
+  }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent-ink); text-transform: uppercase;
+    letter-spacing: 0.14em; margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: ''; width: 22px; height: 2px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+    font-weight: 500; letter-spacing: -0.02em;
+    margin-bottom: 1.1rem; line-height: 1.15;
+  }
+  .section-desc {
+    font-size: 1.04rem; color: var(--ink-soft);
+    max-width: 780px; margin-bottom: 2.6rem; line-height: 1.65;
+  }
+
+  .divider { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .divider hr {
+    border: none; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line), transparent);
+  }
+
+  /* EQUATION */
+  .equation {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.3rem 1.5rem;
+    margin: 0 0 2.4rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.02rem;
+    color: var(--accent-ink);
+    overflow-x: auto;
+  }
+  .equation .eq-note {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 0.7rem;
+  }
+
+  /* METHOD FIGURE */
+  .method-figure {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: #ffffff;
+    padding: 16px;
+    margin-bottom: 0.8rem;
+    box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .method-figure { background: #f2f0ea; }
+  .method-figure img { width: 100%; border-radius: 8px; display: block; }
+  .method-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.92rem; color: var(--ink-soft);
+    text-align: center; margin: 0 auto 2.6rem;
+    max-width: 880px; font-style: italic; line-height: 1.5;
+  }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.6rem;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 38px; height: 38px;
+    display: grid; place-items: center;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+    font-size: 1.2rem;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+  }
+  .feature-card h3 {
+    font-size: 1.02rem; font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.005em;
+  }
+  .feature-card p {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+  }
+
+  /* TABLES */
+  .result-table-wrap {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+  table.results {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.results th, table.results td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  table.results thead th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--accent);
+  }
+  table.results td.num { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; }
+  table.results tr.highlight td {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  table.results tr.highlight td:first-child { border-left: 3px solid var(--accent); }
+  table.results tr.baseline td { color: var(--ink-soft); }
+  .table-caption {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    font-style: italic; margin-top: 0.6rem;
+    line-height: 1.5;
+  }
+
+  /* CITATION */
+  .citation-block {
+    background: var(--bg-code);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.75;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    padding: 5px 12px;
+    background: rgba(109, 76, 159, 0.24);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; cursor: pointer;
+    transition: all 0.18s;
+  }
+  .copy-btn:hover { background: var(--accent); color: var(--bg-elev); }
+  .citation-block .copy-btn { color: #cdb8ec; }
+
+  /* NOTICE */
+  .license-notice {
+    margin-top: 1.6rem;
+    padding: 1.1rem 1.4rem;
+    background: var(--warn-bg);
+    border: 1px solid var(--warn-border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .license-notice .license-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.4; }
+  .license-notice .license-text {
+    font-size: 0.88rem; color: var(--warn-ink); line-height: 1.6;
+  }
+  .license-notice .license-text strong { font-weight: 700; }
+
+  /* ANIMATED FIGURE */
+  .anim-figure { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 0.8rem; line-height: 0; }
+  .anim-figure img { width: 100%; display: block; }
+  details.paper-fig { margin: 0 auto 2.6rem; max-width: 1080px; }
+  details.paper-fig > summary {
+    cursor: pointer; list-style: none; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-ink);
+    letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 0 18px;
+  }
+  details.paper-fig > summary::-webkit-details-marker { display: none; }
+  details.paper-fig > summary::before { content: '\25B8  '; }
+  details.paper-fig[open] > summary::before { content: '\25BE  '; }
+
+  /* CODE SECTION */
+  .code-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+  @media (max-width: 860px) { .code-grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; box-shadow: var(--shadow); }
+  .panel h3 { font-family: 'Inter', sans-serif; font-size: 0.98rem; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; }
+  .panel p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6; }
+  .code-block {
+    background: var(--bg-code); border-radius: 10px; padding: 16px 18px; margin: 0.4rem 0 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.7; color: #d4d4d4;
+    white-space: pre; overflow-x: auto; position: relative;
+  }
+  .code-block:last-child { margin-bottom: 0; }
+  .code-block .c { color: #8a8f87; }
+  .code-block .k { color: #c4a7ef; }
+  .code-block .s { color: #a5d6a7; }
+  .code-block { padding-top: 40px; }
+  .code-block .copy-btn { top: 8px; right: 8px; color: #cdb8ec; background: rgba(183,156,224,0.16); border-color: rgba(183,156,224,0.5); }
+  .code-block .copy-btn:hover { background: #b79ce0; color: #1b1d1a; }
+  .ckpt-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .ckpt-table td { padding: 8px 6px; border-bottom: 1px solid var(--line); }
+  .ckpt-table tr:last-child td { border-bottom: none; }
+  .ckpt-table a { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .ckpt-table .muted { color: var(--ink-muted); font-size: 0.78rem; text-align: right; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.4rem; }
+  .chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; padding: 5px 11px; border-radius: 100px;
+    background: var(--pill-bg); color: var(--pill-ink); border: 1px solid var(--line); transition: all 0.18s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  .chip b { color: var(--accent-ink); font-weight: 600; }
+  .maintainer { display: flex; gap: 16px; align-items: center; margin-top: 18px; }
+  .maintainer img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); flex-shrink: 0; }
+  .maintainer .who { font-size: 0.9rem; line-height: 1.5; }
+  .maintainer .who strong { font-size: 1rem; }
+  .maintainer .who span { color: var(--ink-soft); font-size: 0.84rem; }
+
+  /* FOOTER */
+  footer.site-footer {
+    text-align: center;
+    padding: 50px 28px 70px;
+    color: var(--ink-muted);
+    font-size: 0.86rem;
+    border-top: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  footer.site-footer a { color: var(--accent-ink); margin: 0 6px; }
+
+  /* FADE-IN */
+  .fade-in { opacity: 1; transform: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js-on .fade-in { opacity: 0; transform: translateY(16px); }
+  .js-on .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .stats-bar { gap: 1.4rem; }
+    .stat .stat-value { font-size: 1.4rem; }
+    section.content { padding: 50px 22px; }
+    .equation { font-size: 0.88rem; }
+  }
+
+  /* MedBayes-Lite pipeline strip */
+  .mbl-pipe { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px;
+    background: var(--bg-elev); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1.8rem; }
+  .mp-node { border: 1.5px solid var(--line); border-radius: 10px; padding: 0.55rem 0.8rem; font-weight: 600; font-size: 0.92rem;
+    background: var(--bg); text-align: center; }
+  .mp-node.mp-key { border-color: var(--accent); background: var(--accent-soft); }
+  .mp-node b { display: block; color: var(--accent-ink); }
+  .mp-node span { display: block; font-weight: 400; font-size: 0.76rem; color: var(--ink-soft); }
+  .mp-arrow { color: var(--ink-muted); font-size: 1.2rem; }
+  .mp-out { display: flex; flex-direction: column; gap: 6px; }
+  .mp-out span { border-radius: 8px; padding: 0.3rem 0.7rem; font-weight: 700; font-size: 0.85rem; text-align: center; }
+  .mp-ok { background: #e3f3e9; color: #1e6b3f; }
+  .mp-defer { background: #fbf0cf; color: #7a5a00; }
+  [data-theme="dark"] .mp-ok { background: #16301f; color: #8fdcab; }
+  [data-theme="dark"] .mp-defer { background: #33280f; color: #e8bb70; }
+  @media (max-width: 700px) { .mp-arrow { transform: rotate(90deg); width: 100%; text-align: center; } .mbl-pipe { flex-direction: column; } }
+  .mbl-cite { background: var(--bg-code); color: #e9e4d8; border-radius: 12px; padding: 1.1rem 1.3rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; overflow-x: auto; white-space: pre; }
+  .results td[rowspan] { vertical-align: middle; font-weight: 600; }
+</style>
+<link rel="stylesheet" href="/assets/explainers/explainers.css?v=8" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Elias Hossain" />
+<meta property="og:title" content="MedBayes-Lite · Clinical Uncertainty Governance for Medical Decision Support" />
+<meta property="og:description" content="A retraining-free layer that measures a clinical language model's uncertainty, recalibrates its confidence, and defers low-confidence cases to clinicians. Confident high-severity errors under domain shift fall from about 21% to near zero. Frontiers in Digital Health, 2026." />
+<meta property="og:url" content="https://eliashossain001.github.io/medbayes-lite/" />
+<meta property="og:image" content="https://eliashossain001.github.io/medbayes-lite/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MedBayes-Lite · Clinical Uncertainty Governance for Medical Decision Support" />
+<meta name="twitter:description" content="A retraining-free layer that measures a clinical language model's uncertainty, recalibrates its confidence, and defers low-confidence cases to clinicians. Confident high-severity errors under domain shift fall from about 21% to near zero. Frontiers in Digital Health, 2026." />
+<meta name="twitter:image" content="https://eliashossain001.github.io/medbayes-lite/assets/og.png" />
+<link rel="canonical" href="https://eliashossain001.github.io/medbayes-lite/" />
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "ScholarlyArticle", "url": "https://eliashossain001.github.io/medbayes-lite/", "headline": "MedBayes-Lite: A Clinical Uncertainty Governance Layer for Risk-Aware Medical Decision Support"}</script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-icons"></div>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html">About</a>
+      <a href="../index.html#publications">Publications</a>
+      <a href="#explainer">Explainer</a>
+      <a href="#problem">Problem</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#cite">Cite</a>
+      <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="uat-logo fade-in">
+    <svg viewBox="-2 -2 4 4" width="132" height="132" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="0" cy="0" r="1.45" fill="none" stroke="#0f766e" stroke-width="0.10"/>
+      <!-- shield -->
+      <path d="M0 -1.05 L0.82 -0.72 L0.82 0.05 Q0.82 0.72 0 1.08 Q-0.82 0.72 -0.82 0.05 L-0.82 -0.72 Z" fill="#e2f2ef" stroke="#0f766e" stroke-width="0.10" stroke-linejoin="round"/>
+      <!-- medical cross -->
+      <rect x="-0.13" y="-0.62" width="0.26" height="0.78" rx="0.05" fill="#0f766e"/>
+      <rect x="-0.39" y="-0.36" width="0.78" height="0.26" rx="0.05" fill="#0f766e"/>
+      <!-- confidence gauge -->
+      <path d="M-0.5 0.62 A0.5 0.5 0 0 1 0.5 0.62" fill="none" stroke="#c99a06" stroke-width="0.09" stroke-linecap="round"/>
+      <line x1="0" y1="0.62" x2="0.3" y2="0.36" stroke="#1b1d1a" stroke-width="0.07" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="venue-badge fade-in">Frontiers in Digital Health · 2026 · Accepted</div>
+  <h1 class="fade-in">MedBayes-Lite:<br><span class="brand-text">A Clinical Uncertainty Governance Layer for Risk-Aware Medical Decision Support</span></h1>
+  <p class="authors fade-in"><strong>Elias Hossain</strong><sup>1</sup>, Md Mehedi Hasan Nipu<sup>2</sup>, Maleeha Sheikh<sup>3</sup>, Tasfia Nuzhat<sup>1</sup>, Rajib Rana<sup>4</sup>, Subash Neupane<sup>5</sup>, Björn W. Schuller<sup>6,7</sup>, Niloofar Yousefi<sup>1</sup></p>
+  <p class="affils fade-in"><sup>1</sup>University of Central Florida · <sup>2</sup>North South University · <sup>3</sup>Purdue University Fort Wayne · <sup>4</sup>University of Southern Queensland · <sup>5</sup>Meharry Medical College · <sup>6</sup>Technical University of Munich · <sup>7</sup>Imperial College London</p>
+  <p class="subtitle fade-in">Clinical language models are often confidently wrong, and most dangerously so on high-severity questions and on data unlike their training set. MedBayes-Lite wraps an existing model in a layer that measures its uncertainty, recalibrates its confidence, and sends low-confidence cases to a clinician. It needs no retraining and adds no parameters.</p>
+  <div class="cta-row fade-in">
+    <a href="https://arxiv.org/abs/2511.16625" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> arXiv
+    </a>
+    <a href="https://arxiv.org/pdf/2511.16625" target="_blank" rel="noopener" class="btn btn-outline">📄 PDF</a>
+    <a href="https://github.com/eliashossain001/medbayes-lite" target="_blank" rel="noopener" class="btn btn-outline">💻 Code</a>
+    <a href="#cite" class="btn btn-outline">📚 BibTeX</a>
+  </div>
+  <div class="stats-bar fade-in">
+    <div class="stat"><div class="stat-value">0.23–0.33</div><div class="stat-label">Calibration error removed</div></div>
+    <div class="stat"><div class="stat-value">21% → ~0%</div><div class="stat-label">Confident errors under shift</div></div>
+    <div class="stat"><div class="stat-value">0</div><div class="stat-label">Retraining or new parameters</div></div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<section id="explainer" class="content">
+  <div class="section-label">Explainer</div>
+  <h2 class="section-title">The paper in one minute</h2>
+  <div data-explainer="mbl"></div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- AT A GLANCE -->
+<section id="glance" class="content">
+  <div class="section-label fade-in">At a Glance</div>
+  <h2 class="section-title fade-in">A governance layer, not a new model</h2>
+  <p class="section-desc fade-in">MedBayes-Lite sits between a trained clinical predictor and the clinician. It changes what the system does with the model's confidence: answer when the calibrated confidence is high enough, and escalate to a person when it is not.</p>
+  <div class="mbl-pipe fade-in" role="img" aria-label="Pipeline: question, 15 Monte Carlo dropout passes, calibration, confidence gate at 0.70, then either answer or human review">
+    <div class="mp-node">Question</div>
+    <div class="mp-arrow">→</div>
+    <div class="mp-node mp-key"><b>MC dropout</b><span>15 stochastic passes, averaged</span></div>
+    <div class="mp-arrow">→</div>
+    <div class="mp-node mp-key"><b>Calibration</b><span>temperature fit on held-out data</span></div>
+    <div class="mp-arrow">→</div>
+    <div class="mp-node mp-key"><b>Confidence gate</b><span>answer only if C(p) ≥ 0.70</span></div>
+    <div class="mp-arrow">→</div>
+    <div class="mp-out"><span class="mp-ok">Answer</span><span class="mp-defer">Human review</span></div>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">1</div>
+      <h3>Harmful errors drop to near zero</h3>
+      <p>On MedMCQA and MedQA-USMLE, calibration error falls by <strong>0.23–0.33</strong> and confident, wrong, high-severity answers fall toward zero (paired bootstrap, p ≈ 0).</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">2</div>
+      <h3>Strongest under domain shift</h3>
+      <p>Trained on MedMCQA and tested on MedQA-USMLE, the base models are confidently wrong on about <strong>21%</strong> of high-severity questions. With the layer: <strong>0.2%</strong> and <strong>0.0%</strong>.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">3</div>
+      <h3>Honest about its limits</h3>
+      <p>Temperature scaling alone gets most of the calibration gain, deep ensembles rank risk better, coverage drops, and well-calibrated models gain nothing. All of it is reported.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section id="problem" class="content">
+  <div class="section-label fade-in">The Problem</div>
+  <h2 class="section-title fade-in">Confidence that cannot be trusted</h2>
+  <p class="section-desc fade-in">Transformer-based clinical predictors assign high confidence to incorrect answers, and the miscalibration is worst on ambiguous, high-severity, and out-of-distribution cases, exactly where a confident error costs the most. Existing remedies each leave a gap.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">≈</div>
+      <h3>Post-hoc calibration only rescales</h3>
+      <p>Temperature scaling makes the confidence scale honest, but on its own it does not decide anything. A deployed system still answers every question.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">$</div>
+      <h3>Ensembles are expensive</h3>
+      <p>A five-member deep ensemble of Bio_ClinicalBERT needs 541M parameters and 2.85 GB of GPU memory, against 108M and 0.43 GB for the single model MedBayes-Lite wraps.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">!</div>
+      <h3>Accuracy hides severity</h3>
+      <p>A wrong answer about a medication interaction is not equivalent to a wrong answer on a low-stakes item. Standard metrics weight all errors equally.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- METHOD -->
+<section id="method" class="content">
+  <div class="section-label fade-in">Method</div>
+  <h2 class="section-title fade-in">Three stages, no training</h2>
+  <p class="section-desc fade-in">The layer applies to open-weight encoders (BERT-base, BioBERT, Bio_ClinicalBERT, PubMedBERT) with full internal access. A sampling-only contrast with Qwen2.5-7B-Instruct is included for comparison.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">1</div>
+      <h3>Estimate</h3>
+      <p>Run M&nbsp;=&nbsp;15 stochastic forward passes with inference dropout 0.2. Their average is the predictive distribution; their spread is the uncertainty signal.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">2</div>
+      <h3>Calibrate</h3>
+      <p>Fit a temperature on a held-out calibration set so that reported confidence matches empirical accuracy.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">3</div>
+      <h3>Decide</h3>
+      <p>Convert the calibrated distribution into a normalized confidence and answer only above a threshold τ&nbsp;=&nbsp;0.70; otherwise defer to human review.</p>
+    </div>
+  </div>
+  <div class="equation fade-in">
+    C(p) = 1 &minus; H(p) / log K, &nbsp;&nbsp; H(p) = &minus;&sum;<sub>k</sub> p<sub>k</sub> log p<sub>k</sub>, &nbsp;&nbsp; answer only if C(p) &ge; &tau;
+    <span class="eq-note">Dividing the entropy by its maximum, log K, maps confidence to [0, 1]. The paper also proposes the Clinical Uncertainty Score (CUS), a severity-weighted calibration error over 13 rule-based clinical risk categories, used as an evaluation summary rather than a training signal.</span>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- RESULTS -->
+<section id="results" class="content">
+  <div class="section-label fade-in">Results</div>
+  <h2 class="section-title fade-in">Fewer confident, high-severity errors</h2>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin-bottom:0.6rem">Calibration and harmful errors</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">harmful@0.8 is the rate of answers that are confident (≥ 0.8), wrong, and high-severity. Selective accuracy and coverage are measured at τ = 0.70. Temperature scaling is shown as a strong, cheap baseline, not a strawman.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Setting</th><th>Method</th><th>ECE ↓</th><th>harmful@0.8 ↓</th><th>Selective acc. ↑</th><th>Coverage</th><th>AURC ↓</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td rowspan="3">MedMCQA · PubMedBERT</td><td>Base</td><td class="num">0.255</td><td class="num">0.056</td><td class="num">0.571</td><td class="num">0.541</td><td class="num">0.376</td></tr>
+        <tr><td>Temperature scaling</td><td class="num">0.081</td><td class="num">0.012</td><td class="num">0.721</td><td class="num">0.217</td><td class="num">0.375</td></tr>
+        <tr class="highlight"><td>MedBayes-Lite</td><td class="num"><strong>0.023</strong></td><td class="num"><strong>0.003</strong></td><td class="num"><strong>0.818</strong></td><td class="num">0.100</td><td class="num">0.392</td></tr>
+        <tr class="baseline"><td rowspan="3">MedMCQA · BioBERT</td><td>Base</td><td class="num">0.317</td><td class="num">0.067</td><td class="num">0.457</td><td class="num">0.508</td><td class="num">0.517</td></tr>
+        <tr><td>Temperature scaling</td><td class="num">0.085</td><td class="num">0.003</td><td class="num">0.618</td><td class="num">0.083</td><td class="num">0.515</td></tr>
+        <tr class="highlight"><td>MedBayes-Lite</td><td class="num"><strong>0.021</strong></td><td class="num"><strong>0.000</strong></td><td class="num"><strong>0.714</strong></td><td class="num">0.021</td><td class="num">0.521</td></tr>
+        <tr class="baseline"><td rowspan="3">MedQA-USMLE · PubMedBERT</td><td>Base</td><td class="num">0.325</td><td class="num">0.213</td><td class="num">0.437</td><td class="num">0.541</td><td class="num">0.539</td></tr>
+        <tr><td>Temperature scaling</td><td class="num">0.094</td><td class="num">0.015</td><td class="num">0.583</td><td class="num">0.106</td><td class="num">0.533</td></tr>
+        <tr class="highlight"><td>MedBayes-Lite</td><td class="num"><strong>0.046</strong></td><td class="num"><strong>0.002</strong></td><td class="num">0.539</td><td class="num">0.026</td><td class="num">0.554</td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 1.</strong> Selected rows from the paper's Table 8 (mean over three seeds). MedBayes-Lite gives the lowest calibration error and removes nearly all harmful overconfident errors, but answers fewer questions and does not improve AURC. On MedQA-USMLE with BioBERT (not shown), selective accuracy falls from 0.288 to 0.143.</p>
+  </div>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin:2.6rem 0 0.6rem">Under domain shift</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">Models trained on MedMCQA are evaluated on MedQA-USMLE. "Drift" is the change in calibration error from in-distribution to out-of-distribution.</p>
+  <div class="result-table-wrap fade-in">
+    <table class="results">
+      <thead>
+        <tr><th>Model</th><th>Method</th><th>ID ECE</th><th>OOD ECE</th><th>ECE drift</th><th>OOD harmful@0.8</th></tr>
+      </thead>
+      <tbody>
+        <tr class="baseline"><td>PubMedBERT</td><td>Base</td><td class="num">0.255</td><td class="num">0.325</td><td class="num">+0.070</td><td class="num">0.213</td></tr>
+        <tr class="highlight"><td>PubMedBERT</td><td>MedBayes-Lite</td><td class="num">0.030</td><td class="num">0.055</td><td class="num"><strong>+0.026</strong></td><td class="num"><strong>0.002</strong></td></tr>
+        <tr class="baseline"><td>BioBERT</td><td>Base</td><td class="num">0.317</td><td class="num">0.410</td><td class="num">+0.093</td><td class="num">0.217</td></tr>
+        <tr class="highlight"><td>BioBERT</td><td>MedBayes-Lite</td><td class="num">0.015</td><td class="num">0.084</td><td class="num">+0.069</td><td class="num"><strong>0.000</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="table-caption"><strong>Table 2.</strong> From the paper's Table 9. A model that is most overconfident exactly when it is most likely to be wrong is the failure the layer is designed to contain.</p>
+  </div>
+
+  <h3 class="fade-in" style="font-size:1.35rem;margin:2.6rem 0 0.6rem">Where the harmful errors were</h3>
+  <p class="section-desc fade-in" style="margin-bottom:1.4rem">Each question is assigned to one or more of 13 rule-based clinical risk categories. The base model's harmful overconfidence concentrates in high-severity, diagnosis, treatment, and medication questions; the layer drives it toward zero in each.</p>
+  <div class="method-figure fade-in"><img src="assets/category-harm.png" alt="Bar chart of harmful overconfident error rate by clinical risk category. The base model reaches about 0.18 to 0.21 on rare disease, diagnosis, high severity, medication and drug interaction, treatment recommendation and risk prognosis; MedBayes-Lite is below 0.01 in every category." loading="lazy"></div>
+  <p class="method-caption fade-in"><strong>Figure 1.</strong> Harmful overconfident error rate by clinical risk category, base model (blue) versus MedBayes-Lite (orange). From the paper's Figure 6.</p>
+
+  <div class="feature-grid" style="margin-top:2.2rem">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">r</div>
+      <h3>CUS tracks clinical harm</h3>
+      <p>Across 739 model, method, and category groups, the Clinical Uncertainty Score correlates with the harmful overconfident error rate at <strong>r = 0.88</strong>. Adding it to ECE raises the variance explained in harmful error from R² = 0.60 to 0.79.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">✓</div>
+      <h3>It defers the right cases</h3>
+      <p>At τ = 0.70, the layer defers <strong>97–99%</strong> of incorrect predictions, against roughly 55% for the base model.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">⏱</div>
+      <h3>Cost scales with samples</h3>
+      <p>On Bio_ClinicalBERT, one pass takes 32 ms; ten Monte Carlo passes take 60 ms, at the same 0.43 GB of memory and the same 108M parameters.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIMITATIONS -->
+<section id="limitations" class="content">
+  <div class="section-label fade-in">Limitations</div>
+  <h2 class="section-title fade-in">What this does not claim</h2>
+  <p class="section-desc fade-in">MedBayes-Lite is positioned as a deployable calibration-and-abstention layer, not as a new uncertainty-aware architecture and not as a guarantee of clinical safety.</p>
+  <div class="feature-grid">
+    <div class="feature-card fade-in">
+      <div class="feature-icon">↕</div>
+      <h3>No better risk ranking</h3>
+      <p>AURC is statistically unchanged in three of four settings and marginally worse in one. On PubMedQA, deep ensembles achieve the best AURC.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">≈</div>
+      <h3>A cheap baseline is close</h3>
+      <p>Temperature scaling, a single parameter, captures most of the calibration gain (ECE 0.255 → 0.081 on PubMedBERT).</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">%</div>
+      <h3>Safety costs coverage</h3>
+      <p>On MedMCQA with PubMedBERT, coverage at τ = 0.70 falls from 0.541 to 0.100: the model answers far less often.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">0</div>
+      <h3>No gain when already calibrated</h3>
+      <p>The fine-tuned PubMedQA encoders are already well calibrated, and the layer neither helps nor hurts them.</p>
+    </div>
+    <div class="feature-card fade-in">
+      <div class="feature-icon">R</div>
+      <h3>Retrospective benchmarks only</h3>
+      <p>All results are on public question-answering benchmarks with three seeds and one shift pair; clinical deployment was not evaluated, and the optional attention pathway stayed inactive (λ = 0).</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- CITE -->
+<section id="cite" class="content">
+  <div class="section-label fade-in">Citation</div>
+  <h2 class="section-title fade-in">Cite MedBayes-Lite</h2>
+  <pre class="mbl-cite fade-in">@article{hossain2026medbayes,
+  title   = {MedBayes-Lite: A Clinical Uncertainty Governance Layer
+             for Risk-Aware Medical Decision Support},
+  author  = {Hossain, Elias and Nipu, Md Mehedi Hasan and Sheikh, Maleeha and
+             Nuzhat, Tasfia and Rana, Rajib and Neupane, Subash and
+             Schuller, Bj{\"o}rn W. and Yousefi, Niloofar},
+  journal = {Frontiers in Digital Health},
+  year    = {2026},
+  note    = {Accepted. arXiv:2511.16625}
+}</pre>
+</section>
+
+<footer class="site-footer">
+  <p>
+    <strong>MedBayes-Lite</strong> &mdash; clinical uncertainty governance &nbsp;·&nbsp;
+    <a href="../index.html#publications">Publications</a> ·
+    <a href="../uat-lite/">UAT-LITE</a> ·
+    <a href="../biogen/">BIOGEN</a> ·
+    <a href="../carebench/">CareBench</a>
+  </p>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js-on');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  setTimeout(() => document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible')), 2000);
+
+  const themeBtn = document.getElementById('themeBtn');
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('theme'); } catch (e) {}
+  if (savedTheme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch (e) {}
+  });
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open);
+  });
+</script>
+<script src="/assets/explainers/explainers.js?v=8" defer></script>
+</body>
+</html>

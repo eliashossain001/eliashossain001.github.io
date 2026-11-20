@@ -2280,6 +2280,7 @@
   .vmodal-back { position: absolute; inset: 0; background: rgba(10, 12, 10, 0.62); backdrop-filter: blur(3px); }
   .vmodal-box { position: relative; width: min(880px, 100%); max-height: calc(100vh - 32px); overflow: auto; }
   .vmodal-box .xpl { max-width: none; }
+  .vmodal .xpl-tag { right: 44px; }
   .vmodal-x { position: absolute; top: -6px; right: -6px; z-index: 2; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
     background: var(--bg-elev); color: var(--ink); font-size: 22px; line-height: 1; cursor: pointer; box-shadow: var(--shadow); }
   .vmodal-more { margin: 10px 4px 0; font-size: 14px; }
@@ -2442,7 +2443,7 @@
   .mp a:hover { text-decoration: underline; }
   .mv { font-size: .84rem; color: var(--ink-muted); }
 </style>
-<link rel="stylesheet" href="/assets/explainers/explainers.css?v=7" />
+<link rel="stylesheet" href="/assets/explainers/explainers.css?v=8" />
 <!-- Link previews and search metadata -->
 <meta property="og:type" content="profile" />
 <meta property="og:site_name" content="Elias Hossain" />
@@ -2588,13 +2589,14 @@
         <li><span class="h">Agent Safety</span> <span class="p"><span class="i"><a href="/nexus/">NEXUS</a><span class="v">(AACL 2026)</span></span><span class="i"><a href="/channelguard/">ChannelGuard</a><span class="v">(Under review)</span></span></span></li>
         <li><span class="h">Post-Training &amp; RL</span> <span class="p"><span class="i"><a href="/poe-steering/">When Policies Cannot Be Retrained</a><span class="v">(NeurIPS 2026)</span></span></span></li>
         <li><span class="h">Adaptive Compute for VLMs</span> <span class="p"><span class="i"><a href="/look-think/">When Does Extra Compute Help?</a><span class="v">(Under review)</span></span></span></li>
-        <li><span class="h">Clinical &amp; Biomedical AI</span> <span class="p"><span class="i"><a href="/biogen/">BIOGEN</a><span class="v">(Frontiers 2026)</span></span><span class="i"><a href="/carebench/">CareBench</a><span class="v">(Benchmark)</span></span></span></li>
+        <li><span class="h">Clinical &amp; Biomedical AI</span> <span class="p"><span class="i"><a href="/medbayes-lite/">MedBayes-Lite</a><span class="v">(Frontiers in Digital Health 2026)</span></span><span class="i"><a href="/biogen/">BIOGEN</a><span class="v">(Frontiers 2026)</span></span><span class="i"><a href="/carebench/">CareBench</a><span class="v">(Benchmark)</span></span></span></li>
       </ul>
 
       <div class="ann">&#128226; Ph.D. candidate (expected May 2028) &middot; actively seeking <strong>Summer 2027 research internships</strong> in reliable LLMs, LLM evaluation, and agent safety. Please <a href="mailto:mdelias.hossain@ucf.edu?subject=Research%20internship">reach out</a> if you have an opening.</div>
 
       <h2 class="sec" id="news">Recent News <small>(<a href="#" id="newsAll">See All</a>)</small></h2>
       <table class="newsT">
+        <tr><td class="d">Nov 2026</td><td>&#127881; <a href="/medbayes-lite/">MedBayes-Lite</a> accepted at <strong>Frontiers in Digital Health</strong>: a retraining-free layer that cuts confident, high-severity errors from clinical language models. Watch the <a href="#" data-video="mbl">one-minute video</a>.</td></tr>
         <tr><td class="d">Nov 2026</td><td>&#127881; <a href="/uat-lite/">UAT-LITE</a> accepted at <strong>EACL 2027</strong> (Main): inference-time uncertainty-aware attention for pretrained transformers.</td></tr>
         <tr><td class="d">Nov 2026</td><td>&#127908; NeurIPS 2026 poster and talk slides are on the <a href="https://neurips.cc/virtual/2026/loc/atlanta/poster/152992" target="_blank" rel="noopener">NeurIPS page</a>; watch the <a href="#" data-video="poe">one-minute video</a>.</td></tr>
         <tr><td class="d">Sep 2026</td><td>&#127881; <a href="/poe-steering/">When Policies Cannot Be Retrained</a> accepted at <strong>NeurIPS 2026</strong> (Main Track): closed-form steering of a frozen offline RL policy.</td></tr>
@@ -2709,6 +2711,37 @@
   author={Hossain, Elias and Dipta, Shubhashis Roy and Neupane, Subash and Rana, Rajib and Shwartz-Ziv, Ravid and Garibay, Ivan and Yousefi, Niloofar},
   booktitle={Proceedings of the 2027 Conference of the European Chapter of the Association for Computational Linguistics (EACL)},
   year={2027}
+}</pre>
+              </div>
+            </div>
+          </article>
+
+          <article class="pub pub-card" data-tag="trust">
+            <div class="pub-thumb has-fig">
+              <span class="pub-status s-pub">Frontiers 2026</span>
+              <a class="pub-fig-link" href="/assets/figs/medbayes-category-harm.png" target="_blank" rel="noopener">
+                <img src="/assets/figs/medbayes-category-harm-thumb.png" alt="Harmful overconfident error rate by clinical risk category: the base model reaches about 0.2 on diagnosis, treatment, medication and high-severity questions, while MedBayes-Lite stays below 0.01 in every category" loading="lazy" />
+              </a>
+              <span class="pub-fig-zoom">Full figure</span>
+            </div>
+            <div class="pub-info">
+              <h3>MedBayes-Lite: A Clinical Uncertainty Governance Layer for Risk-Aware Medical Decision Support</h3>
+              <div class="pub-authors"><strong>E. Hossain</strong>, M. M. H. Nipu, M. Sheikh, T. Nuzhat, R. Rana, S. Neupane, B. W. Schuller, N. Yousefi</div>
+              <div class="pub-venue-line">Frontiers in Digital Health, 2026 (accepted)</div>
+              <p class="pub-plain"><span class="pub-plain-k">In short</span>Clinical language models are often confidently wrong, especially on high-stakes questions. A layer around an existing model measures how unsure it is, makes its confidence honest, and hands uncertain cases to a clinician, with no retraining.</p>
+              <details class="pub-tech"><summary>Technical summary</summary><p class="pub-desc">A retraining-free, parameter-free governance layer combining Monte Carlo dropout, calibration of the predictive distribution, and a confidence-guided abstention gate. On MedMCQA and MedQA-USMLE it reduces ECE by 0.23 to 0.33 and drives harmful overconfident errors toward zero; under MedMCQA&rarr;MedQA-USMLE shift, confident errors on high-severity items fall from about 21% to near zero. It does not improve AURC, temperature scaling matches most of its calibration at lower cost, and it costs coverage.</p></details>
+              <div class="pub-links">
+                <a class="pub-pill" href="https://arxiv.org/abs/2511.16625" target="_blank" rel="noopener">ARXIV</a>
+                <button type="button" class="pub-pill pub-explain" data-video="mbl">&#9654; 1-MIN VIDEO</button>
+                <a class="pub-pill" href="/medbayes-lite/">PROJECT</a>
+                <a class="pub-pill" href="https://github.com/eliashossain001/medbayes-lite" target="_blank" rel="noopener">CODE</a>
+                <button class="pub-pill pub-bibtex-btn" type="button">BIBTEX</button>
+                <pre class="pub-bibtex-text" hidden>@article{hossain2026medbayes,
+  title={MedBayes-Lite: A Clinical Uncertainty Governance Layer for Risk-Aware Medical Decision Support},
+  author={Hossain, Elias and Nipu, Md Mehedi Hasan and Sheikh, Maleeha and Nuzhat, Tasfia and Rana, Rajib and Neupane, Subash and Schuller, Bj{\"o}rn W. and Yousefi, Niloofar},
+  journal={Frontiers in Digital Health},
+  year={2026},
+  note={Accepted. arXiv:2511.16625}
 }</pre>
               </div>
             </div>
@@ -3409,7 +3442,7 @@
     Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
   })();
 </script>
-<script src="/assets/explainers/explainers.js?v=7" defer></script>
+<script src="/assets/explainers/explainers.js?v=8" defer></script>
 <script src="/assets/askr/askr.js?v=3" defer></script>
 </body>
 </html>
